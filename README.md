@@ -67,10 +67,10 @@ DRAFT → VALIDATED → SENT → ACKNOWLEDGED → PAID
 ## Progression de la documentation
 
 - [x] Fondations transversales
-- [ ] AUTH
-- [ ] ONBOARDING
-- [ ] DASHBOARD
-- [ ] FACTURES ÉMISES
+- [x] AUTH
+- [x] ONBOARDING
+- [x] DASHBOARD
+- [x] FACTURES ÉMISES
 - [ ] FACTURES REÇUES
 - [ ] CLIENTS & FOURNISSEURS
 - [ ] CATALOGUE

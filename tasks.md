@@ -19,7 +19,7 @@ Suivi de l'avancement du développement. Mis à jour à chaque tâche démarrée
 | Infrastructure Docker (MySQL 8, Redis 7, MinIO, Mailpit, Nginx) | ✅ terminé |
 | Landing page publique (/) | ✅ terminé |
 | Bootstrap applicatif (app démarrable, routes niveau 1+2) | ✅ terminé |
-| Services métier | ❌ 3/11 (S3, Sirene, PPF — stubs seulement) |
+| Services métier | ✅ 9/11 (numérotation, calcul, statuts, duplication, avoir, paiement, notification + S3/Sirene/PPF) |
 | Controllers | ❌ 14 routes réelles / 37 documentées |
 | Form Types | ❌ 0/~15 |
 | Voters Symfony | ❌ 0/4 |
@@ -34,7 +34,7 @@ Suivi de l'avancement du développement. Mis à jour à chaque tâche démarrée
 ---
 
 ## TASK-001 — Services métier fondamentaux
-**Statut :** `nouveau`
+**Statut :** `terminé`
 **Priorité :** critique — aucune facture ne peut être créée sans ces services
 
 ### Ce qu'il faut faire
@@ -70,7 +70,7 @@ Suivi de l'avancement du développement. Mis à jour à chaque tâche démarrée
 ---
 
 ## TASK-002 — Génération PDF et XML (conformité réglementaire)
-**Statut :** `nouveau`
+**Statut :** `en cours`
 **Priorité :** critique — obligation légale de produire les bons formats
 
 ### Ce qu'il faut faire
@@ -640,3 +640,5 @@ Créer `src/DataFixtures/AppFixtures.php` avec `zenstruck/foundry` :
 | Date | Tâche | Action |
 |---|---|---|
 | 2026-05-29 | Toutes (TASK-001 à TASK-022) | Création initiale du fichier tasks.md |
+| 2026-05-30 | TASK-001 | Terminé — InvoiceNumberingService, InvoiceCalculatorService, InvoiceStatusService, InvoiceDuplicateService, PaymentService, NotificationService |
+

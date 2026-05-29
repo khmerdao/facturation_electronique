@@ -19,8 +19,14 @@ final class OnboardingSubscriber implements EventSubscriberInterface
 {
     /** Routes accessibles même si l'onboarding est incomplet. */
     private const ONBOARDING_ALLOWED = [
+        '/',             // landing page publique
         '/onboarding',
         '/logout',
+        '/login',
+        '/register',
+        '/forgot-password',
+        '/reset-password',
+        '/select-organisation',
         '/settings',
         '/_',
     ];

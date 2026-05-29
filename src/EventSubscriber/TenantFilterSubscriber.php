@@ -37,6 +37,7 @@ final class TenantFilterSubscriber implements EventSubscriberInterface
         '/forgot-password',
         '/reset-password',
         '/verify-email',
+        '/select-organisation',
         '/2fa',
         '/admin',
         '/api/auth',
@@ -71,7 +72,11 @@ final class TenantFilterSubscriber implements EventSubscriberInterface
 
         // Ne pas activer le filtre sur les routes exclues
         foreach (self::EXCLUDED_PREFIXES as $prefix) {
-            if (str_starts_with($path, $prefix)) {
+            // Correspondance exacte pour '/' afin de ne pas tout exclure
+            if ($prefix === '/' && $path === '/') {
+                return;
+            }
+            if ($prefix !== '/' && str_starts_with($path, $prefix)) {
                 return;
             }
         }

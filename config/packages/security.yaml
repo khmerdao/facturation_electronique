@@ -100,11 +100,13 @@ security:
     # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     access_control:
         # ── Routes publiques (Auth) ────────────────────────────────────
+        - { path: ^/$, roles: PUBLIC_ACCESS }
         - { path: ^/login$, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
         - { path: ^/forgot-password, roles: PUBLIC_ACCESS }
         - { path: ^/reset-password, roles: PUBLIC_ACCESS }
         - { path: ^/verify-email, roles: PUBLIC_ACCESS }
+        - { path: ^/select-organisation, roles: IS_AUTHENTICATED_FULLY }
 
         # ── 2FA ───────────────────────────────────────────────────────
         - { path: ^/2fa, roles: IS_AUTHENTICATED_2FA_IN_PROGRESS }

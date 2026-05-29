@@ -118,8 +118,30 @@ src/Entity/
 - [x] Factures reçues (ReceivedInvoice, ReceivedInvoiceLine)
 - [x] Transmissions (PdpTransmission, PdpWebhookLog)
 - [x] Paiements (Payment, RelanceEmail)
-- [ ] TVA & exports (TaxAdjustment, ExportJob)
+- [x] TVA & exports (TaxAdjustment, ExportJob)
 - [x] E-reporting (EReportingBatch, EReportingTransaction, EReportingPaymentLine, EReportingCorrection)
-- [ ] Notifications (Notification, NotificationPreference)
-- [ ] Intégrations (ApiKey, WebhookEndpoint, WebhookDelivery)
-- [ ] Traçabilité (AuditLog, SuperAdminLog)
+- [x] Notifications (Notification, NotificationPreference)
+- [x] Intégrations (ApiKey, WebhookEndpoint, WebhookDelivery)
+- [x] Traçabilité (AuditLog, SuperAdminLog)
+
+### Récapitulatif du modèle
+
+**34 entités** + **26 enums** + **3 embeddables** + **2 traits**.
+
+Relations : **42 ManyToOne** / **17 OneToMany**, **aucun ManyToMany**
+(toutes les liaisons N-N passent par une entité de liaison explicite).
+
+Entités de liaison explicites (remplacent les ManyToMany) :
+- `TenantMembership` : User ↔ Tenant (porte le rôle)
+
+Tables de jointure contrôlées via ManyToOne/OneToMany pour les relations
+multiples : lignes de facture, historiques, transmissions, lots e-reporting,
+livraisons webhook, etc.
+
+Points de conformité réglementaire intégrés au modèle :
+- Numérotation séquentielle sans trou (`InvoiceSequence`, lock + verrouillage)
+- Immuabilité des factures (snapshot client, `#[ORM\Version]`, archivage WORM)
+- Piste d'audit fiable (`AuditLog` INSERT only, hash SHA-256 des fichiers)
+- Idempotence des webhooks PDP (`PdpWebhookLog.eventId` unique)
+- E-reporting transaction + paiement (TVA sur encaissement)
+- Conservation légale (soft delete + horodatage)

@@ -145,3 +145,34 @@ Points de conformité réglementaire intégrés au modèle :
 - Idempotence des webhooks PDP (`PdpWebhookLog.eventId` unique)
 - E-reporting transaction + paiement (TVA sur encaissement)
 - Conservation légale (soft delete + horodatage)
+
+## Migrations Doctrine
+
+Fichier unique : `migrations/Version20260901000000.php`
+
+Crée les **34 tables** dans l'ordre correct (contraintes FK respectées).
+Résout la dépendance circulaire `payments ↔ ereporting_payment_lines`
+en ajoutant la FK `payment_id` via `ALTER TABLE` après la création des deux tables.
+
+Pour appliquer : `php bin/console doctrine:migrations:migrate`
+
+## Repositories
+
+**34 repositories** dans `src/Repository/`, un par entité.
+Chaque méthode est commentée avec son rôle, son contexte d'utilisation
+et les pages/services qui l'appellent.
+
+### Méthodes notables par domaine
+
+| Repository | Méthodes clés |
+|---|---|
+| `InvoiceRepository` | `findByFilters()`, `getKpis()`, `getTvaStats()`, `findForFec()`, `findForEreporting()`, `getMonthlyRevenue()` |
+| `ReceivedInvoiceRepository` | `existsByExternalPdpId()` (idempotence), `findPendingTechnicalAck()` (réforme 2026) |
+| `PdpTransmissionRepository` | `getSuccessStats()`, `findPending()`, `findAllTenants()` |
+| `EReportingBatchRepository` | `findByPeriod()`, `findLate()`, `findDueSoon()` |
+| `PaymentRepository` | `findPendingEreporting()`, `findByIdempotencyKey()`, `sumIncoming()` |
+| `InvoiceSequenceRepository` | `lockForUpdate()` (lock pessimiste, numérotation sans trou) |
+| `NotificationRepository` | `countUnread()`, `markAllAsRead()`, `findForDigest()` |
+| `AuditLogRepository` | `findByEntity()` (piste d'audit fiable), `findAllTenants()` |
+| `WebhookEndpointRepository` | `findActiveForEvent()` (requête native JSON), `findToDeactivate()` |
+| `TenantRepository` | `findAllWithStats()`, `findStuckOnboarding()`, `countByPlan()` |

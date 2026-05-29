@@ -80,3 +80,46 @@ DRAFT → VALIDATED → SENT → ACKNOWLEDGED → PAID
 - [x] PARAMÈTRES
 - [x] NOTIFICATIONS
 - [x] ADMIN SAAS
+
+## Modélisation Doctrine
+
+Modèle de données en PHP 8.4 / Doctrine ORM, sous `src/Entity/`.
+
+### Principes de modélisation
+- **Aucun ManyToMany** : toute relation N-N est matérialisée par une entité de
+  liaison explicite (ManyToOne + OneToMany des deux côtés), pour garder le
+  contrôle sur la table de jointure (ex : `TenantMembership` pour User↔Tenant).
+- **Identifiants UUID** (`Symfony\Component\Uid\Uuid`) sur toutes les entités.
+- **TenantAwareTrait** : mutualise la relation `tenant_id` (ManyToOne vers Tenant)
+  sur toutes les entités métier. Le `TenantFilter` Doctrine applique
+  automatiquement l'isolation multi-tenant.
+- **Embeddables** : `Address`, `Money`, `PdpConfig` (objets valeur).
+- **Enums PHP natifs** (backed enums) pour tous les statuts et types.
+- **Soft delete** (champ `deletedAt`) pour les entités à conserver légalement.
+- **AuditLog immuable** : INSERT only, jamais UPDATE/DELETE.
+
+### Organisation des fichiers
+```
+src/Entity/
+├── Enum/            # 26 enums (Role, InvoiceStatus, PaymentMode…)
+├── Embeddable/      # Address, Money, PdpConfig
+├── Trait/           # TenantAwareTrait, TimestampableTrait
+└── *.php            # Entités
+```
+
+### Avancement de la modélisation
+- [x] Enums (26)
+- [x] Embeddables (Address, Money, PdpConfig)
+- [x] Traits (TenantAware, Timestampable)
+- [x] Infrastructure tenant (Tenant, User, TenantMembership, TenantInvitation, EmailVerificationToken)
+- [ ] Contacts (Contact, ContactPerson, ContactDocument)
+- [ ] Catalogue (Product, ProductPriceHistory)
+- [ ] Factures émises (Invoice, InvoiceLine, InvoiceStatusHistory, InvoiceSequence, InvoiceTemplate)
+- [ ] Factures reçues (ReceivedInvoice, ReceivedInvoiceLine)
+- [ ] Transmissions (PdpTransmission, PdpWebhookLog)
+- [ ] Paiements (Payment, RelanceEmail)
+- [ ] TVA & exports (TaxAdjustment, ExportJob)
+- [ ] E-reporting (EReportingBatch, EReportingTransaction, EReportingPaymentLine, EReportingCorrection)
+- [ ] Notifications (Notification, NotificationPreference)
+- [ ] Intégrations (ApiKey, WebhookEndpoint, WebhookDelivery)
+- [ ] Traçabilité (AuditLog, SuperAdminLog)

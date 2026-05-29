@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+{% block title %}Configuration — 1/2 — Organisation{% endblock %}
+{% block sidebar %}{% endblock %}
+{% block header %}{% endblock %}
+{% block main %}
+<div class="d-flex align-items-center justify-content-center" style="min-height:80vh">
+<div class="container" style="max-width:560px">
+
+    <div class="text-center mb-4">
+        <h1 class="h4 fw-bold">Configurer votre organisation</h1>
+        <p class="text-muted">Étape 1/2 — Organisation</p>
+    </div>
+
+    {% for type, msgs in app.flashes %}
+        {% for msg in msgs %}
+            <div class="alert alert-{{ type == 'error' ? 'danger' : type }}">{{ msg }}</div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+
+            <form method="POST" action="{{ path('app_onboarding_organisation') }}">
+                <div class="mb-3">
+                    <label class="form-label fw-medium">Nom de l'organisation <span class="text-danger">*</span></label>
+                    <input type="text" name="name" class="form-control" value="{{ tenant.name }}" required autofocus>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-medium">SIRET</label>
+                    <input type="text" name="siret" class="form-control" value="{{ tenant.siret }}" maxlength="14" placeholder="12345678901234">
+                    <div class="form-text">14 chiffres — optionnel pour l'instant.</div>
+                </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary fw-medium">Continuer →</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

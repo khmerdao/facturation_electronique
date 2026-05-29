@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Double authentification — {{ app_name }}</title>
+    {{ encore_entry_link_tags('app') }}
+</head>
+<body class="bg-light d-flex align-items-center justify-content-center" style="min-height:100vh">
+<div class="container" style="max-width:400px">
+
+    <div class="text-center mb-4">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" class="mb-3">
+            <rect width="40" height="40" rx="10" fill="#2563EB"/>
+            <path d="M20 10a5 5 0 00-5 5v3h-2a2 2 0 00-2 2v10a2 2 0 002 2h14a2 2 0 002-2V20a2 2 0 00-2-2h-2v-3a5 5 0 00-5-5zm0 2a3 3 0 013 3v3h-6v-3a3 3 0 013-3zm0 9a2 2 0 110 4 2 2 0 010-4z" fill="white"/>
+        </svg>
+        <h1 class="h4 fw-bold">Double authentification</h1>
+        <p class="text-muted">Saisissez le code de votre application d'authentification.</p>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body p-4">
+            <form method="POST" action="{{ path('app_2fa_login_check') }}" novalidate>
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('2fa') }}">
+
+                <div class="mb-3">
+                    <label for="auth_code" class="form-label fw-medium">Code à 6 chiffres</label>
+                    <input type="text" id="auth_code" name="_auth_code"
+                           class="form-control form-control-lg text-center fw-bold"
+                           inputmode="numeric" pattern="[0-9]*"
+                           maxlength="6" autocomplete="one-time-code"
+                           autofocus placeholder="000 000">
+                </div>
+
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" name="_trusted" id="trusted">
+                    <label class="form-check-label" for="trusted">
+                        Faire confiance à cet appareil (30 jours)
+                    </label>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg fw-medium">Valider</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <p class="text-center text-muted mt-3 small">
+        <a href="{{ path('app_logout') }}" data-turbo="false">Se déconnecter</a>
+    </p>
+</div>
+{{ encore_entry_script_tags('app') }}
+</body>
+</html>

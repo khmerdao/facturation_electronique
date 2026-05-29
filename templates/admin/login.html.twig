@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+{% block title %}Admin — Connexion{% endblock %}
+{% block sidebar %}{% endblock %}
+{% block header %}{% endblock %}
+{% block main %}
+<div class="d-flex align-items-center justify-content-center" style="min-height:80vh">
+<div class="container" style="max-width:400px">
+    <h1 class="h4 fw-bold text-center mb-4">Administration</h1>
+    {% if error %}<div class="alert alert-danger">{{ error.messageKey|trans({}, 'security') }}</div>{% endif %}
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <form method="POST" action="{{ path('admin_login') }}">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('admin_authenticate') }}">
+                <div class="mb-3">
+                    <label class="form-label fw-medium">Email</label>
+                    <input type="email" name="email" class="form-control" value="{{ last_username }}" autofocus>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-medium">Mot de passe</label>
+                    <input type="password" name="password" class="form-control">
+                </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-dark fw-medium">Connexion</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

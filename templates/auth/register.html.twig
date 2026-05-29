@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Créer un compte — {{ app_name }}</title>
+    {{ encore_entry_link_tags('app') }}
+</head>
+<body class="bg-light d-flex align-items-center justify-content-center py-4" style="min-height:100vh">
+<div class="container" style="max-width:480px">
+
+    <div class="text-center mb-4">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" class="mb-3">
+            <rect width="40" height="40" rx="10" fill="#2563EB"/>
+            <path d="M10 12h20M10 20h14M10 28h10" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+        <h1 class="h4 fw-bold">Créer votre espace</h1>
+        <p class="text-muted">Démarrez votre période d'essai gratuite.</p>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body p-4">
+
+            {% if error %}
+                <div class="alert alert-danger">{{ error }}</div>
+            {% endif %}
+
+            <form method="POST" action="{{ path('app_register') }}" novalidate>
+                <div class="row g-3 mb-3">
+                    <div class="col-6">
+                        <label for="first_name" class="form-label fw-medium">Prénom</label>
+                        <input type="text" id="first_name" name="first_name" class="form-control" autocomplete="given-name">
+                    </div>
+                    <div class="col-6">
+                        <label for="last_name" class="form-label fw-medium">Nom</label>
+                        <input type="text" id="last_name" name="last_name" class="form-control" autocomplete="family-name">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label fw-medium">Adresse email <span class="text-danger">*</span></label>
+                    <input type="email" id="email" name="email" class="form-control" required autofocus autocomplete="email">
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label fw-medium">Mot de passe <span class="text-danger">*</span></label>
+                    <input type="password" id="password" name="password" class="form-control"
+                           required minlength="8" autocomplete="new-password">
+                    <div class="form-text">8 caractères minimum.</div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="organisation_name" class="form-label fw-medium">Nom de l'organisation <span class="text-danger">*</span></label>
+                    <input type="text" id="organisation_name" name="organisation_name" class="form-control" required>
+                    <div class="form-text">Vous pourrez ajouter votre SIRET à l'étape suivante.</div>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg fw-medium">Créer mon compte</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <p class="text-center text-muted mt-3 small">
+        Déjà inscrit ?
+        <a href="{{ path('app_login') }}" class="fw-medium">Se connecter</a>
+    </p>
+
+</div>
+{{ encore_entry_script_tags('app') }}
+</body>
+</html>

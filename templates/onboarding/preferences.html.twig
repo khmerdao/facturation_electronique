@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+{% block title %}Configuration — 2/2 — Préférences{% endblock %}
+{% block sidebar %}{% endblock %}
+{% block header %}{% endblock %}
+{% block main %}
+<div class="d-flex align-items-center justify-content-center" style="min-height:80vh">
+<div class="container" style="max-width:560px">
+
+    <div class="text-center mb-4">
+        <h1 class="h4 fw-bold">Configurer votre organisation</h1>
+        <p class="text-muted">Étape 2/2 — Préférences</p>
+    </div>
+
+    {% for type, msgs in app.flashes %}
+        {% for msg in msgs %}
+            <div class="alert alert-{{ type == 'error' ? 'danger' : type }}">{{ msg }}</div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+
+            <form method="POST" action="{{ path('app_onboarding_preferences') }}">
+                <div class="mb-4 text-center text-muted py-4">
+                    <p>Les préférences (devise, modèles, séquence) seront configurables ici.</p>
+                </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary fw-medium">Terminer la configuration</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

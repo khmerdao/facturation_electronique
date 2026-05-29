@@ -1,0 +1,53 @@
+doctrine:
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # DBAL — connexion PostgreSQL
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    dbal:
+        url: '%env(resolve:DATABASE_URL)%'
+        # Native UUID (PostgreSQL uuid type ↔ Symfony\Component\Uid\Uuid)
+        use_savepoints: true
+        types:
+            uuid:
+                class: Symfony\Bridge\Doctrine\Types\UuidType
+                commented: false
+
+        # Mapping de types pour PostgreSQL
+        mapping_types:
+            uuid: string
+
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # ORM
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    orm:
+        auto_generate_proxy_classes: true
+        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+        auto_mapping: true
+
+        # Mappings PSR-4 des entités
+        mappings:
+            App:
+                is_bundle: false
+                type: attribute
+                dir: '%kernel.project_dir%/src/Entity'
+                prefix: 'App\Entity'
+                alias: App
+
+        # ── Filtres Doctrine (multi-tenant isolation) ─────────────────
+        filters:
+            # TenantFilter applique automatiquement WHERE tenant_id = :current_tenant
+            # sur toutes les entités qui portent TenantAwareTrait.
+            # Activé par TenantFilterSubscriber après chaque requête authentifiée.
+            tenant_filter:
+                class: App\Doctrine\Filter\TenantFilter
+                enabled: false  # activé dynamiquement par TenantFilterSubscriber
+
+        # ── Second Level Cache (SLC) — désactivé en dev ───────────────
+        # second_level_cache:
+        #     enabled: true
+        #     region_cache_driver:
+        #         type: pool
+        #         pool: doctrine.system_cache_pool
+
+        # ── Controller argument resolver ──────────────────────────────
+        controller_resolver:
+            auto_mapping: true

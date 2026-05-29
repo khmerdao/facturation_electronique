@@ -1,0 +1,118 @@
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Paramètres globaux de l'application
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+parameters:
+    # Application
+    app.name: 'Facturation Électronique'
+    app.url: '%env(APP_URL)%'
+    app.locale: 'fr'
+
+    # Mailer
+    app.mailer.from_address: '%env(MAILER_FROM_ADDRESS)%'
+    app.mailer.from_name: '%env(MAILER_FROM_NAME)%'
+
+    # S3 / MinIO
+    app.s3.endpoint: '%env(S3_ENDPOINT)%'
+    app.s3.key: '%env(S3_KEY)%'
+    app.s3.secret: '%env(S3_SECRET)%'
+    app.s3.region: '%env(S3_REGION)%'
+    app.s3.path_style: '%env(bool:S3_PATH_STYLE_ENDPOINT)%'
+    app.s3.presigned_ttl: '%env(int:S3_PRESIGNED_TTL)%'
+    app.s3.buckets:
+        invoices: '%env(S3_BUCKET_INVOICES)%'
+        attachments: '%env(S3_BUCKET_ATTACHMENTS)%'
+        exports: '%env(S3_BUCKET_EXPORTS)%'
+        templates: '%env(S3_BUCKET_TEMPLATES)%'
+
+    # Chiffrement
+    app.encryption.key: '%env(ENCRYPTION_KEY)%'
+
+    # Réglementation
+    app.vat.recovery_fee: '%env(float:LATE_PAYMENT_RECOVERY_FEE)%'
+    app.audit.retention_years: '%env(int:AUDIT_LOG_RETENTION_YEARS)%'
+    app.export.retention_days: '%env(int:EXPORT_RETENTION_DAYS)%'
+    app.jwt.ttl: '%env(int:JWT_TTL)%'
+
+    # APIs externes
+    app.sirene.api_url: '%env(SIRENE_API_URL)%'
+    app.sirene.api_key: '%env(SIRENE_API_KEY)%'
+    app.vies.wsdl: '%env(VIES_WSDL_URL)%'
+    app.ecb.url: '%env(ECB_EXCHANGE_URL)%'
+    app.ppf.api_url: '%env(PPF_API_URL)%'
+    app.ppf.api_key: '%env(PPF_API_KEY)%'
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Configuration des services
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+services:
+    # ── Auto-wiring par défaut ─────────────────────────────────────
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+        bind:
+            # Paramètres injectables par type-hint string dans les services
+            string $appUrl: '%app.url%'
+            string $appName: '%app.name%'
+            string $encryptionKey: '%app.encryption.key%'
+            string $mailerFromAddress: '%app.mailer.from_address%'
+            string $mailerFromName: '%app.mailer.from_name%'
+            int $jwtTtl: '%app.jwt.ttl%'
+            float $recoveryFee: '%app.vat.recovery_fee%'
+            int $exportRetentionDays: '%app.export.retention_days%'
+
+    # ── Auto-discovery des services ───────────────────────────────
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+            - '../src/Tests/'
+
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # SDK AWS (S3 / MinIO)
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    Aws\S3\S3Client:
+        arguments:
+            -   version: 'latest'
+                region: '%app.s3.region%'
+                endpoint: '%app.s3.endpoint%'
+                use_path_style_endpoint: '%app.s3.path_style%'
+                credentials:
+                    key: '%app.s3.key%'
+                    secret: '%app.s3.secret%'
+
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # TenantContext — stocke le tenant courant dans la request
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    App\Security\TenantContext:
+        public: true  # accessible depuis l'EventSubscriber kernel.request
+
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # Doctrine TenantFilter — filtre multi-tenant automatique
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    App\Doctrine\Filter\TenantFilter:
+        tags:
+            - { name: doctrine.filter, filter_name: tenant_filter }
+
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # HTTP Client typés pour les APIs externes
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    App\Service\PDP\SireneApiClient:
+        arguments:
+            $apiUrl: '%app.sirene.api_url%'
+            $apiKey: '%app.sirene.api_key%'
+
+    App\Service\PDP\PpfApiClient:
+        arguments:
+            $apiUrl: '%app.ppf.api_url%'
+            $apiKey: '%app.ppf.api_key%'
+
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # Buckets S3 injectés par nom dans les services de stockage
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    App\Service\Archive\S3StorageService:
+        arguments:
+            $buckets: '%app.s3.buckets%'
+            $presignedTtl: '%app.s3.presigned_ttl%'

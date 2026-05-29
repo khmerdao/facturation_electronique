@@ -1,0 +1,43 @@
+scheb_two_factor:
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # TOTP (compatible Google Authenticator, Authy, etc.)
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    totp:
+        enabled: true
+        # Nom de l'application affiché dans l'app d'authentification
+        issuer: 'Facturation Électronique'
+        # Fenêtre de tolérance (en secondes, pour compenser les dérives d'horloge)
+        window: 1
+        # Paramètre de l'entité User qui stocke le secret TOTP
+        server_name: 'facturation.app'
+
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # Formulaires 2FA
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    security_tokens:
+        - Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken
+        - Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken
+
+    # Formulaire de saisie du code TOTP
+    totp_form_path: app_2fa_login
+    check_path: app_2fa_login_check
+    auth_code_parameter_name: _auth_code
+    trusted_parameter_name: _trusted
+
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # Codes de secours (backup codes)
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    backup_codes:
+        enabled: true
+        # Implémentée par App\Entity\User::getBackupCodes() (future)
+
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # "Faire confiance à cet appareil" (cookie 30 jours)
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    trusted_device:
+        enabled: true
+        lifetime: 2592000  # 30 jours
+        extend_lifetime: false
+        cookie_name: 2fa_trusted
+        cookie_secure: auto
+        cookie_same_site: lax

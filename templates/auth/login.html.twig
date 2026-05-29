@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Connexion — {{ app_name }}</title>
+    {{ encore_entry_link_tags('app') }}
+</head>
+<body class="bg-light d-flex align-items-center justify-content-center" style="min-height:100vh">
+
+<div class="container" style="max-width:420px">
+    <div class="text-center mb-4">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" class="mb-3">
+            <rect width="40" height="40" rx="10" fill="#2563EB"/>
+            <path d="M10 12h20M10 20h14M10 28h10" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+        <h1 class="h4 fw-bold">{{ app_name }}</h1>
+        <p class="text-muted">Connectez-vous à votre espace</p>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body p-4">
+
+            {% if error %}
+                <div class="alert alert-danger">
+                    {{ error.messageKey|trans(error.messageData, 'security') }}
+                </div>
+            {% endif %}
+
+            <form method="POST" action="{{ path('app_login') }}" novalidate>
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                <div class="mb-3">
+                    <label for="email" class="form-label fw-medium">Adresse email</label>
+                    <input type="email" id="email" name="email" class="form-control"
+                           value="{{ last_username }}" autofocus autocomplete="email" required>
+                </div>
+
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label for="password" class="form-label fw-medium mb-0">Mot de passe</label>
+                        <a href="{{ path('app_forgot_password') }}" class="text-muted small">
+                            Mot de passe oublié ?
+                        </a>
+                    </div>
+                    <input type="password" id="password" name="password" class="form-control"
+                           autocomplete="current-password" required>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" name="_remember_me" id="remember_me">
+                    <label class="form-check-label" for="remember_me">Se souvenir de moi</label>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg fw-medium">
+                        Se connecter
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <p class="text-center text-muted mt-3 small">
+        Pas encore de compte ?
+        <a href="{{ path('app_register') }}" class="fw-medium">Créer un espace</a>
+    </p>
+</div>
+
+{{ encore_entry_script_tags('app') }}
+</body>
+</html>

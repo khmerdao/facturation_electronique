@@ -1,0 +1,15 @@
+nelmio_cors:
+    defaults:
+        origin_regex: true
+        allow_origin: ['%env(APP_URL)%']
+        allow_methods: ['GET', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE']
+        allow_headers: ['Content-Type', 'Authorization', 'X-Tenant-ID']
+        expose_headers: ['Link', 'X-Total-Count']
+        max_age: 3600
+    paths:
+        # Autoriser CORS uniquement sur les routes API
+        '^/api/':
+            allow_origin: ['*']
+            allow_headers: ['Content-Type', 'Authorization', 'X-Tenant-ID']
+            allow_methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
+            max_age: 3600

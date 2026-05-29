@@ -1,0 +1,62 @@
+{#
+ # Header de l'application (topbar)
+ #}
+<header class="app-header" data-turbo-permanent>
+
+    {# ── Toggle sidebar (mobile) ───────────────────────────────────────────── #}
+    <button class="btn btn-link text-secondary d-lg-none p-0 me-2"
+            data-action="sidebar#toggle"
+            aria-label="Ouvrir le menu">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+    </button>
+
+    {# ── Titre de la page courant ──────────────────────────────────────────── #}
+    <div class="flex-grow-1">
+        <h1 class="h5 mb-0 fw-semibold text-dark">
+            {% block page_title %}{% endblock %}
+        </h1>
+    </div>
+
+    {# ── Barre de droite ──────────────────────────────────────────────────── #}
+    <div class="d-flex align-items-center gap-3">
+
+        {# Cloche notifications #}
+        <a href="{{ path('app_notifications_index') }}"
+           class="btn btn-link text-secondary position-relative p-1"
+           data-turbo-frame="notifications-count"
+           aria-label="Notifications">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/></svg>
+            {# Turbo Frame pour le badge sans rechargement complet #}
+            <turbo-frame id="notifications-count" class="position-absolute top-0 start-100 translate-middle">
+                {# Chargé par notifications_count_controller #}
+            </turbo-frame>
+        </a>
+
+        {# Menu utilisateur #}
+        <div class="dropdown">
+            <button class="btn btn-link text-secondary p-0 d-flex align-items-center gap-2"
+                    type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="avatar rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+                      style="width:32px;height:32px;font-size:.8rem;font-weight:600">
+                    {{ app.user.firstName|first|upper }}{{ app.user.lastName|first|upper }}
+                </span>
+                <span class="d-none d-md-inline text-dark fw-medium" style="font-size:.875rem">
+                    {{ app.user.fullName }}
+                </span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                <li><h6 class="dropdown-header">{{ tenantContext.tenant.name }}</h6></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{{ path('app_settings_organisation') }}">Paramètres</a></li>
+                <li>
+                    <a class="dropdown-item text-danger" href="{{ path('app_logout') }}"
+                       data-turbo="false">
+                        Se déconnecter
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+
+</header>

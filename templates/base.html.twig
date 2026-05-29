@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="{{ app.request.locale|default('fr') }}" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token('ajax') }}">
+
+    {# ── Titre de page ──────────────────────────────────────────────────── #}
+    <title>{% block title %}{{ block('page_title') is defined ? block('page_title') ~ ' — ' : '' %}{{ app_name }}{% endblock %}</title>
+
+    {# ── SEO / sécurité ─────────────────────────────────────────────────── #}
+    <meta name="robots" content="noindex, nofollow">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    {# ── Favicon ────────────────────────────────────────────────────────── #}
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}">
+
+    {# ── Fonts Google (Inter) ────────────────────────────────────────────── #}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    {# ── CSS ─────────────────────────────────────────────────────────────── #}
+    {{ encore_entry_link_tags('app') }}
+    {% block stylesheets %}{% endblock %}
+
+    {# ── Couleur de marque du tenant (CSS variable) ───────────────────────── #}
+    {% if app.user and app.user.currentTenant is defined %}
+        <style>
+            :root {
+                --brand-color: {{ app.user.currentTenant.brandColor|default('#2563EB') }};
+            }
+        </style>
+    {% endif %}
+</head>
+<body class="{{ block('body_class') is defined ? block('body_class') : 'app-page' }}">
+
+    {# ── Turbo Progress Bar (automatique avec Hotwire Turbo) ─────────────── #}
+
+    {% block body %}
+        <div class="app-wrapper" data-turbo-permanent>
+
+            {# ── Sidebar ──────────────────────────────────────────────────── #}
+            {% block sidebar %}
+                {% include 'partials/_sidebar.html.twig' %}
+            {% endblock %}
+
+            {# ── Contenu principal ────────────────────────────────────────── #}
+            <div class="app-content" id="app-content">
+
+                {# ── Header ───────────────────────────────────────────────── #}
+                {% block header %}
+                    {% include 'partials/_header.html.twig' %}
+                {% endblock %}
+
+                {# ── Flash messages ───────────────────────────────────────── #}
+                {% block flash_messages %}
+                    <div id="flash-container" class="px-4 pt-3">
+                        {% for type, messages in app.flashes %}
+                            {% set bsType = type == 'error' ? 'danger' : type %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ bsType }} alert-dismissible fade show" role="alert">
+                                    {{ message|trans }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                {% endblock %}
+
+                {# ── Contenu de la page ───────────────────────────────────── #}
+                <main class="app-main" id="main-content">
+                    {% block main %}{% endblock %}
+                </main>
+
+            </div>{# /app-content #}
+
+        </div>{# /app-wrapper #}
+    {% endblock %}
+
+    {# ── JavaScript ───────────────────────────────────────────────────────── #}
+    {{ encore_entry_script_tags('app') }}
+    {% block javascripts %}{% endblock %}
+
+    {# ── Modales dynamiques (Turbo Frame) ─────────────────────────────────── #}
+    <div id="modal-container" data-turbo-permanent></div>
+
+</body>
+</html>

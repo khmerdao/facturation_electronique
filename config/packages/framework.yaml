@@ -1,0 +1,131 @@
+framework:
+    secret: '%env(APP_SECRET)%'
+    http_method_override: false
+
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # Sessions
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    session:
+        handler_id: 'snc_redis.session'  # sessions stockées dans Redis
+        cookie_secure: auto
+        cookie_samesite: lax
+        # Durée de session : 2h (en secondes)
+        gc_maxlifetime: 7200
+        # Renouvelle l'ID de session à chaque login (protection fixation)
+        save_path: null
+
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # Locale & Internationalisation
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    default_locale: fr
+    translator:
+        default_path: '%kernel.project_dir%/translations'
+        fallbacks: ['fr', 'en']
+        providers: []
+
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # Validation
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    validation:
+        email_validation_mode: html5
+        not_compromised_password: true
+
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # CSRF
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    csrf_protection:
+        enabled: true
+
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # Cache
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    cache:
+        # Cache par défaut : Redis (pool partagé)
+        app: cache.adapter.redis
+        system: cache.adapter.system
+        default_redis_provider: '%env(REDIS_URL)%'
+        # Pools spécifiques
+        pools:
+            # Cache des taux de change (TTL 12h)
+            cache.exchange_rates:
+                adapter: cache.adapter.redis
+                default_lifetime: 43200
+            # Cache des données Sirene (TTL 24h)
+            cache.sirene:
+                adapter: cache.adapter.redis
+                default_lifetime: 86400
+            # Cache des templates PDF compilés (TTL 1h)
+            cache.pdf_templates:
+                adapter: cache.adapter.redis
+                default_lifetime: 3600
+
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # HTTP Client (pour les appels APIs PDP, Sirene, VIES…)
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    http_client:
+        default_options:
+            timeout: 30
+            max_redirects: 3
+            headers:
+                Accept: 'application/json'
+                User-Agent: 'FacturationElectronique/1.0 (contact@facturation.app)'
+        scoped_clients:
+            sirene.client:
+                base_uri: '%app.sirene.api_url%'
+                auth_bearer: '%app.sirene.api_key%'
+                timeout: 10
+            ppf.client:
+                base_uri: '%app.ppf.api_url%'
+                timeout: 30
+                verify_peer: true
+
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # Rate Limiter (protection anti-bruteforce des endpoints sensibles)
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    rate_limiter:
+        # Limiter pour les endpoints d'auth (/login, /forgot-password)
+        login:
+            policy: sliding_window
+            limit: 5
+            interval: '1 minute'
+            lock_factory: lock.factory
+        # Limiter pour les webhooks entrants PDP
+        pdp_webhook:
+            policy: token_bucket
+            limit: 100
+            rate: { interval: '1 minute', amount: 100 }
+
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # Lock (verrous distribués Redis — numérotation factures sans trou)
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    lock:
+        invoice_numbering: '%env(REDIS_URL)%'
+
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # Mailer
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    mailer:
+        dsn: '%env(MAILER_DSN)%'
+        envelope:
+            sender: '%env(MAILER_FROM_ADDRESS)%'
+        headers:
+            from: '"%env(MAILER_FROM_NAME)%" <%env(MAILER_FROM_ADDRESS)%>'
+
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # Serializer (API JSON)
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    serializer:
+        enable_annotations: true
+        name_converter: serializer.name_converter.camel_case_to_snake_case
+
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # Assets (Webpack Encore)
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    assets:
+        json_manifest_path: '%kernel.project_dir%/public/build/manifest.json'
+
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # PHP 8.4 — expression language
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    php_errors:
+        log: true

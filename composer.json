@@ -1,0 +1,129 @@
+{
+    "name": "app/facturation-electronique",
+    "description": "SaaS de facturation électronique conforme à la réforme française 2026-2027",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": ">=8.4",
+        "ext-ctype": "*",
+        "ext-iconv": "*",
+        "ext-intl": "*",
+        "ext-bcmath": "*",
+        "ext-mbstring": "*",
+        "ext-openssl": "*",
+        "ext-sodium": "*",
+        "ext-zip": "*",
+        "doctrine/annotations": "^2.0",
+        "doctrine/doctrine-bundle": "^2.12",
+        "doctrine/doctrine-migrations-bundle": "^3.3",
+        "doctrine/orm": "^3.2",
+        "lexik/jwt-authentication-bundle": "^3.1",
+        "nelmio/cors-bundle": "^2.4",
+        "scheb/2fa-bundle": "^7.4",
+        "scheb/2fa-totp": "^7.4",
+        "scheb/2fa-backup-code": "^7.4",
+        "snc/redis-bundle": "^4.8",
+        "symfony/asset": "7.*",
+        "symfony/asset-mapper": "7.*",
+        "symfony/console": "7.*",
+        "symfony/dotenv": "7.*",
+        "symfony/expression-language": "7.*",
+        "symfony/flex": "^2",
+        "symfony/form": "7.*",
+        "symfony/framework-bundle": "7.*",
+        "symfony/http-client": "7.*",
+        "symfony/intl": "7.*",
+        "symfony/mailer": "7.*",
+        "symfony/messenger": "7.*",
+        "symfony/mime": "7.*",
+        "symfony/monolog-bundle": "^3.10",
+        "symfony/notifier": "7.*",
+        "symfony/property-access": "7.*",
+        "symfony/property-info": "7.*",
+        "symfony/rate-limiter": "7.*",
+        "symfony/redis-messenger": "7.*",
+        "symfony/routing": "7.*",
+        "symfony/runtime": "7.*",
+        "symfony/security-bundle": "7.*",
+        "symfony/serializer": "7.*",
+        "symfony/stimulus-bundle": "^2.22",
+        "symfony/translation": "7.*",
+        "symfony/twig-bundle": "7.*",
+        "symfony/uid": "7.*",
+        "symfony/validator": "7.*",
+        "symfony/webpack-encore-bundle": "^2.1",
+        "twig/extra-bundle": "^3.8",
+        "twig/twig": "^3.10",
+        "vich/uploader-bundle": "^2.4",
+        "aws/aws-sdk-php": "^3.319",
+        "dompdf/dompdf": "^2.0",
+        "horstoeko/zugferd": "^1.0",
+        "symfony/ux-turbo": "^2.22",
+        "symfony/ux-stimulus-bundle": "^2.22",
+        "symfony/ux-live-component": "^2.22"
+    },
+    "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "^3.6",
+        "fakerphp/faker": "^1.23",
+        "phpunit/phpunit": "^11.0",
+        "symfony/browser-kit": "7.*",
+        "symfony/css-selector": "7.*",
+        "symfony/debug-bundle": "7.*",
+        "symfony/maker-bundle": "^1.60",
+        "symfony/phpunit-bridge": "7.*",
+        "symfony/stopwatch": "7.*",
+        "symfony/web-profiler-bundle": "7.*",
+        "zenstruck/foundry": "^2.1"
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true,
+            "symfony/flex": true,
+            "symfony/runtime": true
+        },
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "App\\Tests\\": "tests/"
+        }
+    },
+    "replace": {
+        "symfony/polyfill-ctype": "*",
+        "symfony/polyfill-iconv": "*",
+        "symfony/polyfill-php72": "*",
+        "symfony/polyfill-php73": "*",
+        "symfony/polyfill-php74": "*",
+        "symfony/polyfill-php80": "*",
+        "symfony/polyfill-php81": "*",
+        "symfony/polyfill-php82": "*",
+        "symfony/polyfill-php83": "*"
+    },
+    "scripts": {
+        "auto-scripts": {
+            "cache:clear": "symfony-cmd",
+            "assets:install %PUBLIC_DIR%": "symfony-cmd"
+        },
+        "post-install-cmd": [
+            "@auto-scripts"
+        ],
+        "post-update-cmd": [
+            "@auto-scripts"
+        ]
+    },
+    "conflict": {
+        "symfony/symfony": "*"
+    },
+    "extra": {
+        "symfony": {
+            "allow-contrib": false,
+            "require": "7.*",
+            "docker": true
+        }
+    }
+}

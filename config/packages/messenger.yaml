@@ -1,0 +1,124 @@
+framework:
+    messenger:
+        # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        # Transports (Redis Streams)
+        # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        transports:
+            # File principale — traitement asynchrone général
+            async:
+                dsn: '%env(REDIS_URL)%'
+                options:
+                    stream: facturation_async
+                    group: workers
+                    consumer: consumer_%kernel.environment%
+                retry_strategy:
+                    max_retries: '%env(int:MESSENGER_RETRY_MAX)%'
+                    delay: 1000      # 1 seconde d'attente initiale
+                    multiplier: 2    # Backoff exponentiel
+                    max_delay: 60000 # 60 secondes max
+
+            # File haute priorité — transmissions PDP (temps réel)
+            pdp_urgent:
+                dsn: '%env(REDIS_URL)%'
+                options:
+                    stream: facturation_pdp_urgent
+                    group: pdp_workers
+                retry_strategy:
+                    max_retries: 5
+                    delay: 2000
+                    multiplier: 2
+                    max_delay: 30000
+
+            # File des exports (tâches longues — PDF, FEC, ZIP)
+            exports:
+                dsn: '%env(REDIS_URL)%'
+                options:
+                    stream: facturation_exports
+                    group: export_workers
+                retry_strategy:
+                    max_retries: 3
+                    delay: 5000
+                    multiplier: 2
+
+            # File des emails (notifications, relances, digests)
+            emails:
+                dsn: '%env(REDIS_URL)%'
+                options:
+                    stream: facturation_emails
+                    group: email_workers
+                retry_strategy:
+                    max_retries: 5
+                    delay: 2000
+                    multiplier: 2
+
+            # File des webhooks sortants (livraison vers les endpoints clients)
+            webhooks:
+                dsn: '%env(REDIS_URL)%'
+                options:
+                    stream: facturation_webhooks
+                    group: webhook_workers
+                retry_strategy:
+                    max_retries: 10
+                    delay: 1000
+                    multiplier: 2
+                    max_delay: 300000  # 5 minutes
+
+            # File d'échecs définitifs (dead-letter queue)
+            failed:
+                dsn: '%env(REDIS_URL)%'
+                options:
+                    stream: facturation_failed
+
+        # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        # Routage des messages vers leurs files
+        # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        routing:
+            # ── Transmission PDP (haute priorité) ────────────────────
+            App\Messenger\Message\SendInvoiceToPdpMessage: pdp_urgent
+            App\Messenger\Message\SendTechnicalAckMessage: pdp_urgent
+            App\Messenger\Message\ProcessPdpWebhookMessage: pdp_urgent
+
+            # ── Exports (longue durée) ────────────────────────────────
+            App\Messenger\Message\GenerateInvoicePdfMessage: exports
+            App\Messenger\Message\GenerateExportFecMessage: exports
+            App\Messenger\Message\GenerateExportCsvMessage: exports
+            App\Messenger\Message\GenerateExportXmlMessage: exports
+            App\Messenger\Message\GenerateArchiveZipMessage: exports
+
+            # ── Emails ────────────────────────────────────────────────
+            App\Messenger\Message\SendRelanceEmailMessage: emails
+            App\Messenger\Message\SendInvoiceEmailMessage: emails
+            App\Messenger\Message\SendWelcomeEmailMessage: emails
+            App\Messenger\Message\SendInvitationEmailMessage: emails
+            App\Messenger\Message\SendDigestEmailMessage: emails
+            App\Messenger\Message\SendPasswordResetEmailMessage: emails
+            App\Messenger\Message\SendPaymentConfirmationEmailMessage: emails
+
+            # ── Webhooks sortants ─────────────────────────────────────
+            App\Messenger\Message\DeliverWebhookMessage: webhooks
+            App\Messenger\Message\RetryWebhookDeliveryMessage: webhooks
+
+            # ── Tâches asynchrones générales ─────────────────────────
+            App\Messenger\Message\CreateEReportingBatchMessage: async
+            App\Messenger\Message\AggregateEReportingTransactionsMessage: async
+            App\Messenger\Message\RefreshSireneStatusMessage: async
+            App\Messenger\Message\CheckOverdueInvoicesMessage: async
+            App\Messenger\Message\PurgeExpiredExportsMessage: async
+            App\Messenger\Message\SendNotificationMessage: async
+
+            # ── Fallback : tous les autres messages → async ───────────
+            Symfony\Component\Mailer\Messenger\SendEmailMessage: emails
+
+        # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        # File d'échecs (messages qui ont épuisé leurs retries)
+        # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        failure_transport: failed
+
+        # Middleware personnalisés (ordre d'exécution)
+        buses:
+            messenger.bus.default:
+                middleware:
+                    # Journalisation des messages (AuditLog)
+                    - App\Messenger\Middleware\AuditLogMiddleware
+                    # Injection du contexte tenant dans les workers
+                    - App\Messenger\Middleware\TenantContextMiddleware

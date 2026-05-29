@@ -1,0 +1,14 @@
+doctrine:
+    orm:
+        # En production, les proxies sont pré-générés (bin/console cache:warmup)
+        auto_generate_proxy_classes: false
+        # Metadata cache en production (Redis)
+        metadata_cache_driver:
+            type: pool
+            pool: doctrine.system_cache_pool
+        query_cache_driver:
+            type: pool
+            pool: doctrine.system_cache_pool
+        result_cache_driver:
+            type: pool
+            pool: cache.app

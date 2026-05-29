@@ -1,0 +1,4 @@
+doctrine:
+    orm:
+        # Génère les proxies à la volée (pratique en dev, désactivé en prod)
+        auto_generate_proxy_classes: true

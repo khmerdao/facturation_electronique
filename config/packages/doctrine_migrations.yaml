@@ -1,0 +1,12 @@
+doctrine_migrations:
+    migrations_paths:
+        'DoctrineMigrations': '%kernel.project_dir%/migrations'
+
+    # Permet de migrer depuis un état vide (sans table de version)
+    all_or_nothing: true
+    transactional: true
+    check_database_platform: true
+
+    # Désactive la vérification des migrations manquantes sur chaque requête
+    # (activer uniquement en déploiement)
+    enable_profiler: false

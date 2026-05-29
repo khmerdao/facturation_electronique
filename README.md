@@ -176,3 +176,96 @@ et les pages/services qui l'appellent.
 | `AuditLogRepository` | `findByEntity()` (piste d'audit fiable), `findAllTenants()` |
 | `WebhookEndpointRepository` | `findActiveForEvent()` (requête native JSON), `findToDeactivate()` |
 | `TenantRepository` | `findAllWithStats()`, `findStuckOnboarding()`, `countByPlan()` |
+
+## Structure Symfony 7
+
+### Installation rapide
+
+```bash
+# 1. Cloner et démarrer l'infrastructure Docker
+make install
+
+# 2. Copier et adapter la configuration locale
+cp .env.local.example .env.local
+# Éditez .env.local avec vos valeurs
+
+# 3. Appliquer la migration initiale
+make db-migrate
+
+# 4. Compiler les assets
+make assets-install && make assets-dev
+```
+
+### Commandes utiles
+
+| Commande | Description |
+|---|---|
+| `make start` | Démarrer les containers |
+| `make db-migrate` | Appliquer les migrations |
+| `make cache-clear` | Vider le cache Symfony |
+| `make workers` | Lancer les workers Messenger |
+| `make assets-watch` | Watcher les assets (dev) |
+| `make test` | Lancer PHPUnit |
+| `make lint` | Vérifier la syntaxe |
+
+### Services Docker
+
+| Service | URL |
+|---|---|
+| Application | http://localhost:8000 |
+| Mailpit (emails) | http://localhost:8025 |
+| MinIO console | http://localhost:9001 |
+| PostgreSQL | localhost:5432 |
+| Redis | localhost:6379 |
+
+### Architecture des fichiers de configuration
+
+```
+config/
+├── bundles.php              # Déclaration des 20 bundles
+├── services.yaml            # DI, paramètres, bindings
+├── routes.yaml              # Chargement des routes
+├── packages/
+│   ├── doctrine.yaml        # ORM + TenantFilter
+│   ├── doctrine_migrations.yaml
+│   ├── framework.yaml       # Cache, session, HTTP client, rate-limiter
+│   ├── messenger.yaml       # 6 files Redis + routage de 20 messages
+│   ├── security.yaml        # 3 firewalls + ACL + 2FA
+│   ├── twig.yaml
+│   ├── monolog.yaml         # Canaux audit/pdp/ereporting dédiés
+│   ├── lexik_jwt_authentication.yaml
+│   ├── scheb_two_factor.yaml
+│   ├── snc_redis.yaml
+│   ├── nelmio_cors.yaml
+│   ├── webpack_encore.yaml
+│   ├── vich_uploader.yaml
+│   ├── dev/                 # Surcharges développement
+│   ├── prod/                # Surcharges production (cache, logs)
+│   └── test/                # Surcharges test
+src/
+├── Kernel.php
+├── Doctrine/Filter/TenantFilter.php   # Isolation multi-tenant automatique
+├── Security/
+│   ├── TenantContext.php              # Contexte tenant de la requête
+│   ├── Authenticator/AppAuthenticator.php
+│   └── Authenticator/ApiKeyAuthenticator.php
+├── EventSubscriber/
+│   ├── TenantFilterSubscriber.php     # Active TenantFilter à chaque requête
+│   └── OnboardingSubscriber.php      # Redirige si onboarding incomplet
+└── EventListener/
+    ├── DoctrineTimestampListener.php  # Auto-fill createdAt/updatedAt
+    └── AuditLogListener.php          # Journal d'audit automatique
+```
+
+### Stack technique complète
+
+- **PHP 8.4** / **Symfony 7** (FrameworkBundle, Security, Messenger, Mailer…)
+- **Doctrine ORM 3** avec TenantFilter multi-tenant
+- **PostgreSQL 16** (UUID natif, JSON, transactions)
+- **Redis 7** (sessions, cache, Messenger streams)
+- **S3 / MinIO** (stockage fichiers : PDF, XML, exports)
+- **Bootstrap 5** + **Hotwire Turbo** + **Stimulus** + **Vue 3**
+- **Webpack Encore** (assets compilés)
+- **LexikJWT** (API stateless)
+- **scheb/2fa-bundle** (TOTP Google Authenticator)
+- **Docker** (dev) + **Nginx** + **PHP-FPM**

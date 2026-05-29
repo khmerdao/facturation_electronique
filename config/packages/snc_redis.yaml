@@ -1,0 +1,23 @@
+snc_redis:
+    clients:
+        # Client par défaut (cache, sessions, rate-limiter)
+        default:
+            type: predis
+            alias: default
+            dsn: '%env(REDIS_URL)%'
+            options:
+                prefix: 'fe:'  # Préfixe pour éviter les collisions entre apps
+
+        # Client dédié aux sessions
+        session:
+            type: predis
+            alias: session
+            dsn: '%env(REDIS_URL)%'
+            options:
+                prefix: 'fe:sess:'
+
+    # Sessions stockées dans Redis (configurable par environnement)
+    session:
+        client: session
+        prefix: 'session_'
+        ttl: 7200  # 2 heures (doit correspondre à framework.session.gc_maxlifetime)

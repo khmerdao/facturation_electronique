@@ -1,0 +1,12 @@
+twig:
+    default_path: '%kernel.project_dir%/templates'
+    debug: '%kernel.debug%'
+    strict_variables: '%kernel.debug%'
+    # Variables globales accessibles dans tous les templates
+    globals:
+        app_name: '%app.name%'
+        app_url: '%app.url%'
+    # Extensions activées (twig/extra-bundle)
+    form_themes:
+        - 'bootstrap_5_layout.html.twig'
+    file_name_pattern: '*.html.twig'

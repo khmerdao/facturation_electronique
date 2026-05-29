@@ -1,0 +1,21 @@
+lexik_jwt_authentication:
+    secret_key: '%env(resolve:JWT_SECRET_KEY)%'
+    public_key: '%env(resolve:JWT_PUBLIC_KEY)%'
+    pass_phrase: '%env(JWT_PASSPHRASE)%'
+    # TTL du token JWT (1 heure par défaut)
+    token_ttl: '%env(int:JWT_TTL)%'
+
+    # Extraction du token depuis le header Authorization: Bearer <token>
+    token_extractors:
+        authorization_header:
+            enabled: true
+            prefix: Bearer
+            name: Authorization
+        cookie:
+            enabled: false
+        query_parameter:
+            enabled: false
+
+    # Clés de payload supplémentaires injectées dans le token
+    # (tenant courant, rôle intra-tenant)
+    user_identity_field: email

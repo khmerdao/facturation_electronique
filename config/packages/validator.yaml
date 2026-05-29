@@ -1,0 +1,7 @@
+framework:
+    validation:
+        # Active la validation des contraintes Symfony sur les entités
+        enable_annotations: true
+        # Valide que les mots de passe ne figurent pas dans des fuites connues (HIBP)
+        not_compromised_password: true
+        email_validation_mode: html5

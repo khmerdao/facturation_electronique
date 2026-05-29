@@ -1,0 +1,43 @@
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+###> symfony/webpack-encore-bundle ###
+/node_modules/
+/public/build/
+npm-debug.log
+yarn-error.log
+###< symfony/webpack-encore-bundle ###
+
+###> Clés JWT ###
+/config/jwt/
+###< Clés JWT ###
+
+###> Docker ###
+.env.docker
+docker-compose.override.yml
+###< Docker ###
+
+###> IDE ###
+/.idea/
+/.vscode/
+*.swp
+*.swo
+.DS_Store
+###< IDE ###
+
+###> PHPUnit ###
+/phpunit.xml
+/.phpunit.cache/
+###< PHPUnit ###
+
+###> PHP ###
+/phpstan.neon
+/psalm.xml
+###< PHP ###

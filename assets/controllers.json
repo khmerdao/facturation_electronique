@@ -1,0 +1,12 @@
+{
+    "controllers": {
+        "@symfony/ux-turbo": {
+            "turbo-stream": {
+                "enabled": true,
+                "fetch": "eager"
+            }
+        },
+        "@symfony/stimulus-bundle": {}
+    },
+    "entrypoints": []
+}

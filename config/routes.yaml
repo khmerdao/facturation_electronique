@@ -1,0 +1,17 @@
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Routes de l'application — chargées via attributs #[Route]
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Toutes les routes publiques (Auth, Onboarding)
+controllers:
+    resource:
+        path: '../src/Controller/'
+        namespace: 'App\Controller'
+    type: attribute
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Symfony UX Turbo — Mercure (Server-Sent Events pour Turbo Streams)
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+_turbo:
+    resource: '@TurboBundle/config/routes.php'
+    prefix: '/'

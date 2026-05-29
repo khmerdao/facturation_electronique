@@ -1,0 +1,4 @@
+doctrine:
+    dbal:
+        # En test, utilisation d'une transaction globale rollback entre tests
+        dbname_suffix: '_test%env(default::TEST_TOKEN)%'

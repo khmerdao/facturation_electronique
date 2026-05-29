@@ -119,7 +119,7 @@ src/Entity/
 - [x] Transmissions (PdpTransmission, PdpWebhookLog)
 - [x] Paiements (Payment, RelanceEmail)
 - [ ] TVA & exports (TaxAdjustment, ExportJob)
-- [ ] E-reporting (EReportingBatch, EReportingTransaction, EReportingPaymentLine, EReportingCorrection)
+- [x] E-reporting (EReportingBatch, EReportingTransaction, EReportingPaymentLine, EReportingCorrection)
 - [ ] Notifications (Notification, NotificationPreference)
 - [ ] Intégrations (ApiKey, WebhookEndpoint, WebhookDelivery)
 - [ ] Traçabilité (AuditLog, SuperAdminLog)

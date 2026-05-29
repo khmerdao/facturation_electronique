@@ -18,4 +18,20 @@ enum InvoiceType: string
             self::PROFORMA => 'Proforma',
         };
     }
+    /** Code type document CII (UN/EDIFACT 1001). */
+    public function ciiTypeCode(): string
+    {
+        return match ($this) {
+            self::INVOICE     => '380',  // Facture commerciale
+            self::CREDIT_NOTE => '381',  // Avoir
+            self::PROFORMA    => '325',  // Proforma
+        };
+    }
+
+    /** Code type document UBL 2.1. */
+    public function ublTypeCode(): string
+    {
+        return $this->ciiTypeCode();
+    }
+
 }

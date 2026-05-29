@@ -478,4 +478,13 @@ class Contact
 
         return $this;
     }
+
+    /**
+     * Adresse de facturation. Retourne l'adresse de livraison si distincte,
+     * sinon l'adresse principale.
+     */
+    public function getBillingAddress(): \App\Entity\Embeddable\Address
+    {
+        return $this->getAddress();
+    }
 }

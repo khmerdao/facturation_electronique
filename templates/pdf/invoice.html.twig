@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        /* ── Reset & base ───────────────────────────────────────────────────── */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DejaVu Sans', Arial, sans-serif;
+            font-size: 9pt;
+            color: #1e293b;
+            line-height: 1.45;
+        }
+
+        /* ── Mise en page ───────────────────────────────────────────────────── */
+        .page {
+            padding: 12mm 14mm 15mm 14mm;
+        }
+
+        /* ── En-tête ────────────────────────────────────────────────────────── */
+        .header {
+            width: 100%;
+            margin-bottom: 8mm;
+        }
+
+        .header-left { float: left; width: 55%; }
+        .header-right { float: right; width: 42%; text-align: right; }
+        .clearfix::after { content: ''; display: table; clear: both; }
+
+        .company-name {
+            font-size: 14pt;
+            font-weight: bold;
+            color: #0f2044;
+            margin-bottom: 2mm;
+        }
+
+        .company-address {
+            font-size: 8pt;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        /* Badge type document */
+        .doc-type-badge {
+            display: inline-block;
+            background: #2563eb;
+            color: white;
+            font-size: 14pt;
+            font-weight: bold;
+            padding: 2mm 5mm;
+            border-radius: 2mm;
+            margin-bottom: 2mm;
+        }
+
+        .doc-number {
+            font-size: 10pt;
+            font-weight: bold;
+            color: #1e293b;
+        }
+
+        .doc-date {
+            font-size: 8pt;
+            color: #64748b;
+            margin-top: 1mm;
+        }
+
+        /* ── Bloc client ────────────────────────────────────────────────────── */
+        .client-block {
+            float: right;
+            width: 45%;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 2mm;
+            padding: 4mm;
+            margin-top: 2mm;
+        }
+
+        .client-label {
+            font-size: 7pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            margin-bottom: 1.5mm;
+        }
+
+        .client-name {
+            font-size: 10pt;
+            font-weight: bold;
+            color: #0f2044;
+            margin-bottom: 1mm;
+        }
+
+        .client-address {
+            font-size: 8pt;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        .client-siret {
+            font-size: 7.5pt;
+            color: #94a3b8;
+            margin-top: 1.5mm;
+        }
+
+        /* ── Bloc dates & ref ───────────────────────────────────────────────── */
+        .meta-row {
+            width: 100%;
+            margin: 6mm 0 4mm;
+            border-top: 2px solid #2563eb;
+            padding-top: 3mm;
+        }
+
+        .meta-row table {
+            width: 100%;
+        }
+
+        .meta-row td {
+            width: 25%;
+            font-size: 8pt;
+            vertical-align: top;
+        }
+
+        .meta-label {
+            font-weight: bold;
+            color: #64748b;
+            font-size: 7pt;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: block;
+            margin-bottom: 0.5mm;
+        }
+
+        .meta-value {
+            font-size: 9pt;
+            color: #1e293b;
+            font-weight: bold;
+        }
+
+        /* ── Objet ──────────────────────────────────────────────────────────── */
+        .subject-line {
+            font-size: 9pt;
+            font-style: italic;
+            color: #475569;
+            margin-bottom: 4mm;
+        }
+
+        /* ── Tableau des lignes ─────────────────────────────────────────────── */
+        .lines-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 4mm;
+            font-size: 8.5pt;
+        }
+
+        .lines-table thead tr {
+            background: #0f2044;
+            color: white;
+        }
+
+        .lines-table thead th {
+            padding: 2.5mm 3mm;
+            text-align: left;
+            font-size: 7.5pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .lines-table thead th.right { text-align: right; }
+
+        .lines-table tbody tr:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        .lines-table tbody tr.comment-row {
+            background: #eff6ff;
+        }
+
+        .lines-table tbody td {
+            padding: 2mm 3mm;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: top;
+        }
+
+        .lines-table tbody td.right { text-align: right; }
+        .lines-table tbody td.center { text-align: center; }
+
+        .line-ref {
+            font-size: 7.5pt;
+            color: #94a3b8;
+        }
+
+        .line-desc {
+            font-size: 8.5pt;
+            color: #1e293b;
+        }
+
+        .comment-text {
+            font-style: italic;
+            color: #475569;
+            font-size: 8pt;
+        }
+
+        /* ── Totaux ─────────────────────────────────────────────────────────── */
+        .totals-section {
+            float: right;
+            width: 55%;
+            margin-top: 2mm;
+        }
+
+        .totals-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 8.5pt;
+        }
+
+        .totals-table tr td {
+            padding: 1.5mm 3mm;
+        }
+
+        .totals-table tr td:first-child {
+            color: #64748b;
+            text-align: right;
+        }
+
+        .totals-table tr td:last-child {
+            text-align: right;
+            font-weight: bold;
+            min-width: 25mm;
+        }
+
+        .totals-table .tva-row td { font-size: 8pt; color: #94a3b8; }
+
+        .totals-table .total-ttc-row {
+            border-top: 2px solid #0f2044;
+            margin-top: 1mm;
+        }
+
+        .totals-table .total-ttc-row td {
+            padding-top: 2mm;
+            font-size: 11pt;
+            font-weight: bold;
+            color: #0f2044;
+        }
+
+        .totals-table .paid-row td { color: #16a34a; font-size: 8.5pt; }
+        .totals-table .due-row td { color: #dc2626; font-size: 10pt; font-weight: bold; }
+
+        /* ── Notes & mentions ───────────────────────────────────────────────── */
+        .notes-section {
+            float: left;
+            width: 42%;
+            margin-top: 2mm;
+        }
+
+        .notes-label {
+            font-size: 7pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            margin-bottom: 1mm;
+        }
+
+        .notes-text {
+            font-size: 8pt;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        /* ── Pied de page ───────────────────────────────────────────────────── */
+        .footer {
+            position: fixed;
+            bottom: 8mm;
+            left: 14mm;
+            right: 14mm;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 2mm;
+        }
+
+        .footer-content {
+            font-size: 7pt;
+            color: #94a3b8;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        /* ── Bandeau Avoir ──────────────────────────────────────────────────── */
+        .credit-note-banner {
+            background: #fef3c7;
+            border: 1px solid #fde68a;
+            border-radius: 1.5mm;
+            padding: 2mm 3mm;
+            font-size: 8pt;
+            color: #92400e;
+            margin-bottom: 3mm;
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+
+    {# ── En-tête ────────────────────────────────────────────────────────────── #}
+    <div class="header clearfix">
+
+        {# Émetteur (gauche) #}
+        <div class="header-left">
+            {# Logo si disponible #}
+            {% if tenant.logoS3Key %}
+            <img src="{{ asset('uploads/logos/' ~ tenant.logoS3Key) }}"
+                 alt="{{ tenant.name }}" style="max-height:18mm;max-width:60mm;margin-bottom:2mm">
+            {% endif %}
+            <div class="company-name">{{ tenant.name }}</div>
+            <div class="company-address">
+                {% set addr = tenant.address %}
+                {% if addr.line1 %}{{ addr.line1 }}<br>{% endif %}
+                {% if addr.line2 %}{{ addr.line2 }}<br>{% endif %}
+                {% if addr.postalCode or addr.city %}{{ addr.postalCode }} {{ addr.city }}<br>{% endif %}
+                {% if tenant.phone %}Tél. : {{ tenant.phone }}<br>{% endif %}
+                {% if tenant.billingEmail %}{{ tenant.billingEmail }}<br>{% endif %}
+                {% if tenant.siret %}SIRET : {{ tenant.siret|replace({' ':''}) }}<br>{% endif %}
+                {% if tenant.tvaIntra %}N° TVA : {{ tenant.tvaIntra }}<br>{% endif %}
+            </div>
+        </div>
+
+        {# Numéro et type (droite) #}
+        <div class="header-right">
+            <div class="doc-type-badge">
+                {{ invoice.type.label()|upper }}
+            </div>
+            <div class="doc-number">N° {{ invoice.number ?? 'BROUILLON' }}</div>
+            <div class="doc-date">
+                Émise le {{ invoice.issueDate|date('d/m/Y') }}
+                {% if invoice.dueDate %}
+                <br>Échéance : {{ invoice.dueDate|date('d/m/Y') }}
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+
+    {# ── Bandeau avoir ──────────────────────────────────────────────────────── #}
+    {% if invoice.type.value == 'CREDIT_NOTE' and invoice.creditNoteFor %}
+    <div class="credit-note-banner">
+        ⚠ Avoir émis en référence à la facture {{ invoice.creditNoteFor.number }}
+        {% if invoice.creditNoteFor.issueDate %}
+        du {{ invoice.creditNoteFor.issueDate|date('d/m/Y') }}
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {# ── Bloc destinataire ──────────────────────────────────────────────────── #}
+    <div class="clearfix" style="margin-bottom:4mm">
+        <div style="float:left;width:50%"><!-- espace gauche --></div>
+        <div class="client-block">
+            <div class="client-label">Destinataire</div>
+            <div class="client-name">
+                {{ invoice.clientNameSnapshot ?? contact.name ?? 'N/A' }}
+            </div>
+            {% if contact %}
+                {% set caddr = contact.address %}
+                <div class="client-address">
+                    {% if caddr.line1 %}{{ caddr.line1 }}<br>{% endif %}
+                    {% if caddr.line2 %}{{ caddr.line2 }}<br>{% endif %}
+                    {% if caddr.postalCode or caddr.city %}
+                        {{ caddr.postalCode }} {{ caddr.city }}
+                    {% endif %}
+                </div>
+                {% if invoice.clientSiretSnapshot %}
+                    <div class="client-siret">SIRET : {{ invoice.clientSiretSnapshot }}</div>
+                {% endif %}
+                {% if contact.tvaIntra %}
+                    <div class="client-siret">N° TVA : {{ contact.tvaIntra }}</div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+    {# ── Méta-données ───────────────────────────────────────────────────────── #}
+    <div class="meta-row">
+        <table>
+            <tr>
+                <td>
+                    <span class="meta-label">Date d'émission</span>
+                    <span class="meta-value">{{ invoice.issueDate|date('d/m/Y') }}</span>
+                </td>
+                <td>
+                    <span class="meta-label">Date d'échéance</span>
+                    <span class="meta-value">{{ invoice.dueDate ? invoice.dueDate|date('d/m/Y') : '—' }}</span>
+                </td>
+                <td>
+                    <span class="meta-label">Réf. client</span>
+                    <span class="meta-value">{{ invoice.clientReference ?? '—' }}</span>
+                </td>
+                <td>
+                    <span class="meta-label">Devise</span>
+                    <span class="meta-value">{{ invoice.currency }}</span>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    {# ── Objet ──────────────────────────────────────────────────────────────── #}
+    {% if invoice.subject %}
+    <div class="subject-line">Objet : {{ invoice.subject }}</div>
+    {% endif %}
+
+    {# ── Tableau des lignes ─────────────────────────────────────────────────── #}
+    <table class="lines-table">
+        <thead>
+            <tr>
+                <th style="width:6%">Réf.</th>
+                <th style="width:38%">Désignation</th>
+                <th class="right" style="width:9%">Qté</th>
+                <th style="width:6%;text-align:center">Unité</th>
+                <th class="right" style="width:13%">PU HT</th>
+                <th class="right" style="width:8%">Rem.</th>
+                <th class="right" style="width:8%">TVA</th>
+                <th class="right" style="width:12%">Montant HT</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for line in invoice.lines %}
+                {% if line.isComment %}
+                    <tr class="comment-row">
+                        <td colspan="8">
+                            <span class="comment-text">{{ line.description }}</span>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td class="line-ref">{{ line.reference ?? '' }}</td>
+                        <td class="line-desc">{{ line.description }}</td>
+                        <td class="right">{{ line.quantity|number_format(2, ',', ' ') }}</td>
+                        <td class="center">{{ line.unit }}</td>
+                        <td class="right">{{ line.unitPrice|number_format(2, ',', ' ') }} {{ invoice.currency }}</td>
+                        <td class="right">
+                            {% if line.discount != '0.00' %}
+                                {{ line.discount }}%
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                        <td class="right">
+                            {% if line.tvaExemptionReason %}
+                                {{ line.tvaExemptionReason.ciiCode() }}
+                            {% else %}
+                                {{ line.tvaRate }}%
+                            {% endif %}
+                        </td>
+                        <td class="right">{{ line.amountHt|number_format(2, ',', ' ') }} {{ invoice.currency }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {# ── Zone totaux + notes ─────────────────────────────────────────────────── #}
+    <div class="clearfix">
+
+        {# Notes client (gauche) #}
+        {% if invoice.clientNotes %}
+        <div class="notes-section">
+            <div class="notes-label">Conditions & notes</div>
+            <div class="notes-text">{{ invoice.clientNotes|nl2br }}</div>
+        </div>
+        {% endif %}
+
+        {# Totaux (droite) #}
+        <div class="totals-section">
+            <table class="totals-table">
+                <tr>
+                    <td>Total HT</td>
+                    <td>{{ invoice.totalHt|number_format(2, ',', ' ') }} {{ invoice.currency }}</td>
+                </tr>
+
+                {# Décomposition TVA par taux #}
+                {% for rate, amounts in tvaBreakdown ?? {} %}
+                <tr class="tva-row">
+                    <td>TVA {{ rate }}%</td>
+                    <td>{{ amounts.tva|number_format(2, ',', ' ') }} {{ invoice.currency }}</td>
+                </tr>
+                {% endfor %}
+
+                <tr class="total-ttc-row">
+                    <td>Total TTC</td>
+                    <td>{{ invoice.totalTtc|number_format(2, ',', ' ') }} {{ invoice.currency }}</td>
+                </tr>
+
+                {% if invoice.amountPaid != '0.00' %}
+                <tr class="paid-row">
+                    <td>Acompte versé</td>
+                    <td>{{ invoice.amountPaid|number_format(2, ',', ' ') }} {{ invoice.currency }}</td>
+                </tr>
+                <tr class="due-row">
+                    <td>Reste à payer</td>
+                    <td>{{ remainingDue|number_format(2, ',', ' ') }} {{ invoice.currency }}</td>
+                </tr>
+                {% endif %}
+            </table>
+        </div>
+
+    </div>
+
+    {# ── Mentions légales et bancaires ──────────────────────────────────────── #}
+    {% if tenant.iban or tenant.legalMentions %}
+    <div style="margin-top:8mm;padding-top:2mm;border-top:1px solid #e2e8f0">
+        {% if tenant.iban %}
+        <div style="font-size:8pt;color:#475569;margin-bottom:1.5mm">
+            <strong>Coordonnées bancaires :</strong>
+            IBAN {{ tenant.iban }}{% if tenant.bic %} · BIC {{ tenant.bic }}{% endif %}
+        </div>
+        {% endif %}
+        {% if tenant.legalMentions %}
+        <div style="font-size:7.5pt;color:#94a3b8;line-height:1.5">
+            {{ tenant.legalMentions|raw }}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {# ── Pied de page fixe ──────────────────────────────────────────────────── #}
+    <div class="footer">
+        <div class="footer-content">
+            {{ tenant.name }}
+            {% if tenant.siret %} · SIRET {{ tenant.siret }}{% endif %}
+            {% if tenant.legalForm %} · {{ tenant.legalForm }}{% endif %}
+            {% if tenant.shareCapital %} · Capital {{ tenant.shareCapital|number_format(0, ',', ' ') }} €{% endif %}
+            {% if tenant.rcsNumber %} · RCS {{ tenant.rcsNumber }}{% endif %}
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

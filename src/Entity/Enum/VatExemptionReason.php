@@ -25,4 +25,17 @@ enum VatExemptionReason: string
             self::OTHER => 'Autre exonération',
         };
     }
+    /** Code raison d'exonération CII (UNTDID 5305). */
+    public function ciiCode(): string
+    {
+        return match ($this) {
+            self::ART293B  => 'E',   // Exempt
+            self::EXPORT   => 'G',   // Free export
+            self::INTRACOM => 'K',   // Intra-community
+            self::AUTOLIQ  => 'AE',  // VAT reverse charge
+            self::DOM      => 'E',
+            self::OTHER    => 'E',
+        };
+    }
+
 }

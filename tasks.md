@@ -70,7 +70,7 @@ Suivi de l'avancement du développement. Mis à jour à chaque tâche démarrée
 ---
 
 ## TASK-002 — Génération PDF et XML (conformité réglementaire)
-**Statut :** `en cours`
+**Statut :** `terminé`
 **Priorité :** critique — obligation légale de produire les bons formats
 
 ### Ce qu'il faut faire
@@ -95,7 +95,7 @@ Suivi de l'avancement du développement. Mis à jour à chaque tâche démarrée
 ---
 
 ## TASK-003 — Transmission PDP / PPF
-**Statut :** `nouveau`
+**Statut :** `en cours`
 **Priorité :** critique — cœur de la conformité réforme 2026
 
 ### Ce qu'il faut faire
@@ -640,5 +640,6 @@ Créer `src/DataFixtures/AppFixtures.php` avec `zenstruck/foundry` :
 | Date | Tâche | Action |
 |---|---|---|
 | 2026-05-29 | Toutes (TASK-001 à TASK-022) | Création initiale du fichier tasks.md |
+| 2026-05-30 | TASK-002 | Terminé — InvoiceXmlBuilderService (CII+UBL), PdfGeneratorService (dompdf+Factur-X embed), template PDF, GenerateInvoicePdfHandler |
 | 2026-05-30 | TASK-001 | Terminé — InvoiceNumberingService, InvoiceCalculatorService, InvoiceStatusService, InvoiceDuplicateService, PaymentService, NotificationService |
 

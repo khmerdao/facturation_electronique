@@ -245,7 +245,7 @@ class InvoiceRepository extends ServiceEntityRepository
 
         return $this->createQueryBuilder('i')
             ->select(
-                "TO_CHAR(i.issueDate, 'YYYY-MM') AS month",
+                "DATE_FORMAT(i.issueDate, '%Y-%m') AS month",
                 'SUM(i.totalTtc) AS total',
             )
             ->where('i.tenant = :tenant')

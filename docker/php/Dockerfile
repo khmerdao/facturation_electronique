@@ -2,12 +2,12 @@ FROM php:8.4-fpm-alpine
 
 # Extensions PHP nécessaires
 RUN apk add --no-cache \
-        libpq-dev libzip-dev libpng-dev libjpeg-turbo-dev \
+        libzip-dev libpng-dev libjpeg-turbo-dev \
         freetype-dev icu-dev oniguruma-dev libsodium-dev \
-        git unzip curl \
+        git unzip curl mysql-client \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
-        pdo_pgsql pgsql bcmath intl zip gd mbstring sodium opcache \
+        pdo pdo_mysql mysqli bcmath intl zip gd mbstring sodium opcache \
     && pecl install redis apcu \
     && docker-php-ext-enable redis apcu
 

@@ -1,19 +1,22 @@
 doctrine:
     # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    # DBAL — connexion PostgreSQL
+    # DBAL — connexion MySQL 8.0+ / MariaDB 10.6+
     # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     dbal:
         url: '%env(resolve:DATABASE_URL)%'
-        # Native UUID (PostgreSQL uuid type ↔ Symfony\Component\Uid\Uuid)
+        # MySQL : désactiver le mode STRICT pour les valeurs par défaut vides
+        # (Symfony recommande de garder strict_mode: true en production)
         use_savepoints: true
+        # UUID stocké en CHAR(36) — Doctrine le gère via le type 'uuid'
+        # qui sérialise/désérialise Symfony\Component\Uid\Uuid ↔ string
         types:
             uuid:
                 class: Symfony\Bridge\Doctrine\Types\UuidType
                 commented: false
 
-        # Mapping de types pour PostgreSQL
+        # MySQL utilise 'string' pour les CHAR(36) annotés DC2Type:uuid
         mapping_types:
-            uuid: string
+            char: string
 
     # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     # ORM

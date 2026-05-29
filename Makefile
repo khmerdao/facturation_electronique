@@ -102,5 +102,5 @@ sh: ## Ouvrir un shell dans le container app
 logs: ## Afficher les logs en temps réel
 	docker compose logs -f app nginx
 
-psql: ## Se connecter à PostgreSQL
-	docker compose exec postgres psql -U facturation -d facturation
+psql: ## Se connecter à MySQL (CLI)
+	docker compose exec mysql mysql -u facturation -psecret facturation

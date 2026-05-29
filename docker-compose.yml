@@ -17,13 +17,13 @@ services:
             - /var/www/html/vendor  # vendor dans le container uniquement
         environment:
             APP_ENV: dev
-            DATABASE_URL: postgresql://facturation:secret@postgres:5432/facturation?serverVersion=16
+            DATABASE_URL: mysql://facturation:secret@mysql:3306/facturation?serverVersion=8.0&charset=utf8mb4
             REDIS_URL: redis://redis:6379
             MAILER_DSN: smtp://mailpit:1025
             S3_ENDPOINT: http://minio:9000
             S3_PATH_STYLE_ENDPOINT: 'true'
         depends_on:
-            postgres:
+            mysql:
                 condition: service_healthy
             redis:
                 condition: service_healthy
@@ -40,20 +40,27 @@ services:
         depends_on: [app]
         networks: [facturation]
 
-    # ── PostgreSQL 16 ────────────────────────────────────────────────────────
-    postgres:
-        image: postgres:16-alpine
+    # ── MySQL 8.0 ────────────────────────────────────────────────────────────
+    mysql:
+        image: mysql:8.0
         environment:
-            POSTGRES_DB: facturation
-            POSTGRES_USER: facturation
-            POSTGRES_PASSWORD: secret
-            PGDATA: /var/lib/postgresql/data/pgdata
+            MYSQL_DATABASE: facturation
+            MYSQL_USER: facturation
+            MYSQL_PASSWORD: secret
+            MYSQL_ROOT_PASSWORD: root_secret
+            # Désactive le mode ONLY_FULL_GROUP_BY strict incompatible avec certaines requêtes DQL
+            MYSQL_INITDB_SKIP_TZINFO: 1
+        command: >
+            --character-set-server=utf8mb4
+            --collation-server=utf8mb4_unicode_ci
+            --default-authentication-plugin=caching_sha2_password
+            --innodb-buffer-pool-size=256M
         volumes:
-            - postgres_data:/var/lib/postgresql/data
+            - mysql_data:/var/lib/mysql
         ports:
-            - "5432:5432"
+            - "3306:3306"
         healthcheck:
-            test: ["CMD-SHELL", "pg_isready -U facturation -d facturation"]
+            test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "facturation", "-psecret"]
             interval: 5s
             timeout: 5s
             retries: 10
@@ -125,7 +132,7 @@ services:
     # En prod, supervisor gère les workers (voir docker/supervisor/)
 
 volumes:
-    postgres_data:
+    mysql_data:
     redis_data:
     minio_data:
 

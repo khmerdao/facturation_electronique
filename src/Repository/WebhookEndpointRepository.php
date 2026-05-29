@@ -26,18 +26,24 @@ class WebhookEndpointRepository extends ServiceEntityRepository
      */
     public function findActiveForEvent(Tenant $tenant, string $event): array
     {
-        // JSON_CONTAINS n'est pas standard en DQL — utilisation d'une requête native
+        // JSON_CONTAINS() est la fonction MySQL pour vérifier la présence d'une
+        // valeur dans un tableau JSON (équivalent de @> en PostgreSQL).
+        // On cherche les endpoints qui ont souscrit à cet événement spécifique
+        // OU au wildcard "*".
         $conn = $this->getEntityManager()->getConnection();
         $sql = <<<'SQL'
             SELECT we.id FROM webhook_endpoints we
             WHERE we.tenant_id = :tenantId
-              AND we.active = TRUE
-              AND (we.events @> :eventJson OR we.events @> '["*"]')
+              AND we.active = 1
+              AND (
+                  JSON_CONTAINS(we.events, :eventJson)
+                  OR JSON_CONTAINS(we.events, '"*"')
+              )
         SQL;
 
         $ids = $conn->fetchFirstColumn($sql, [
             'tenantId' => (string) $tenant->getId(),
-            'eventJson' => json_encode([$event]),
+            'eventJson' => json_encode($event),  // ex: '"invoice.paid"' (string JSON)
         ]);
 
         if (empty($ids)) {

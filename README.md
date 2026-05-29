@@ -115,7 +115,7 @@ src/Entity/
 - [x] Contacts (Contact, ContactPerson, ContactDocument)
 - [x] Catalogue (Product, ProductPriceHistory)
 - [x] Factures émises (Invoice, InvoiceLine, InvoiceStatusHistory, InvoiceSequence, InvoiceTemplate)
-- [ ] Factures reçues (ReceivedInvoice, ReceivedInvoiceLine)
+- [x] Factures reçues (ReceivedInvoice, ReceivedInvoiceLine)
 - [ ] Transmissions (PdpTransmission, PdpWebhookLog)
 - [ ] Paiements (Payment, RelanceEmail)
 - [ ] TVA & exports (TaxAdjustment, ExportJob)

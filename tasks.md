@@ -470,7 +470,7 @@ Routes à ajouter dans `src/Controller/Invoice/InvoiceController.php` :
 ---
 
 ## TASK-015 — Validators personnalisés
-**Statut :** `en cours`
+**Statut :** `terminé`
 **Priorité :** moyenne — améliore la qualité des données
 
 ### Ce qu'il faut faire
@@ -484,7 +484,7 @@ Routes à ajouter dans `src/Controller/Invoice/InvoiceController.php` :
 ---
 
 ## TASK-016 — Twig Extensions et assets JS
-**Statut :** `nouveau`
+**Statut :** `en cours`
 **Priorité :** moyenne — améliore l'ergonomie des templates
 
 ### Ce qu'il faut faire
@@ -640,6 +640,7 @@ Créer `src/DataFixtures/AppFixtures.php` avec `zenstruck/foundry` :
 | Date | Tâche | Action |
 |---|---|---|
 | 2026-05-29 | Toutes (TASK-001 à TASK-022) | Création initiale du fichier tasks.md |
+| 2026-05-30 | TASK-015 | Terminé — ValidSiret (Luhn), ValidIban (ISO 13616), ValidBic, ValidTvaIntra (multi-pays), UniqueInvoiceNumber |
 | 2026-05-30 | TASK-014 | Terminé — AdminController (7 routes), 3 templates admin (tenants/tenant_show/logs) |
 | 2026-05-30 | TASK-013 | Terminé — NotificationController (4 routes), SendNotificationHandler, template avec marquage lu JS |
 | 2026-05-30 | TASK-012 | Terminé — SettingsController (6 routes), 7 templates settings (organisation/users/templates/sequences/pdp/integrations/_nav) |

@@ -175,7 +175,7 @@ Routes à ajouter dans `src/Controller/Invoice/InvoiceController.php` :
 ---
 
 ## TASK-005 — Module Factures reçues
-**Statut :** `en cours`
+**Statut :** `terminé`
 **Priorité :** haute — obligation légale dès septembre 2026
 
 ### Ce qu'il faut faire
@@ -207,7 +207,7 @@ Routes à ajouter dans `src/Controller/Invoice/InvoiceController.php` :
 ---
 
 ## TASK-006 — Module Contacts
-**Statut :** `nouveau`
+**Statut :** `en cours`
 **Priorité :** haute — requis pour créer une facture
 
 ### Ce qu'il faut faire
@@ -640,6 +640,7 @@ Créer `src/DataFixtures/AppFixtures.php` avec `zenstruck/foundry` :
 | Date | Tâche | Action |
 |---|---|---|
 | 2026-05-29 | Toutes (TASK-001 à TASK-022) | Création initiale du fichier tasks.md |
+| 2026-05-30 | TASK-005 | Terminé — ReceivedInvoiceController (5 routes), templates index/show avec contestation et acquittement |
 | 2026-05-30 | TASK-004 | Terminé — InvoiceController (10 routes), InvoiceVoter, 6 templates (index/show/new/edit/credit_note/_line_row) |
 | 2026-05-30 | TASK-003 | Terminé — PdpConfigEncryptorService, PdpDispatchService, SendInvoiceToPdpHandler, SendTechnicalAckHandler, ProcessPdpWebhookHandler |
 | 2026-05-30 | TASK-002 | Terminé — InvoiceXmlBuilderService (CII+UBL), PdfGeneratorService (dompdf+Factur-X embed), template PDF, GenerateInvoicePdfHandler |

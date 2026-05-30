@@ -1,0 +1,138 @@
+{% extends 'base.html.twig' %}
+{% block page_title %}Facture reçue {{ invoice.invoiceNumber ?? invoice.id }}{% endblock %}
+
+{% block main %}
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+    <div class="d-flex align-items-center gap-3">
+        <a href="{{ path('app_received_invoices_index') }}" class="btn btn-sm btn-outline-secondary">← Retour</a>
+        <h1 class="h4 mb-0 fw-bold">
+            {{ invoice.invoiceNumber ?? 'Facture reçue' }}
+            <span class="badge badge-{{ invoice.status.value }} ms-2">{{ invoice.status.label() }}</span>
+        </h1>
+    </div>
+    <div class="d-flex gap-2">
+        {% if invoice.status.value == 'PENDING_VALIDATION' %}
+        <form method="POST" action="{{ path('app_received_invoices_approve', {id: invoice.id}) }}" class="d-inline">
+            <button type="submit" class="btn btn-success btn-sm">✓ Valider</button>
+        </form>
+        {% endif %}
+        {% if not invoice.technicalAckSentAt %}
+        <form method="POST" action="{{ path('app_received_invoices_ack', {id: invoice.id}) }}" class="d-inline">
+            <button type="submit" class="btn btn-outline-primary btn-sm">Envoyer l'acquittement</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        {# Données parsées #}
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header fw-semibold bg-transparent">Données de la facture</div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-sm-4">
+                        <div class="text-muted small">Fournisseur</div>
+                        <div class="fw-semibold">{{ invoice.supplierName ?? '—' }}</div>
+                        {% if invoice.supplierSiret %}<div class="small text-muted">SIRET : {{ invoice.supplierSiret }}</div>{% endif %}
+                        {% if invoice.supplierTvaIntra %}<div class="small text-muted">TVA : {{ invoice.supplierTvaIntra }}</div>{% endif %}
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="text-muted small">Date de facture</div>
+                        <div class="fw-semibold">{{ invoice.invoiceDate ? invoice.invoiceDate|date('d/m/Y') : '—' }}</div>
+                        <div class="text-muted small mt-1">Échéance</div>
+                        <div class="fw-semibold">{{ invoice.dueDate ? invoice.dueDate|date('d/m/Y') : '—' }}</div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="text-muted small">Montant HT</div>
+                        <div class="fw-semibold">{{ invoice.amountHt ? invoice.amountHt|number_format(2,',',' ') ~ ' ' ~ invoice.currency : '—' }}</div>
+                        <div class="text-muted small mt-1">TVA</div>
+                        <div class="fw-semibold">{{ invoice.amountTva ? invoice.amountTva|number_format(2,',',' ') ~ ' ' ~ invoice.currency : '—' }}</div>
+                        <div class="text-muted small mt-1">TTC</div>
+                        <div class="fw-bold fs-5">{{ invoice.amountTtc ? invoice.amountTtc|number_format(2,',',' ') ~ ' ' ~ invoice.currency : '—' }}</div>
+                    </div>
+                </div>
+                {% if invoice.supplierIban %}
+                <div class="mt-3 pt-3 border-top">
+                    <span class="text-muted small">IBAN fournisseur :</span>
+                    <span class="ms-2 fw-medium">{{ invoice.supplierIban }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {# Erreurs de parsing #}
+        {% if invoice.parseErrors %}
+        <div class="alert alert-danger">
+            <strong>Erreurs de lecture du fichier :</strong>
+            <ul class="mb-0 mt-2">
+                {% for error in invoice.parseErrors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        {# Formulaire contestation #}
+        {% if invoice.status.value == 'PENDING_VALIDATION' %}
+        <div class="card border-0 shadow-sm">
+            <div class="card-header fw-semibold bg-transparent text-warning">Contester cette facture</div>
+            <div class="card-body">
+                <form method="POST" action="{{ path('app_received_invoices_contest', {id: invoice.id}) }}">
+                    <div class="mb-3">
+                        <label class="form-label fw-medium">Motif</label>
+                        <select name="contest_reason" class="form-select">
+                            <option value="WRONG_AMOUNT">Montant incorrect</option>
+                            <option value="DUPLICATE">Facture en double</option>
+                            <option value="NOT_ORDERED">Prestation non commandée</option>
+                            <option value="OTHER">Autre</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-medium">Description <span class="text-danger">*</span></label>
+                        <textarea name="contest_description" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-warning">Contester</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header fw-semibold bg-transparent">Informations techniques</div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <div class="text-muted small">Format</div>
+                    <div>{{ invoice.format ? invoice.format.value : '—' }}</div>
+                </div>
+                <div class="mb-2">
+                    <div class="text-muted small">ID PDP externe</div>
+                    <div class="font-monospace small">{{ invoice.externalPdpId ?? '—' }}</div>
+                </div>
+                <div class="mb-2">
+                    <div class="text-muted small">Reçue le</div>
+                    <div>{{ invoice.receivedAt|date('d/m/Y H:i') }}</div>
+                </div>
+                <div class="mb-2">
+                    <div class="text-muted small">Acquittement technique</div>
+                    <div>
+                        {% if invoice.technicalAckSentAt %}
+                            <span class="text-success">Envoyé le {{ invoice.technicalAckSentAt|date('d/m/Y H:i') }}</span>
+                        {% else %}
+                            <span class="text-warning">Non encore envoyé</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if invoice.fileHash %}
+                <div class="mb-2">
+                    <div class="text-muted small">Hash SHA-256</div>
+                    <div class="font-monospace small text-muted" style="word-break:break-all">{{ invoice.fileHash }}</div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

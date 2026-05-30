@@ -1,19 +1,128 @@
 {% extends 'base.html.twig' %}
 {% block page_title %}Factures reçues{% endblock %}
+
 {% block main %}
 <div class="d-flex align-items-center justify-content-between mb-4">
-    <div>
-        <h1 class="h4 mb-0 fw-bold">Factures reçues</h1>
+    <h1 class="h4 mb-0 fw-bold">Factures reçues</h1>
+    {% if pendingAck > 0 %}
+    <span class="badge bg-warning text-dark fs-6">
+        {{ pendingAck }} en attente d'acquittement
+    </span>
+    {% endif %}
+</div>
+
+{# KPIs #}
+{% if kpis is defined %}
+<div class="row g-3 mb-4">
+    <div class="col-sm-3">
+        <div class="card border-0 shadow-sm text-center py-3">
+            <div class="h4 mb-0 fw-bold">{{ kpis.pending ?? 0 }}</div>
+            <div class="text-muted small">À valider</div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="card border-0 shadow-sm text-center py-3">
+            <div class="h4 mb-0 fw-bold text-success">{{ kpis.approved ?? 0 }}</div>
+            <div class="text-muted small">Validées</div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="card border-0 shadow-sm text-center py-3">
+            <div class="h4 mb-0 fw-bold text-warning">{{ kpis.contested ?? 0 }}</div>
+            <div class="text-muted small">Contestées</div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="card border-0 shadow-sm text-center py-3">
+            <div class="h4 mb-0 fw-bold text-danger">{{ kpis.parseErrors ?? 0 }}</div>
+            <div class="text-muted small">Erreurs de lecture</div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{# Filtres #}
+<div class="card border-0 shadow-sm mb-3">
+    <div class="card-body py-3">
+        <form method="GET" class="row g-2">
+            <div class="col-md-3">
+                <select name="status" class="form-select form-select-sm">
+                    <option value="">Tous les statuts</option>
+                    {% for status in statuses %}
+                    <option value="{{ status.value }}" {{ filters.status == status.value ? 'selected' : '' }}>
+                        {{ status.label() }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <input type="date" name="from" class="form-control form-control-sm" value="{{ filters.from ?? '' }}">
+            </div>
+            <div class="col-md-3">
+                <input type="date" name="to" class="form-control form-control-sm" value="{{ filters.to ?? '' }}">
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-outline-secondary btn-sm">Filtrer</button>
+            </div>
+        </form>
     </div>
 </div>
 
+{# Tableau #}
 <div class="card border-0 shadow-sm">
-    <div class="card-body py-5 text-center text-muted">
-        <svg width="48" height="48" viewBox="0 0 20 20" fill="currentColor" class="mb-3 opacity-25">
-            <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm2 10a1 1 0 10-2 0v3a1 1 0 102 0v-3zm2-3a1 1 0 011 1v5a1 1 0 11-2 0v-5a1 1 0 011-1zm4-1a1 1 0 10-2 0v6a1 1 0 102 0V8z" clip-rule="evenodd"/>
-        </svg>
-        <p class="fw-medium mb-1">Factures reçues</p>
-        <p class="small mb-0">Cette section est en cours de développement.</p>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>N° facture fournisseur</th>
+                    <th>Fournisseur</th>
+                    <th>Date facture</th>
+                    <th>Reçue le</th>
+                    <th class="text-end">Montant TTC</th>
+                    <th class="text-center">Statut</th>
+                    <th class="text-center">Acq. tech.</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for invoice in invoices %}
+                <tr class="{{ invoice.parseErrors ? 'table-danger' : '' }}">
+                    <td>
+                        <a href="{{ path('app_received_invoices_show', {id: invoice.id}) }}" class="fw-semibold text-decoration-none">
+                            {{ invoice.invoiceNumber ?? '—' }}
+                        </a>
+                    </td>
+                    <td>{{ invoice.supplierName ?? invoice.supplierContact?.name ?? '—' }}</td>
+                    <td>{{ invoice.invoiceDate ? invoice.invoiceDate|date('d/m/Y') : '—' }}</td>
+                    <td>{{ invoice.receivedAt|date('d/m/Y H:i') }}</td>
+                    <td class="text-end fw-semibold">
+                        {{ invoice.amountTtc ? invoice.amountTtc|number_format(2,',',' ') ~ ' ' ~ invoice.currency : '—' }}
+                    </td>
+                    <td class="text-center">
+                        <span class="badge badge-{{ invoice.status.value }}">
+                            {{ invoice.status.label() }}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        {% if invoice.technicalAckSentAt %}
+                            <span class="text-success" title="{{ invoice.technicalAckSentAt|date('d/m/Y H:i') }}">✓</span>
+                        {% else %}
+                            <span class="text-warning">En attente</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ path('app_received_invoices_show', {id: invoice.id}) }}" class="btn btn-sm btn-outline-secondary">Voir</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8" class="text-center text-muted py-5">
+                        Aucune facture reçue. Elles apparaîtront automatiquement dès que votre PDP en transmettra.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 {% endblock %}

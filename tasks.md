@@ -236,7 +236,7 @@ Routes à ajouter dans `src/Controller/Invoice/InvoiceController.php` :
 ---
 
 ## TASK-007 — Module Catalogue (Produits/Services)
-**Statut :** `en cours`
+**Statut :** `terminé`
 **Priorité :** moyenne — utile mais pas bloquant pour créer des factures manuellement
 
 ### Ce qu'il faut faire
@@ -265,7 +265,7 @@ Routes à ajouter dans `src/Controller/Invoice/InvoiceController.php` :
 ---
 
 ## TASK-008 — Module Paiements
-**Statut :** `nouveau`
+**Statut :** `en cours`
 **Priorité :** haute — requis pour clôturer le cycle de vie d'une facture
 
 ### Ce qu'il faut faire
@@ -640,6 +640,7 @@ Créer `src/DataFixtures/AppFixtures.php` avec `zenstruck/foundry` :
 | Date | Tâche | Action |
 |---|---|---|
 | 2026-05-29 | Toutes (TASK-001 à TASK-022) | Création initiale du fichier tasks.md |
+| 2026-05-30 | TASK-007 | Terminé — ProductController (5 routes), ProductVoter, 4 templates |
 | 2026-05-30 | TASK-006 | Terminé — ContactController (6 routes), ContactVoter, 4 templates, lookup SIRET Sirene |
 | 2026-05-30 | TASK-005 | Terminé — ReceivedInvoiceController (5 routes), templates index/show avec contestation et acquittement |
 | 2026-05-30 | TASK-004 | Terminé — InvoiceController (10 routes), InvoiceVoter, 6 templates (index/show/new/edit/credit_note/_line_row) |

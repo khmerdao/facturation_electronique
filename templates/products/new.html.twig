@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+{% block page_title %}Nouveau produit{% endblock %}
+{% block main %}
+<div class="d-flex align-items-center gap-3 mb-4">
+    <a href="{{ path('app_products_index') }}" class="btn btn-sm btn-outline-secondary">← Retour</a>
+    <h1 class="h4 mb-0 fw-bold">Nouveau produit</h1>
+</div>
+<div class="row justify-content-center"><div class="col-lg-7">
+<form method="POST" action="{{ path('app_products_new') }}">
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label fw-medium">Référence *</label>
+                <input type="text" name="reference" class="form-control" value="{{ product.reference }}" required>
+            </div>
+            <div class="col-md-8">
+                <label class="form-label fw-medium">Libellé *</label>
+                <input type="text" name="label" class="form-control" value="{{ product.label }}" required>
+            </div>
+            <div class="col-12">
+                <label class="form-label fw-medium">Description</label>
+                <textarea name="description" class="form-control" rows="2">{{ product.description }}</textarea>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-medium">Prix unitaire HT *</label>
+                <input type="number" name="unit_price" class="form-control" value="{{ product.unitPrice }}" step="0.0001" min="0" required>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-medium">Unité</label>
+                <input type="text" name="unit" class="form-control" value="{{ product.unit }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-medium">Taux TVA (%)</label>
+                <input type="number" name="tva_rate" class="form-control" value="{{ product.tvaRate }}" step="0.01" min="0">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label fw-medium">Type</label>
+                <select name="type" class="form-select">
+                    {% for t in types %}<option value="{{ t.value }}" {{ product.type.value == t.value ? 'selected' : '' }}>{{ t.value }}</option>{% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-medium">Code comptable</label>
+                <input type="text" name="accounting_code" class="form-control" value="{{ product.accountingCode }}">
+            </div>
+            <div class="col-12">
+                <label class="form-label fw-medium">Notes</label>
+                <textarea name="notes" class="form-control" rows="2">{{ product.notes }}</textarea>
+            </div>
+        </div>
+    </div>
+</div>
+<button type="submit" class="btn btn-primary">Créer</button>
+</form>
+</div></div>
+{% endblock %}

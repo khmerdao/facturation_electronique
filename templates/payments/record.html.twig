@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+{% block page_title %}Enregistrer un paiement{% endblock %}
+{% block main %}
+<div class="d-flex align-items-center gap-3 mb-4">
+    <a href="{{ path('app_invoices_show', {id: invoice.id}) }}" class="btn btn-sm btn-outline-secondary">← Retour</a>
+    <h1 class="h4 mb-0 fw-bold">Enregistrer un paiement</h1>
+</div>
+<div class="row justify-content-center"><div class="col-lg-6">
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <div class="mb-3 p-3 bg-light rounded">
+            <div class="d-flex justify-content-between">
+                <span>Facture {{ invoice.number }}</span>
+                <span class="fw-bold">{{ invoice.totalTtc|number_format(2,',',' ') }} {{ invoice.currency }}</span>
+            </div>
+            <div class="d-flex justify-content-between text-muted small">
+                <span>Déjà payé</span>
+                <span>{{ invoice.amountPaid|number_format(2,',',' ') }} {{ invoice.currency }}</span>
+            </div>
+            <div class="d-flex justify-content-between fw-bold text-primary mt-1">
+                <span>Reste à payer</span>
+                <span>{{ (invoice.totalTtc - invoice.amountPaid)|number_format(2,',',' ') }} {{ invoice.currency }}</span>
+            </div>
+        </div>
+        <form method="POST" action="{{ path('app_payments_record', {id: invoice.id}) }}">
+            <div class="mb-3">
+                <label class="form-label fw-medium">Montant *</label>
+                <input type="number" name="amount" class="form-control" step="0.01" min="0.01"
+                    max="{{ invoice.totalTtc - invoice.amountPaid }}"
+                    value="{{ invoice.totalTtc - invoice.amountPaid }}" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-medium">Date de paiement *</label>
+                <input type="date" name="date" class="form-control" value="{{ 'now'|date('Y-m-d') }}" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-medium">Mode de paiement *</label>
+                <select name="mode" class="form-select" required>
+                    {% for mode in modes %}<option value="{{ mode.value }}">{{ mode.label() }}</option>{% endfor %}
+                </select>
+            </div>
+            <div class="mb-4">
+                <label class="form-label fw-medium">Référence (virement, chèque…)</label>
+                <input type="text" name="reference" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-success w-100">Enregistrer le paiement</button>
+        </form>
+    </div>
+</div>
+</div></div>
+{% endblock %}

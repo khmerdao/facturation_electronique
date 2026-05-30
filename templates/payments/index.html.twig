@@ -1,19 +1,48 @@
 {% extends 'base.html.twig' %}
 {% block page_title %}Paiements{% endblock %}
 {% block main %}
-<div class="d-flex align-items-center justify-content-between mb-4">
-    <div>
-        <h1 class="h4 mb-0 fw-bold">Paiements</h1>
+<h1 class="h4 fw-bold mb-4">Paiements</h1>
+<div class="card border-0 shadow-sm mb-3">
+    <div class="card-body py-3">
+        <form method="GET" class="row g-2">
+            <div class="col-md-3">
+                <select name="direction" class="form-select form-select-sm">
+                    <option value="">Tous</option>
+                    <option value="INCOMING" {{ filters.direction == 'INCOMING' ? 'selected' : '' }}>Encaissements</option>
+                    <option value="OUTGOING" {{ filters.direction == 'OUTGOING' ? 'selected' : '' }}>Décaissements</option>
+                </select>
+            </div>
+            <div class="col-md-2"><input type="date" name="from" class="form-control form-control-sm" value="{{ filters.from ?? '' }}"></div>
+            <div class="col-md-2"><input type="date" name="to" class="form-control form-control-sm" value="{{ filters.to ?? '' }}"></div>
+            <div class="col-auto"><button type="submit" class="btn btn-outline-secondary btn-sm">Filtrer</button></div>
+        </form>
     </div>
 </div>
-
 <div class="card border-0 shadow-sm">
-    <div class="card-body py-5 text-center text-muted">
-        <svg width="48" height="48" viewBox="0 0 20 20" fill="currentColor" class="mb-3 opacity-25">
-            <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm2 10a1 1 0 10-2 0v3a1 1 0 102 0v-3zm2-3a1 1 0 011 1v5a1 1 0 11-2 0v-5a1 1 0 011-1zm4-1a1 1 0 10-2 0v6a1 1 0 102 0V8z" clip-rule="evenodd"/>
-        </svg>
-        <p class="fw-medium mb-1">Paiements</p>
-        <p class="small mb-0">Cette section est en cours de développement.</p>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light"><tr><th>Date</th><th>Facture</th><th>Mode</th><th>Référence</th><th class="text-end">Montant</th><th>Direction</th></tr></thead>
+            <tbody>
+                {% for payment in payments %}
+                <tr>
+                    <td>{{ payment.date|date('d/m/Y') }}</td>
+                    <td>
+                        {% if payment.invoice %}
+                            <a href="{{ path('app_invoices_show', {id: payment.invoice.id}) }}">{{ payment.invoice.number ?? 'Brouillon' }}</a>
+                        {% else %}—{% endif %}
+                    </td>
+                    <td>{{ payment.mode.label() }}</td>
+                    <td class="text-muted small">{{ payment.reference ?? '—' }}</td>
+                    <td class="text-end fw-semibold {{ payment.direction.value == 'INCOMING' ? 'text-success' : 'text-danger' }}">
+                        {{ payment.direction.value == 'INCOMING' ? '+' : '-' }}{{ payment.amount|number_format(2,',',' ') }} {{ payment.currency }}
+                    </td>
+                    <td><span class="badge {{ payment.direction.value == 'INCOMING' ? 'bg-success' : 'bg-danger' }}">{{ payment.direction.value }}</span></td>
+                </tr>
+                {% else %}
+                <tr><td colspan="6" class="text-center text-muted py-5">Aucun paiement enregistré.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 {% endblock %}

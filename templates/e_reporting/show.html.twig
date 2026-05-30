@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+{% block page_title %}E-reporting {{ batch.period }}{% endblock %}
+{% block main %}
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+    <div class="d-flex align-items-center gap-3">
+        <a href="{{ path('app_e_reporting_index') }}" class="btn btn-sm btn-outline-secondary">← Retour</a>
+        <h1 class="h4 mb-0 fw-bold">Lot {{ batch.period }}</h1>
+        <span class="badge bg-secondary">{{ batch.status.value }}</span>
+        {% if batch.late %}<span class="badge bg-danger">En retard</span>{% endif %}
+    </div>
+    <div class="d-flex gap-2">
+        <form method="POST" action="{{ path('app_e_reporting_aggregate', {id: batch.id}) }}" class="d-inline">
+            <button type="submit" class="btn btn-outline-secondary btn-sm">Recalculer</button>
+        </form>
+        {% if batch.status.value == 'READY' %}
+        <form method="POST" action="{{ path('app_e_reporting_submit', {id: batch.id}) }}" class="d-inline">
+            <button type="submit" class="btn btn-primary btn-sm">Soumettre à la DGFiP</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body">
+                <div class="mb-2"><div class="text-muted small">Période</div><div class="fw-semibold">{{ batch.period }}</div></div>
+                <div class="mb-2"><div class="text-muted small">Périodicité</div><div>{{ batch.periodicity.value }}</div></div>
+                <div class="mb-2"><div class="text-muted small">Échéance DGFiP</div><div class="{{ batch.late ? 'text-danger fw-bold' : '' }}">{{ batch.deadline|date('d/m/Y') }}</div></div>
+                <div class="mb-2"><div class="text-muted small">Déclaration néant</div><div>{{ batch.nil ? 'Oui' : 'Non' }}</div></div>
+                {% if batch.submittedAt %}
+                <div class="mb-2"><div class="text-muted small">Soumis le</div><div>{{ batch.submittedAt|date('d/m/Y H:i') }}</div></div>
+                {% endif %}
+                {% if batch.dgfipReference %}
+                <div class="mb-2"><div class="text-muted small">Réf. DGFiP</div><div class="font-monospace small">{{ batch.dgfipReference }}</div></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header fw-semibold bg-transparent">Transactions</div>
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead class="table-light">
+                        <tr><th>Type</th><th>Nb transactions</th><th class="text-end">Total HT</th><th class="text-end">Total TVA</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for tx in batch.transactions %}
+                        <tr>
+                            <td><span class="badge bg-secondary">{{ tx.type.value }}</span></td>
+                            <td>{{ tx.transactionCount }}</td>
+                            <td class="text-end">{{ tx.totalHt|number_format(2,',',' ') }} €</td>
+                            <td class="text-end">{{ tx.totalTva|number_format(2,',',' ') }} €</td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="4" class="text-center text-muted py-4">Aucune transaction. Lancez le recalcul.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

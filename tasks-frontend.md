@@ -963,7 +963,7 @@ Des composants utilisés dans les templates n'ont **aucun style dédié** :
 
 ## TASK-F010 — Tests PHPUnit : couverture des controllers web et services manquants
 **Priorité :** 🟠 HAUTE
-**Statut :** `nouveau`
+**Statut :** `terminé`
 **Estimation :** 2-3 jours
 
 ### Problème
@@ -1224,6 +1224,7 @@ curl /api/invoices \
 
 | Date | Task | Action |
 |---|---|---|
+| 2026-05-30 | TASK-F010 | Terminé — 21 fichiers de test, 351 assertions (objectif 250 dépassé) |
 | 2026-05-30 | TASK-F004 résiduel | 6 controllers web corrigés (InvoiceController, TaxController, ReceivedInvoiceController, NotificationController, AdminController, EReportingController) |
 | 2026-05-30 | TASK-F005 | 8 FormTypes créés + 4 controllers refactorisés, validators TASK-015 désormais actifs |
 | 2026-05-30 | TASK-F001 + F002 + F004 | Terminées — Build npm entry points, sidebar_controller, CSRF 23 templates + 9 controllers |

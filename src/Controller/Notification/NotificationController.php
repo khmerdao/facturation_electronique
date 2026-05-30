@@ -41,9 +41,14 @@ final class NotificationController extends AbstractController
     }
 
     #[Route('/{id}/read', name: 'read', methods: ['POST'])]
-    public function markRead(string $id): Response
+    public function markRead(string $id, Request $request): Response
     {
         $tenant = $this->tenantContext->requireTenant();
+        // CSRF via header pour les requêtes AJAX (pas de form body)
+        $token = $request->headers->get('X-CSRF-Token') ?? $request->request->get('_token', '');
+        if (!$this->isCsrfTokenValid('notif_read_' . $id, $token)) {
+            return new Response('', Response::HTTP_FORBIDDEN);
+        }
         $notif  = $this->notificationRepository->find($id);
 
         if ($notif && (string) $notif->getTenant()->getId() === (string) $tenant->getId()) {
@@ -55,9 +60,12 @@ final class NotificationController extends AbstractController
     }
 
     #[Route('/read-all', name: 'read_all', methods: ['POST'])]
-    public function markAllRead(): Response
+    public function markAllRead(Request $request): Response
     {
         $tenant = $this->tenantContext->requireTenant();
+        if (!$this->isCsrfTokenValid('notif_read_all', $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
         $this->notificationRepository->markAllAsRead($this->getUser(), $tenant);
         $this->addFlash('success', 'Toutes les notifications marquées comme lues.');
         return $this->redirectToRoute('app_notifications_index');

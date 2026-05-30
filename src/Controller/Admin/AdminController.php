@@ -89,6 +89,10 @@ final class AdminController extends AbstractController
     {
         $tenant  = $this->tenantRepository->find($id);
         if (!$tenant) throw $this->createNotFoundException();
+        if (!$this->isCsrfTokenValid('admin_tenant_plan_' . $id, $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
+        if (!$tenant) throw $this->createNotFoundException();
 
         $plan = Plan::tryFrom($request->request->get('plan', ''));
         if ($plan) {
@@ -111,6 +115,9 @@ final class AdminController extends AbstractController
     {
         $tenant = $this->tenantRepository->find($id);
         if (!$tenant) throw $this->createNotFoundException();
+        if (!$this->isCsrfTokenValid('admin_tenant_plan_' . $id, $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
 
         $suspend = $request->request->getBoolean('suspend', true);
         $tenant->setStatus($suspend ? TenantStatus::SUSPENDED : TenantStatus::ACTIVE);

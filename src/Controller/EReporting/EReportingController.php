@@ -50,6 +50,9 @@ final class EReportingController extends AbstractController
     public function generate(Request $request): Response
     {
         $tenant = $this->tenantContext->requireTenant();
+        if (!$this->isCsrfTokenValid('ereporting_generate', $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
         $period = $request->request->get('period', date('Y-m'));
         $this->bus->dispatch(new CreateEReportingBatchMessage((string) $tenant->getId(), $period));
         $this->addFlash('success', "Lot e-reporting $period en cours de génération.");
@@ -57,18 +60,24 @@ final class EReportingController extends AbstractController
     }
 
     #[Route('/{id}/aggregate', name: 'aggregate', methods: ['POST'])]
-    public function aggregate(EReportingBatch $batch): Response
+    public function aggregate(EReportingBatch $batch, Request $request): Response
     {
         $this->assertSameTenant($batch);
+        if (!$this->isCsrfTokenValid('ereporting_' . (string) $batch->getId(), $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
         $this->bus->dispatch(new AggregateEReportingTransactionsMessage((string) $batch->getId()));
         $this->addFlash('success', 'Recalcul des transactions lancé.');
         return $this->redirectToRoute('app_e_reporting_show', ['id' => $batch->getId()]);
     }
 
     #[Route('/{id}/submit', name: 'submit', methods: ['POST'])]
-    public function submit(EReportingBatch $batch): Response
+    public function submit(EReportingBatch $batch, Request $request): Response
     {
         $this->assertSameTenant($batch);
+        if (!$this->isCsrfTokenValid('ereporting_' . (string) $batch->getId(), $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
         if ($batch->getStatus() !== EReportingStatus::READY) {
             $this->addFlash('error', 'Le lot doit être en statut READY pour être soumis.');
             return $this->redirectToRoute('app_e_reporting_show', ['id' => $batch->getId()]);

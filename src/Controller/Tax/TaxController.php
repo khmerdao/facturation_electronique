@@ -66,6 +66,9 @@ final class TaxController extends AbstractController
     #[Route('/exports/new', name: 'export_new', methods: ['POST'])]
     public function exportNew(Request $request): Response
     {
+        if (!$this->isCsrfTokenValid('tax_export_new', $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
         $tenant = $this->tenantContext->requireTenant();
         $type   = $request->request->get('type', 'CSV');
         $from   = new \DateTimeImmutable($request->request->get('from', date('Y-01-01')));

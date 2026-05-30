@@ -144,6 +144,9 @@ final class InvoiceController extends AbstractController
     public function validate(Invoice $invoice, Request $request): Response
     {
         $this->denyAccessUnlessGranted(InvoiceVoter::VALIDATE, $invoice);
+        if (!$this->isCsrfTokenValid('invoice_' . (string) $invoice->getId(), $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
         $this->em->wrapInTransaction(function () use ($invoice) {
             $this->statusService->validate($invoice, $this->getUser());
         });
@@ -153,9 +156,12 @@ final class InvoiceController extends AbstractController
     }
 
     #[Route('/{id}/send', name: 'send', methods: ['POST'])]
-    public function send(Invoice $invoice): Response
+    public function send(Invoice $invoice, Request $request): Response
     {
         $this->denyAccessUnlessGranted(InvoiceVoter::SEND, $invoice);
+        if (!$this->isCsrfTokenValid('invoice_' . (string) $invoice->getId(), $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
         $this->bus->dispatch(new SendInvoiceToPdpMessage((string) $invoice->getId()));
         $this->addFlash('success', 'Transmission PDP/PPF démarrée.');
         return $this->redirectToRoute('app_invoices_show', ['id' => $invoice->getId()]);
@@ -173,9 +179,12 @@ final class InvoiceController extends AbstractController
     }
 
     #[Route('/{id}/duplicate', name: 'duplicate', methods: ['POST'])]
-    public function duplicate(Invoice $invoice): Response
+    public function duplicate(Invoice $invoice, Request $request): Response
     {
         $this->denyAccessUnlessGranted(InvoiceVoter::DUPLICATE, $invoice);
+        if (!$this->isCsrfTokenValid('invoice_' . (string) $invoice->getId(), $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
         $copy = $this->duplicateService->duplicate($invoice, $this->getUser());
         $this->em->flush();
         $this->addFlash('success', 'Facture dupliquée en brouillon.');
@@ -187,6 +196,9 @@ final class InvoiceController extends AbstractController
     {
         $this->denyAccessUnlessGranted(InvoiceVoter::CREDIT_NOTE, $invoice);
         if ($request->isMethod('POST')) {
+            if (!$this->isCsrfTokenValid('credit_note_' . (string) $invoice->getId(), $request->request->get('_token'))) {
+                throw $this->createAccessDeniedException('Token CSRF invalide.');
+            }
             $cn = $this->duplicateService->createCreditNote($invoice, $this->getUser(), $request->request->get('reason'));
             $this->em->flush();
             $this->addFlash('success', 'Avoir créé en brouillon.');
@@ -199,6 +211,9 @@ final class InvoiceController extends AbstractController
     public function cancel(Invoice $invoice, Request $request): Response
     {
         $this->denyAccessUnlessGranted(InvoiceVoter::DELETE, $invoice);
+        if (!$this->isCsrfTokenValid('invoice_' . (string) $invoice->getId(), $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
         $this->statusService->cancel($invoice, $this->getUser(), $request->request->get('reason'));
         $this->em->flush();
         $this->addFlash('success', 'Facture annulée.');

@@ -58,9 +58,12 @@ final class ReceivedInvoiceController extends AbstractController
     }
 
     #[Route('/{id}/approve', name: 'approve', methods: ['POST'])]
-    public function approve(ReceivedInvoice $invoice): Response
+    public function approve(ReceivedInvoice $invoice, Request $request): Response
     {
         $this->assertBelongsToTenant($invoice);
+        if (!$this->isCsrfTokenValid('received_invoice_' . (string) $invoice->getId(), $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
         if ($invoice->getStatus() !== ReceivedInvoiceStatus::PENDING_VALIDATION) {
             $this->addFlash('error', 'Cette facture ne peut plus être validée.');
             return $this->redirectToRoute('app_received_invoices_show', ['id' => $invoice->getId()]);
@@ -75,6 +78,9 @@ final class ReceivedInvoiceController extends AbstractController
     public function contest(ReceivedInvoice $invoice, Request $request): Response
     {
         $this->assertBelongsToTenant($invoice);
+        if (!$this->isCsrfTokenValid('received_invoice_' . (string) $invoice->getId(), $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
         $description = $request->request->get('contest_description');
         if (!$description) {
             $this->addFlash('error', 'La description de la contestation est obligatoire.');
@@ -89,9 +95,12 @@ final class ReceivedInvoiceController extends AbstractController
     }
 
     #[Route('/{id}/ack', name: 'ack', methods: ['POST'])]
-    public function sendAck(ReceivedInvoice $invoice): Response
+    public function sendAck(ReceivedInvoice $invoice, Request $request): Response
     {
         $this->assertBelongsToTenant($invoice);
+        if (!$this->isCsrfTokenValid('received_invoice_' . (string) $invoice->getId(), $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
         if ($invoice->getTechnicalAckSentAt()) {
             $this->addFlash('info', 'Acquittement déjà envoyé.');
             return $this->redirectToRoute('app_received_invoices_show', ['id' => $invoice->getId()]);

@@ -118,4 +118,17 @@ class PdpTransmissionRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    /**
+     * Trouve une transmission par son identifiant externe PDP.
+     */
+    public function findByExternalId(string $externalId): ?\App\Entity\PdpTransmission
+    {
+        return $this->createQueryBuilder('t')
+            ->where('t.externalId = :externalId')
+            ->setParameter('externalId', $externalId)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

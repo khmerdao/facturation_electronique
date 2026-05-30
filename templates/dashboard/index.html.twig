@@ -1,19 +1,218 @@
 {% extends 'base.html.twig' %}
 {% block page_title %}Tableau de bord{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+.kpi-card { border-left: 4px solid transparent; transition: transform .15s; }
+.kpi-card:hover { transform: translateY(-2px); }
+.kpi-card--blue   { border-left-color: #2563eb; }
+.kpi-card--green  { border-left-color: #16a34a; }
+.kpi-card--orange { border-left-color: #d97706; }
+.kpi-card--red    { border-left-color: #dc2626; }
+.kpi-value { font-size: 1.75rem; font-weight: 700; letter-spacing: -.02em; line-height: 1; }
+.alert-row { border-left: 3px solid #f59e0b; background: #fffbeb; }
+</style>
+{% endblock %}
+
 {% block main %}
+
 <div class="d-flex align-items-center justify-content-between mb-4">
     <div>
         <h1 class="h4 mb-0 fw-bold">Tableau de bord</h1>
+        <p class="text-muted small mb-0">{{ 'now'|date('F Y')|capitalize }} — {{ tenant.name }}</p>
+    </div>
+    <a href="{{ path('app_invoices_new') }}" class="btn btn-primary">+ Nouvelle facture</a>
+</div>
+
+{# KPIs #}
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm kpi-card kpi-card--blue">
+            <div class="card-body">
+                <div class="text-muted small mb-1">CA du mois (TTC)</div>
+                <div class="kpi-value text-primary">{{ kpis.totalSent is defined and kpis.totalSent ? kpis.totalSent|number_format(0, ',', ' ') : '0' }} €</div>
+                <div class="text-muted small mt-1">Factures transmises</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm kpi-card kpi-card--green">
+            <div class="card-body">
+                <div class="text-muted small mb-1">Encaissé</div>
+                <div class="kpi-value text-success">{{ kpis.totalPaid is defined and kpis.totalPaid ? kpis.totalPaid|number_format(0, ',', ' ') : '0' }} €</div>
+                <div class="text-muted small mt-1">Factures réglées ce mois</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm kpi-card kpi-card--orange">
+            <div class="card-body">
+                <div class="text-muted small mb-1">En attente</div>
+                <div class="kpi-value" style="color:#d97706">{{ kpis.totalAcknowledged is defined and kpis.totalAcknowledged ? kpis.totalAcknowledged|number_format(0, ',', ' ') : '0' }} €</div>
+                <div class="text-muted small mt-1">Acceptées non réglées</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm kpi-card kpi-card--red">
+            <div class="card-body">
+                <div class="text-muted small mb-1">En retard</div>
+                <div class="kpi-value text-danger">{{ overdueInvoices|length }}</div>
+                <div class="text-muted small mt-1">Factures échues non réglées</div>
+            </div>
+        </div>
     </div>
 </div>
 
-<div class="card border-0 shadow-sm">
-    <div class="card-body py-5 text-center text-muted">
-        <svg width="48" height="48" viewBox="0 0 20 20" fill="currentColor" class="mb-3 opacity-25">
-            <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm2 10a1 1 0 10-2 0v3a1 1 0 102 0v-3zm2-3a1 1 0 011 1v5a1 1 0 11-2 0v-5a1 1 0 011-1zm4-1a1 1 0 10-2 0v6a1 1 0 102 0V8z" clip-rule="evenodd"/>
-        </svg>
-        <p class="fw-medium mb-1">Tableau de bord</p>
-        <p class="small mb-0">Cette section est en cours de développement.</p>
+{# Alertes #}
+{% if overdueInvoices|length > 0 or pendingAck|length > 0 or ereportingDue|length > 0 %}
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header fw-semibold bg-transparent">⚠ Alertes</div>
+    <div class="list-group list-group-flush">
+        {% if overdueInvoices|length > 0 %}
+        <div class="list-group-item alert-row d-flex align-items-center justify-content-between">
+            <div>
+                <strong>{{ overdueInvoices|length }} facture(s) en retard</strong>
+                <div class="text-muted small">Échéance dépassée, paiement non reçu.</div>
+            </div>
+            <a href="{{ path('app_invoices_index') }}?status=ACKNOWLEDGED" class="btn btn-sm btn-outline-warning">Voir</a>
+        </div>
+        {% endif %}
+        {% if pendingAck|length > 0 %}
+        <div class="list-group-item alert-row d-flex align-items-center justify-content-between">
+            <div>
+                <strong>{{ pendingAck|length }} acquittement(s) technique(s) à envoyer</strong>
+                <div class="text-muted small">Obligatoire dans les 5 jours ouvrés (réforme 2026).</div>
+            </div>
+            <a href="{{ path('app_received_invoices_index') }}" class="btn btn-sm btn-outline-warning">Voir</a>
+        </div>
+        {% endif %}
+        {% if ereportingDue|length > 0 %}
+        <div class="list-group-item alert-row d-flex align-items-center justify-content-between">
+            <div>
+                <strong>{{ ereportingDue|length }} lot(s) e-reporting à soumettre</strong>
+                <div class="text-muted small">Transmission DGFiP imminente.</div>
+            </div>
+            <a href="{{ path('app_e_reporting_index') }}" class="btn btn-sm btn-outline-warning">Voir</a>
+        </div>
+        {% endif %}
     </div>
 </div>
+{% endif %}
+
+{# Graphique + dernières factures #}
+<div class="row g-4 mb-4">
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header fw-semibold bg-transparent">CA — 12 derniers mois</div>
+            <div class="card-body">
+                {% if monthlyRevenue|length > 0 %}
+                    <canvas id="revenueChart" height="220"></canvas>
+                {% else %}
+                    <div class="text-center text-muted py-5">Aucune donnée de chiffre d'affaires pour le moment.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header fw-semibold bg-transparent d-flex justify-content-between align-items-center">
+                Dernières factures
+                <a href="{{ path('app_invoices_index') }}" class="btn btn-sm btn-outline-secondary">Tout voir</a>
+            </div>
+            <div class="list-group list-group-flush">
+                {% for invoice in recentInvoices %}
+                <a href="{{ path('app_invoices_show', {id: invoice.id}) }}" class="list-group-item list-group-item-action py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-semibold">{{ invoice.number ?? 'Brouillon' }}</div>
+                            <div class="text-muted small">{{ invoice.clientNameSnapshot ?? invoice.contact?.name ?? '—' }}</div>
+                        </div>
+                        <div class="text-end">
+                            <div class="fw-semibold">{{ invoice.totalTtc|number_format(2, ',', ' ') }} €</div>
+                            <span class="badge badge-{{ invoice.status.value }}">{{ invoice.status.label() }}</span>
+                        </div>
+                    </div>
+                </a>
+                {% else %}
+                <div class="list-group-item text-muted text-center py-4">
+                    Aucune facture. <a href="{{ path('app_invoices_new') }}">Créer la première</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Accès rapides #}
+<div class="card border-0 shadow-sm">
+    <div class="card-header fw-semibold bg-transparent">Accès rapides</div>
+    <div class="card-body d-flex flex-wrap gap-2">
+        <a href="{{ path('app_invoices_new') }}" class="btn btn-outline-primary">📄 Nouvelle facture</a>
+        <a href="{{ path('app_contacts_new') }}" class="btn btn-outline-secondary">👤 Nouveau contact</a>
+        <a href="{{ path('app_received_invoices_index') }}" class="btn btn-outline-secondary">📥 Factures reçues</a>
+        <a href="{{ path('app_e_reporting_index') }}" class="btn btn-outline-secondary">📊 E-reporting</a>
+        <a href="{{ path('app_tax_index') }}" class="btn btn-outline-secondary">🧾 TVA & Exports</a>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+{% if monthlyRevenue|length > 0 %}
+<script>
+(function() {
+    const rawData = {{ monthlyRevenue|json_encode|raw }};
+    const months = [];
+    const today  = new Date();
+    for (let i = 11; i >= 0; i--) {
+        const d   = new Date(today.getFullYear(), today.getMonth() - i, 1);
+        const key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+        months.push({ key, label: d.toLocaleDateString('fr-FR', { month: 'short', year: '2-digit' }) });
+    }
+    const dataMap = {};
+    rawData.forEach(r => dataMap[r.month] = parseFloat(r.total) || 0);
+
+    function initChart() {
+        new Chart(document.getElementById('revenueChart'), {
+            type: 'bar',
+            data: {
+                labels: months.map(m => m.label),
+                datasets: [{
+                    label: 'CA TTC',
+                    data: months.map(m => dataMap[m.key] || 0),
+                    backgroundColor: 'rgba(37,99,235,.15)',
+                    borderColor: '#2563eb',
+                    borderWidth: 2,
+                    borderRadius: 4,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: c => c.parsed.y.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' }) } }
+                },
+                scales: {
+                    y: { beginAtZero: true, ticks: { callback: v => v >= 1000 ? (v/1000).toFixed(0)+'k €' : v+' €' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    }
+
+    if (typeof Chart !== 'undefined') {
+        initChart();
+    } else {
+        const s = document.createElement('script');
+        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';
+        s.onload = initChart;
+        document.head.appendChild(s);
+    }
+})();
+</script>
+{% endif %}
 {% endblock %}

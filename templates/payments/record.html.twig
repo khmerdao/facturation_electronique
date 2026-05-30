@@ -44,7 +44,8 @@
                 <input type="text" name="reference" class="form-control">
             </div>
             <button type="submit" class="btn btn-success w-100">Enregistrer le paiement</button>
-        </form>
+            <input type="hidden" name="_token" value="{{ csrf_token('record_payment_' ~ invoice.id) }}">
+</form>
     </div>
 </div>
 </div></div>

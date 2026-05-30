@@ -38,6 +38,11 @@ final class RegisterController extends AbstractController
         $error = null;
 
         if ($request->isMethod('POST')) {
+
+        // ── Vérification CSRF ─────────────────────────────────────────────
+        if (!$this->isCsrfTokenValid('register', $request->request->get('_token'))) {{
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }}
             $email        = trim($request->request->get('email', ''));
             $password     = $request->request->get('password', '');
             $firstName    = trim($request->request->get('first_name', ''));

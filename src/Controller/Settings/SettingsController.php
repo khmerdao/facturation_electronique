@@ -45,6 +45,11 @@ final class SettingsController extends AbstractController
         $tenant = $this->tenantContext->requireTenant();
 
         if ($request->isMethod("POST")) {
+
+        // ── Vérification CSRF ────────────────────────────────────────────────
+        if (!$this->isCsrfTokenValid('settings_organisation', $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
             $d = $request->request->all();
             $tenant->setName($d["name"] ?? $tenant->getName());
             $tenant->setSiret(!empty($d["siret"]) ? $d["siret"] : null);
@@ -110,6 +115,11 @@ final class SettingsController extends AbstractController
         $sequences = $this->sequenceRepository->findByTenant($tenant);
 
         if ($request->isMethod("POST")) {
+
+        // ── Vérification CSRF ────────────────────────────────────────────────
+        if (!$this->isCsrfTokenValid('settings_organisation', $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
             $action = $request->request->get("action");
             if ($action === "create") {
                 $forCreditNote = $request->request->getBoolean("is_credit_note_sequence");
@@ -138,6 +148,11 @@ final class SettingsController extends AbstractController
         $testResult = null;
 
         if ($request->isMethod("POST")) {
+
+        // ── Vérification CSRF ────────────────────────────────────────────────
+        if (!$this->isCsrfTokenValid('settings_organisation', $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
             $action = $request->request->get("action", "save");
             $d      = $request->request->all();
 

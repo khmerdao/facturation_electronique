@@ -12,7 +12,8 @@
         <button type="submit" class="btn btn-outline-secondary btn-sm">
             ⚙️ Gérer via Stripe
         </button>
-    </form>
+        <input type="hidden" name="_token" value="{{ csrf_token('billing_portal') }}">
+</form>
     {% endif %}
 </div>
 

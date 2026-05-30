@@ -61,6 +61,11 @@ final class PaymentController extends AbstractController
         }
 
         if ($request->isMethod('POST')) {
+
+        // ── Vérification CSRF ────────────────────────────────────────────────
+        if (!$this->isCsrfTokenValid('record_payment_', $request->request->get('_token'))) {{
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }}
             try {
                 $mode = PaymentMode::from($request->request->get('mode', 'VIREMENT'));
                 $this->paymentService->recordOnInvoice($invoice, [

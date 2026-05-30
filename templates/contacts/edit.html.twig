@@ -69,6 +69,7 @@
     <textarea name="notes" class="form-control" rows="3"></textarea>
 </div>
 <button type="submit" class="btn btn-primary">Sauvegarder</button>
+    <input type="hidden" name="_token" value="{{ csrf_token('edit_contact_' ~ contact.id) }}">
 </form>
 </div></div>
 {% endblock %}

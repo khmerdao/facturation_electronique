@@ -11,11 +11,13 @@
     <div class="d-flex gap-2">
         <form method="POST" action="{{ path('app_e_reporting_aggregate', {id: batch.id}) }}" class="d-inline">
             <button type="submit" class="btn btn-outline-secondary btn-sm">Recalculer</button>
-        </form>
+            <input type="hidden" name="_token" value="{{ csrf_token('ereporting_' ~ batch.id) }}">
+</form>
         {% if batch.status.value == 'READY' %}
         <form method="POST" action="{{ path('app_e_reporting_submit', {id: batch.id}) }}" class="d-inline">
             <button type="submit" class="btn btn-primary btn-sm">Soumettre à la DGFiP</button>
-        </form>
+            <input type="hidden" name="_token" value="{{ csrf_token('ereporting_' ~ batch.id) }}">
+</form>
         {% endif %}
     </div>
 </div>

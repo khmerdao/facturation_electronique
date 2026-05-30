@@ -57,7 +57,8 @@
                 <button type="submit" name="action" value="test" class="btn btn-outline-secondary">Tester la connexion</button>
                 {% endif %}
             </div>
-        </form>
+            <input type="hidden" name="_token" value="{{ csrf_token('settings_pdp') }}">
+</form>
     </div>
 </div>
 {% endblock %}

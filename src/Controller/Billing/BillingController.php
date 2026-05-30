@@ -74,6 +74,9 @@ final class BillingController extends AbstractController
     #[Route('/checkout', name: 'checkout', methods: ['POST'])]
     public function checkout(Request $request): Response
     {
+        if (!$this->isCsrfTokenValid('billing_checkout', $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
         $tenant = $this->tenantContext->requireTenant();
         $plan   = Plan::tryFrom($request->request->get('plan', ''));
 
@@ -104,8 +107,11 @@ final class BillingController extends AbstractController
     // ── Customer Portal ───────────────────────────────────────────────────────
 
     #[Route('/portal', name: 'portal', methods: ['POST'])]
-    public function portal(): Response
+    public function portal(Request $request): Response
     {
+        if (!$this->isCsrfTokenValid('billing_portal', $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
         $tenant = $this->tenantContext->requireTenant();
 
         try {

@@ -1,0 +1,4 @@
+stimulus:
+    # Dossier des controllers Stimulus auto-découverts
+    # Correspondent aux fichiers assets/controllers/*_controller.js
+    controllers_dir: '%kernel.project_dir%/assets/controllers'

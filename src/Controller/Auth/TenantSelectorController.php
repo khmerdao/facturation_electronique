@@ -50,6 +50,11 @@ final class TenantSelectorController extends AbstractController
 
         // POST : l'utilisateur a choisi un tenant dans la liste
         if ($request->isMethod('POST')) {
+
+        // ── Vérification CSRF ─────────────────────────────────────────────
+        if (!$this->isCsrfTokenValid('tenant_select', $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
             $tenantId = $request->request->get('tenant_id', '');
             // Vérifier que l'utilisateur appartient bien au tenant choisi
             foreach ($memberships as $membership) {

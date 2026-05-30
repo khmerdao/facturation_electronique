@@ -52,6 +52,7 @@
     </div>
 </div>
 <button type="submit" class="btn btn-primary">Sauvegarder</button>
+    <input type="hidden" name="_token" value="{{ csrf_token('edit_product_' ~ product.id) }}">
 </form>
 </div></div>
 {% endblock %}

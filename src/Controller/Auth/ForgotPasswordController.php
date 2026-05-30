@@ -40,6 +40,11 @@ final class ForgotPasswordController extends AbstractController
         $sent = false;
 
         if ($request->isMethod('POST')) {
+
+        // ── Vérification CSRF ─────────────────────────────────────────────
+        if (!$this->isCsrfTokenValid('forgot_password', $request->request->get('_token'))) {{
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }}
             $email = trim($request->request->get('email', ''));
             $user  = $this->userRepository->findByEmail($email);
 
@@ -73,6 +78,11 @@ final class ForgotPasswordController extends AbstractController
         $error = null;
 
         if ($request->isMethod('POST')) {
+
+        // ── Vérification CSRF ─────────────────────────────────────────────
+        if (!$this->isCsrfTokenValid('forgot_password', $request->request->get('_token'))) {{
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }}
             $password = $request->request->get('password', '');
             $confirm  = $request->request->get('password_confirm', '');
 

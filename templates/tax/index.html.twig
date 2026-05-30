@@ -91,7 +91,8 @@
             <button type="submit" class="btn btn-outline-primary btn-sm">
                 Générer le FEC {{ from|date('Y') }}
             </button>
-        </form>
+            <input type="hidden" name="_token" value="{{ csrf_token('tax_fec_export') }}">
+</form>
     </div>
 </div>
 {% endblock %}

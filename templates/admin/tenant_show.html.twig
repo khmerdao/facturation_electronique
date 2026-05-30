@@ -28,7 +28,8 @@
                         {% endfor %}
                     </select>
                     <button type="submit" class="btn btn-primary btn-sm flex-shrink-0">Changer</button>
-                </form>
+                    <input type="hidden" name="_token" value="{{ csrf_token('admin_tenant_plan_' ~ tenant.id) }}">
+</form>
             </div>
         </div>
         <div class="card border-0 shadow-sm">
@@ -38,12 +39,14 @@
                 <form method="POST" action="{{ path('admin_tenant_suspend', {id: tenant.id}) }}">
                     <input type="hidden" name="suspend" value="1">
                     <button type="submit" class="btn btn-warning btn-sm w-100">Suspendre</button>
-                </form>
+                    <input type="hidden" name="_token" value="{{ csrf_token('admin_tenant_plan_' ~ tenant.id) }}">
+</form>
                 {% elseif tenant.status.value == 'SUSPENDED' %}
                 <form method="POST" action="{{ path('admin_tenant_suspend', {id: tenant.id}) }}">
                     <input type="hidden" name="suspend" value="0">
                     <button type="submit" class="btn btn-success btn-sm w-100">Réactiver</button>
-                </form>
+                    <input type="hidden" name="_token" value="{{ csrf_token('admin_tenant_plan_' ~ tenant.id) }}">
+</form>
                 {% endif %}
             </div>
         </div>

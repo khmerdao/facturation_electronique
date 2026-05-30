@@ -42,6 +42,11 @@ final class ProductController extends AbstractController
         $product = new Product();
         $product->setTenant($tenant);
         if ($request->isMethod('POST')) {
+
+        // ── Vérification CSRF ────────────────────────────────────────────────
+        if (!$this->isCsrfTokenValid('create_product', $request->request->get('_token'))) {{
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }}
             $this->hydrate($product, $request->request->all());
             $this->em->persist($product);
             $this->em->flush();
@@ -67,6 +72,11 @@ final class ProductController extends AbstractController
         $this->denyAccessUnlessGranted(ProductVoter::EDIT, $product);
         $this->assertSameTenant($product);
         if ($request->isMethod('POST')) {
+
+        // ── Vérification CSRF ────────────────────────────────────────────────
+        if (!$this->isCsrfTokenValid('create_product', $request->request->get('_token'))) {{
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }}
             $this->hydrate($product, $request->request->all());
             $this->em->flush();
             $this->addFlash('success', 'Produit mis à jour.');

@@ -52,6 +52,7 @@
     </div>
 </div>
 <button type="submit" class="btn btn-primary">Créer</button>
+    <input type="hidden" name="_token" value="{{ csrf_token('create_product') }}">
 </form>
 </div></div>
 {% endblock %}

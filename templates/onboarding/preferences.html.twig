@@ -27,7 +27,8 @@
                 <div class="d-grid">
                     <button type="submit" class="btn btn-primary fw-medium">Terminer la configuration</button>
                 </div>
-            </form>
+                <input type="hidden" name="_token" value="{{ csrf_token('onboarding_preferences') }}">
+</form>
 
         </div>
     </div>

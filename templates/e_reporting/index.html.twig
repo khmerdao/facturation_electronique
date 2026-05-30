@@ -25,7 +25,8 @@
             <div class="col-auto">
                 <button type="submit" class="btn btn-primary">Générer le lot</button>
             </div>
-        </form>
+            <input type="hidden" name="_token" value="{{ csrf_token('ereporting_generate') }}">
+</form>
         <p class="text-muted small mt-2">Format : AAAA-MM pour mensuel (ex: 2026-09)</p>
     </div>
 </div>

@@ -53,6 +53,11 @@ final class ContactController extends AbstractController
         $contact->setTenant($tenant);
         $contact->setType(ContactType::CLIENT);
         if ($request->isMethod('POST')) {
+
+        // ── Vérification CSRF ────────────────────────────────────────────────
+        if (!$this->isCsrfTokenValid('create_contact', $request->request->get('_token'))) {{
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }}
             $this->hydrateContact($contact, $request->request->all());
             $this->em->persist($contact);
             $this->em->flush();
@@ -81,6 +86,11 @@ final class ContactController extends AbstractController
         $this->denyAccessUnlessGranted(ContactVoter::EDIT, $contact);
         $this->assertSameTenant($contact);
         if ($request->isMethod('POST')) {
+
+        // ── Vérification CSRF ────────────────────────────────────────────────
+        if (!$this->isCsrfTokenValid('create_contact', $request->request->get('_token'))) {{
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }}
             $this->hydrateContact($contact, $request->request->all());
             $this->em->flush();
             $this->addFlash('success', 'Contact mis à jour.');

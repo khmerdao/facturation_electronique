@@ -137,15 +137,41 @@ $sidebar-active-color:   #FFFFFF;
 .badge-REJECTED      { background: #DC2626; color: #fff; }
 .badge-CANCELLED     { background: #9CA3AF; color: #fff; }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// Responsive (mobile)
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ── Responsive + Overlay sidebar (voir ci-dessous) ───────────────────────────
+
+
+// ── Overlay sidebar mobile ─────────────────────────────────────────────────
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .45);
+    z-index: 999;
+    cursor: pointer;
+    transition: opacity .3s;
+
+    &.visible {
+        display: block;
+    }
+}
+
+// ── Sidebar mobile — état ouvert ───────────────────────────────────────────
 @include media-breakpoint-down(lg) {
     .app-sidebar {
         transform: translateX(-100%);
-        &.open { transform: translateX(0); }
+
+        &.open {
+            transform: translateX(0);
+            box-shadow: 4px 0 24px rgba(0, 0, 0, .3);
+        }
     }
+
     .app-content {
         margin-left: 0;
     }
+}
+
+// ── Body bloqué lors de l'ouverture sidebar mobile ─────────────────────────
+body.sidebar-open {
+    overflow: hidden;
 }

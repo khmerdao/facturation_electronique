@@ -28,7 +28,8 @@
             <div class="col-md-3">
                 <button type="submit" class="btn btn-primary w-100">Générer</button>
             </div>
-        </form>
+            <input type="hidden" name="_token" value="{{ csrf_token('tax_export_new') }}">
+</form>
     </div>
 </div>
 

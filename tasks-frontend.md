@@ -15,7 +15,7 @@
 
 ## TASK-F001 — Build npm : entry points et compilation Webpack
 **Priorité :** 🔴 BLOQUANT
-**Statut :** `nouveau`
+**Statut :** `terminé`
 **Estimation :** 2-3 heures
 
 ### Problème
@@ -106,7 +106,7 @@ public/build/
 
 ## TASK-F002 — Stimulus : sidebar_controller et enregistrement des controllers
 **Priorité :** 🔴 BLOQUANT
-**Statut :** `nouveau`
+**Statut :** `terminé`
 **Estimation :** 1-2 heures
 
 ### Problème
@@ -403,7 +403,7 @@ Remplacer le tableau HTML statique + JS inline par :
 
 ## TASK-F004 — Sécurité formulaires : CSRF sur 23 templates
 **Priorité :** 🔴 BLOQUANT
-**Statut :** `nouveau`
+**Statut :** `terminé`
 **Estimation :** 3-4 heures
 
 ### Problème
@@ -1224,4 +1224,5 @@ curl /api/invoices \
 
 | Date | Task | Action |
 |---|---|---|
+| 2026-05-30 | TASK-F001 + F002 + F004 | Terminées — Build npm entry points, sidebar_controller, CSRF 23 templates + 9 controllers |
 | 2026-05-30 | TASK-F001 à TASK-F012 | Création initiale suite à l'analyse frontend complète |

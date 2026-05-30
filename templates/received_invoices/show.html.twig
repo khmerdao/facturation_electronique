@@ -14,12 +14,14 @@
         {% if invoice.status.value == 'PENDING_VALIDATION' %}
         <form method="POST" action="{{ path('app_received_invoices_approve', {id: invoice.id}) }}" class="d-inline">
             <button type="submit" class="btn btn-success btn-sm">✓ Valider</button>
-        </form>
+            <input type="hidden" name="_token" value="{{ csrf_token('received_invoice_' ~ invoice.id) }}">
+</form>
         {% endif %}
         {% if not invoice.technicalAckSentAt %}
         <form method="POST" action="{{ path('app_received_invoices_ack', {id: invoice.id}) }}" class="d-inline">
             <button type="submit" class="btn btn-outline-primary btn-sm">Envoyer l'acquittement</button>
-        </form>
+            <input type="hidden" name="_token" value="{{ csrf_token('received_invoice_' ~ invoice.id) }}">
+</form>
         {% endif %}
     </div>
 </div>
@@ -93,7 +95,8 @@
                         <textarea name="contest_description" class="form-control" rows="3" required></textarea>
                     </div>
                     <button type="submit" class="btn btn-warning">Contester</button>
-                </form>
+                    <input type="hidden" name="_token" value="{{ csrf_token('received_invoice_' ~ invoice.id) }}">
+</form>
             </div>
         </div>
         {% endif %}

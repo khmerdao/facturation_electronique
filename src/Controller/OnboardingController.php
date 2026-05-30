@@ -34,6 +34,11 @@ final class OnboardingController extends AbstractController
         $tenant = $this->tenantContext->requireTenant();
 
         if ($request->isMethod('POST')) {
+
+        // ── Vérification CSRF ────────────────────────────────────────────────
+        if (!$this->isCsrfTokenValid('onboarding_form', $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
             $name  = trim($request->request->get('name', ''));
             $siret = trim($request->request->get('siret', ''));
 
@@ -64,6 +69,11 @@ final class OnboardingController extends AbstractController
         $tenant = $this->tenantContext->requireTenant();
 
         if ($request->isMethod('POST')) {
+
+        // ── Vérification CSRF ────────────────────────────────────────────────
+        if (!$this->isCsrfTokenValid('onboarding_form', $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
             $tenant->setOnboardingCompleted(true);
             $tenant->setOnboardingStep(OnboardingStep::COMPLETED);
             $this->em->flush();

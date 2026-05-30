@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+{% block page_title %}{{ contact.name }}{% endblock %}
+{% block main %}
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+    <div class="d-flex align-items-center gap-3">
+        <a href="{{ path('app_contacts_index') }}" class="btn btn-sm btn-outline-secondary">← Retour</a>
+        <h1 class="h4 mb-0 fw-bold">{{ contact.name }}</h1>
+        <span class="badge bg-secondary">{{ contact.type.value }}</span>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ path('app_contacts_edit', {id: contact.id}) }}" class="btn btn-outline-secondary btn-sm">Modifier</a>
+        <a href="{{ path('app_invoices_new') }}?contact_id={{ contact.id }}" class="btn btn-primary btn-sm">Nouvelle facture</a>
+    </div>
+</div>
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body">
+                {% if contact.siret %}<div class="mb-2"><div class="text-muted small">SIRET</div><div class="font-monospace">{{ contact.siret }}</div></div>{% endif %}
+                {% if contact.tvaIntra %}<div class="mb-2"><div class="text-muted small">N° TVA</div><div>{{ contact.tvaIntra }}</div></div>{% endif %}
+                {% if contact.email %}<div class="mb-2"><div class="text-muted small">Email</div><div><a href="mailto:{{ contact.email }}">{{ contact.email }}</a></div></div>{% endif %}
+                {% if contact.phone %}<div class="mb-2"><div class="text-muted small">Téléphone</div><div>{{ contact.phone }}</div></div>{% endif %}
+                {% if contact.address and not contact.address.isEmpty %}
+                <div class="mb-2">
+                    <div class="text-muted small">Adresse</div>
+                    <div>
+                        {% if contact.address.line1 %}{{ contact.address.line1 }}<br>{% endif %}
+                        {% if contact.address.line2 %}{{ contact.address.line2 }}<br>{% endif %}
+                        {{ contact.address.postalCode }} {{ contact.address.city }}
+                    </div>
+                </div>
+                {% endif %}
+                {% if contact.pdpIdentifier %}<div class="mb-2"><div class="text-muted small">Identifiant PDP</div><div class="font-monospace small">{{ contact.pdpIdentifier }}</div></div>{% endif %}
+                {% if contact.notes %}<div class="mt-3 pt-3 border-top"><div class="text-muted small">Notes</div><div>{{ contact.notes }}</div></div>{% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header fw-semibold bg-transparent">Factures</div>
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead class="table-light"><tr><th>Numéro</th><th>Date</th><th class="text-end">Montant TTC</th><th class="text-center">Statut</th></tr></thead>
+                    <tbody>
+                        {% for inv in invoices %}
+                        <tr>
+                            <td><a href="{{ path('app_invoices_show', {id: inv.id}) }}">{{ inv.number ?? 'Brouillon' }}</a></td>
+                            <td>{{ inv.issueDate|date('d/m/Y') }}</td>
+                            <td class="text-end">{{ inv.totalTtc|number_format(2,',',' ') }} {{ inv.currency }}</td>
+                            <td class="text-center"><span class="badge badge-{{ inv.status.value }}">{{ inv.status.label() }}</span></td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="4" class="text-center text-muted py-4">Aucune facture pour ce contact.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

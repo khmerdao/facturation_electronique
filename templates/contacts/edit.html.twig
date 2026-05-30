@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+{% block page_title %}Modifier {{ contact.name }}{% endblock %}
+{% block main %}
+<div class="d-flex align-items-center gap-3 mb-4">
+    <a href="{{ path('app_contacts_index') }}" class="btn btn-sm btn-outline-secondary">← Retour</a>
+    <h1 class="h4 mb-0 fw-bold">Modifier le contact</h1>
+</div>
+<div class="row justify-content-center"><div class="col-lg-8">
+<form method="POST" action="{{ path('app_contacts_edit', {id: contact.id}) }}">
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header fw-semibold bg-transparent">Informations générales</div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-8">
+                <label class="form-label fw-medium">Nom / Raison sociale *</label>
+                <input type="text" name="name" class="form-control" required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-medium">Type</label>
+                <select name="type" class="form-select">
+                    {% for t in types %}<option value="{{ t.value }}">{{ t.value }}</option>{% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-medium">SIRET</label>
+                <input type="text" name="siret" id="siret-input" class="form-control" maxlength="14" placeholder="14 chiffres">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-medium">N° TVA intracommunautaire</label>
+                <input type="text" name="tva_intra" class="form-control" placeholder="FR12345678901">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-medium">Email</label>
+                <input type="email" name="email" class="form-control">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-medium">Email facturation</label>
+                <input type="email" name="billing_email" class="form-control">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-medium">Téléphone</label>
+                <input type="text" name="phone" class="form-control">
+            </div>
+            <div class="col-md-8">
+                <label class="form-label fw-medium">Site web</label>
+                <input type="url" name="website" class="form-control">
+            </div>
+            <div class="col-md-8">
+                <label class="form-label fw-medium">Identifiant PDP</label>
+                <input type="text" name="pdp_identifier" class="form-control" placeholder="Identifiant destinataire PDP">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header fw-semibold bg-transparent">Adresse</div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-12"><input type="text" name="addr_line1" class="form-control" placeholder="Ligne 1"></div>
+            <div class="col-12"><input type="text" name="addr_line2" class="form-control" placeholder="Ligne 2"></div>
+            <div class="col-md-4"><input type="text" name="addr_postal_code" class="form-control" placeholder="Code postal"></div>
+            <div class="col-md-5"><input type="text" name="addr_city" class="form-control" placeholder="Ville"></div>
+            <div class="col-md-3"><input type="text" name="addr_country" class="form-control" value="FR"></div>
+        </div>
+    </div>
+</div>
+<div class="mb-3">
+    <label class="form-label fw-medium">Notes internes</label>
+    <textarea name="notes" class="form-control" rows="3"></textarea>
+</div>
+<button type="submit" class="btn btn-primary">Sauvegarder</button>
+</form>
+</div></div>
+{% endblock %}

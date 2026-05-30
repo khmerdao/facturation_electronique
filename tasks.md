@@ -425,7 +425,7 @@ Routes à ajouter dans `src/Controller/Invoice/InvoiceController.php` :
 ---
 
 ## TASK-013 — Notifications
-**Statut :** `en cours`
+**Statut :** `terminé`
 **Priorité :** moyenne
 
 ### Ce qu'il faut faire
@@ -450,7 +450,7 @@ Routes à ajouter dans `src/Controller/Invoice/InvoiceController.php` :
 ---
 
 ## TASK-014 — Admin SaaS (Super-admin)
-**Statut :** `nouveau`
+**Statut :** `en cours`
 **Priorité :** faible — pas nécessaire pour les utilisateurs finaux
 
 ### Ce qu'il faut faire
@@ -640,6 +640,7 @@ Créer `src/DataFixtures/AppFixtures.php` avec `zenstruck/foundry` :
 | Date | Tâche | Action |
 |---|---|---|
 | 2026-05-29 | Toutes (TASK-001 à TASK-022) | Création initiale du fichier tasks.md |
+| 2026-05-30 | TASK-013 | Terminé — NotificationController (4 routes), SendNotificationHandler, template avec marquage lu JS |
 | 2026-05-30 | TASK-012 | Terminé — SettingsController (6 routes), 7 templates settings (organisation/users/templates/sequences/pdp/integrations/_nav) |
 | 2026-05-30 | TASK-011 | Terminé — EReportingAggregatorService, CreateEReportingBatchHandler, AggregateEReportingTransactionsHandler, EReportingController (5 routes), 2 templates |
 | 2026-05-30 | TASK-010 | Terminé — ExportService (FEC+CSV), TaxController, GenerateExportFecHandler, GenerateExportCsvHandler, 2 templates |

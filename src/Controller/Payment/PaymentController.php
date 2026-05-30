@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace App\Controller\Payment;
 
+use App\Form\PaymentType as PaymentForm;
 use App\Entity\Invoice;
 use App\Entity\Payment;
 use App\Entity\Enum\PaymentMode;
@@ -47,7 +48,6 @@ final class PaymentController extends AbstractController
     }
 
     #[Route('/invoices/{invoiceId}/payment', name: 'record', methods: ['GET', 'POST'])]
-    #[\Symfony\Component\Routing\Attribute\Route('/invoices/{invoiceId}/payment', name: 'record', methods: ['GET', 'POST'])]
     public function record(Invoice $invoice, Request $request): Response
     {
         $tenant = $this->tenantContext->requireTenant();
@@ -60,20 +60,17 @@ final class PaymentController extends AbstractController
             return $this->redirectToRoute('app_invoices_show', ['id' => $invoice->getId()]);
         }
 
-        if ($request->isMethod('POST')) {
+        $form = $this->createForm(PaymentForm::class, null, ['invoice' => $invoice]);
+        $form->handleRequest($request);
 
-        // ── Vérification CSRF ────────────────────────────────────────────────
-        if (!$this->isCsrfTokenValid('record_payment_', $request->request->get('_token'))) {{
-            throw $this->createAccessDeniedException('Token CSRF invalide.');
-        }}
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
             try {
-                $mode = PaymentMode::from($request->request->get('mode', 'VIREMENT'));
                 $this->paymentService->recordOnInvoice($invoice, [
-                    'amount'    => $request->request->get('amount'),
-                    'date'      => new \DateTimeImmutable($request->request->get('date', 'now')),
-                    'mode'      => $mode,
-                    'reference' => $request->request->get('reference'),
-                    'notes'     => $request->request->get('notes'),
+                    'amount'    => (string) $data['amount'],
+                    'date'      => $data['date'],
+                    'mode'      => $data['mode'],
+                    'reference' => $data['reference'] ?? null,
                     'currency'  => $invoice->getCurrency(),
                 ], $this->getUser());
                 $this->addFlash('success', 'Paiement enregistré.');
@@ -85,9 +82,10 @@ final class PaymentController extends AbstractController
 
         return $this->render('payments/record.html.twig', [
             'invoice' => $invoice,
-            'modes'   => PaymentMode::cases(),
+            'form'    => $form,
         ]);
     }
+
 
     #[Route('/{id}/cancel', name: 'cancel', methods: ['POST'])]
     public function cancel(Payment $payment): Response

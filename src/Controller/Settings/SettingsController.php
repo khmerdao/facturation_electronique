@@ -2,6 +2,8 @@
 declare(strict_types=1);
 namespace App\Controller\Settings;
 
+use App\Form\PdpSettingsType as PdpForm;
+use App\Form\OrganisationSettingsType as OrganisationForm;
 use App\Entity\Embeddable\PdpConfig;
 use App\Entity\Enum\PdpMode;
 use App\Entity\Enum\Role;
@@ -44,36 +46,22 @@ final class SettingsController extends AbstractController
     {
         $tenant = $this->tenantContext->requireTenant();
 
-        if ($request->isMethod("POST")) {
+        $form = $this->createForm(OrganisationForm::class, $tenant);
+        $form->handleRequest($request);
 
-        // ── Vérification CSRF ────────────────────────────────────────────────
-        if (!$this->isCsrfTokenValid('settings_organisation', $request->request->get('_token'))) {
-            throw $this->createAccessDeniedException('Token CSRF invalide.');
-        }
-            $d = $request->request->all();
-            $tenant->setName($d["name"] ?? $tenant->getName());
-            $tenant->setSiret(!empty($d["siret"]) ? $d["siret"] : null);
-            $tenant->setTvaIntra(!empty($d["tva_intra"]) ? $d["tva_intra"] : null);
-            $tenant->setBillingEmail(!empty($d["billing_email"]) ? $d["billing_email"] : null);
-            $tenant->setPhone(!empty($d["phone"]) ? $d["phone"] : null);
-            $tenant->setIban(!empty($d["iban"]) ? $d["iban"] : null);
-            $tenant->setBic(!empty($d["bic"]) ? $d["bic"] : null);
-            $tenant->setWebsite(!empty($d["website"]) ? $d["website"] : null);
-            // Adresse
-            $addr = $tenant->getAddress();
-            $addr->setLine1($d["addr_line1"] ?? null);
-            $addr->setLine2($d["addr_line2"] ?? null);
-            $addr->setPostalCode($d["addr_postal_code"] ?? null);
-            $addr->setCity($d["addr_city"] ?? null);
-            $addr->setCountry($d["addr_country"] ?? "FR");
+        if ($form->isSubmitted() && $form->isValid()) {
             $this->em->flush();
             $this->addFlash("success", "Organisation mise à jour.");
             return $this->redirectToRoute("app_settings_organisation");
         }
 
-        return $this->render("settings/organisation.html.twig", ["tenant" => $tenant]);
+        return $this->render("settings/organisation.html.twig", [
+            "tenant" => $tenant,
+            "form"   => $form,
+        ]);
     }
 
+    
     // ── Utilisateurs ─────────────────────────────────────────────────────────
 
     #[Route("/users", name: "users", methods: ["GET", "POST"])]

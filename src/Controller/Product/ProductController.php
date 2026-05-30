@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 namespace App\Controller\Product;
+use App\Form\ProductType as ProductForm;
 use App\Entity\Product;
 use App\Entity\Enum\ProductType;
 use App\Repository\ProductRepository;
@@ -41,23 +42,22 @@ final class ProductController extends AbstractController
         $tenant  = $this->tenantContext->requireTenant();
         $product = new Product();
         $product->setTenant($tenant);
-        if ($request->isMethod('POST')) {
 
-        // ── Vérification CSRF ────────────────────────────────────────────────
-        if (!$this->isCsrfTokenValid('create_product', $request->request->get('_token'))) {{
-            throw $this->createAccessDeniedException('Token CSRF invalide.');
-        }}
-            $this->hydrate($product, $request->request->all());
+        $form = $this->createForm(ProductForm::class, $product);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
             $this->em->persist($product);
             $this->em->flush();
             $this->addFlash('success', 'Produit créé.');
             return $this->redirectToRoute('app_products_show', ['id' => $product->getId()]);
         }
+
         return $this->render('products/new.html.twig', [
-            'product' => $product, 'types' => ProductType::cases(),
+            'product' => $product,
+            'form'    => $form,
         ]);
     }
-
     #[Route('/{id}', name: 'show', methods: ['GET'])]
     public function show(Product $product): Response
     {
@@ -71,22 +71,21 @@ final class ProductController extends AbstractController
     {
         $this->denyAccessUnlessGranted(ProductVoter::EDIT, $product);
         $this->assertSameTenant($product);
-        if ($request->isMethod('POST')) {
 
-        // ── Vérification CSRF ────────────────────────────────────────────────
-        if (!$this->isCsrfTokenValid('create_product', $request->request->get('_token'))) {{
-            throw $this->createAccessDeniedException('Token CSRF invalide.');
-        }}
-            $this->hydrate($product, $request->request->all());
+        $form = $this->createForm(ProductForm::class, $product);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
             $this->em->flush();
             $this->addFlash('success', 'Produit mis à jour.');
             return $this->redirectToRoute('app_products_show', ['id' => $product->getId()]);
         }
+
         return $this->render('products/edit.html.twig', [
-            'product' => $product, 'types' => ProductType::cases(),
+            'product' => $product,
+            'form'    => $form,
         ]);
     }
-
     #[Route('/{id}/archive', name: 'archive', methods: ['POST'])]
     public function archive(Product $product): Response
     {

@@ -4,6 +4,7 @@ namespace App\Controller\Contact;
 
 use App\Entity\Contact;
 use App\Entity\Enum\ContactType;
+use App\Form\ContactType as ContactForm;
 use App\Repository\ContactRepository;
 use App\Repository\InvoiceRepository;
 use App\Security\TenantContext;
@@ -51,24 +52,22 @@ final class ContactController extends AbstractController
         $tenant  = $this->tenantContext->requireTenant();
         $contact = new Contact();
         $contact->setTenant($tenant);
-        $contact->setType(ContactType::CLIENT);
-        if ($request->isMethod('POST')) {
 
-        // ── Vérification CSRF ────────────────────────────────────────────────
-        if (!$this->isCsrfTokenValid('create_contact', $request->request->get('_token'))) {{
-            throw $this->createAccessDeniedException('Token CSRF invalide.');
-        }}
-            $this->hydrateContact($contact, $request->request->all());
+        $form = $this->createForm(ContactForm::class, $contact);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
             $this->em->persist($contact);
             $this->em->flush();
             $this->addFlash('success', 'Contact créé.');
             return $this->redirectToRoute('app_contacts_show', ['id' => $contact->getId()]);
         }
+
         return $this->render('contacts/new.html.twig', [
-            'contact' => $contact, 'types' => ContactType::cases(),
+            'contact' => $contact,
+            'form'    => $form,
         ]);
     }
-
     #[Route('/{id}', name: 'show', methods: ['GET'], requirements: ['id' => '.+'])]
     public function show(Contact $contact): Response
     {
@@ -85,22 +84,21 @@ final class ContactController extends AbstractController
     {
         $this->denyAccessUnlessGranted(ContactVoter::EDIT, $contact);
         $this->assertSameTenant($contact);
-        if ($request->isMethod('POST')) {
 
-        // ── Vérification CSRF ────────────────────────────────────────────────
-        if (!$this->isCsrfTokenValid('create_contact', $request->request->get('_token'))) {{
-            throw $this->createAccessDeniedException('Token CSRF invalide.');
-        }}
-            $this->hydrateContact($contact, $request->request->all());
+        $form = $this->createForm(ContactForm::class, $contact);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
             $this->em->flush();
             $this->addFlash('success', 'Contact mis à jour.');
             return $this->redirectToRoute('app_contacts_show', ['id' => $contact->getId()]);
         }
+
         return $this->render('contacts/edit.html.twig', [
-            'contact' => $contact, 'types' => ContactType::cases(),
+            'contact' => $contact,
+            'form'    => $form,
         ]);
     }
-
     #[Route('/{id}/archive', name: 'archive', methods: ['POST'])]
     public function archive(Contact $contact): Response
     {

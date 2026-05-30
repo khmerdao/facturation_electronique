@@ -1,0 +1,35 @@
+{# Ligne de facture réutilisable — inclus dans new.html.twig et edit.html.twig #}
+{% set i = index %}
+{% set l = line %}
+<tr>
+    <td>
+        <select name="lines[{{ i }}][product_id]" class="form-select form-select-sm mb-1 product-select" style="font-size:.8rem">
+            <option value="">— Produit catalogue —</option>
+            {% if products is defined %}
+                {% for product in products %}
+                <option value="{{ product.id }}"
+                    data-price="{{ product.unitPrice }}"
+                    data-tva="{{ product.tvaRate }}"
+                    data-unit="{{ product.unit }}"
+                    data-desc="{{ product.label }}"
+                    {{ l and l.product and l.product.id == product.id ? 'selected' : '' }}>
+                    {{ product.label }}
+                </option>
+                {% endfor %}
+            {% endif %}
+        </select>
+        <input type="text" name="lines[{{ i }}][description]" class="form-control form-control-sm"
+               placeholder="Description *" value="{{ l ? l.description : '' }}" required>
+        <input type="text" name="lines[{{ i }}][reference]" class="form-control form-control-sm mt-1"
+               placeholder="Référence (optionnel)" value="{{ l ? l.reference : '' }}">
+    </td>
+    <td><input type="number" name="lines[{{ i }}][quantity]" class="form-control form-control-sm text-end" value="{{ l ? l.quantity : '1' }}" step="0.01" min="0"></td>
+    <td><input type="text" name="lines[{{ i }}][unit]" class="form-control form-control-sm" value="{{ l ? l.unit : 'U' }}"></td>
+    <td><input type="number" name="lines[{{ i }}][unit_price]" class="form-control form-control-sm text-end" value="{{ l ? l.unitPrice : '0' }}" step="0.0001" min="0"></td>
+    <td><input type="number" name="lines[{{ i }}][discount]" class="form-control form-control-sm text-end" value="{{ l ? l.discount : '0' }}" step="0.01" min="0" max="100"></td>
+    <td><input type="number" name="lines[{{ i }}][tva_rate]" class="form-control form-control-sm text-end" value="{{ l ? l.tvaRate : '20.00' }}" step="0.01" min="0" max="100"></td>
+    <td><span class="line-amount fw-semibold small">{{ l ? l.amountHt|number_format(2,',',' ') ~ ' €' : '0,00 €' }}</span></td>
+    <td>
+        <button type="button" class="btn btn-sm btn-outline-danger remove-line" title="Supprimer">×</button>
+    </td>
+</tr>

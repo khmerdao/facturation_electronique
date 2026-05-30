@@ -131,7 +131,7 @@ Suivi de l'avancement du développement. Mis à jour à chaque tâche démarrée
 ---
 
 ## TASK-004 — Module Factures émises (CRUD complet)
-**Statut :** `en cours`
+**Statut :** `terminé`
 **Priorité :** haute — fonctionnalité principale du produit
 
 ### Ce qu'il faut faire
@@ -175,7 +175,7 @@ Routes à ajouter dans `src/Controller/Invoice/InvoiceController.php` :
 ---
 
 ## TASK-005 — Module Factures reçues
-**Statut :** `nouveau`
+**Statut :** `en cours`
 **Priorité :** haute — obligation légale dès septembre 2026
 
 ### Ce qu'il faut faire
@@ -640,6 +640,7 @@ Créer `src/DataFixtures/AppFixtures.php` avec `zenstruck/foundry` :
 | Date | Tâche | Action |
 |---|---|---|
 | 2026-05-29 | Toutes (TASK-001 à TASK-022) | Création initiale du fichier tasks.md |
+| 2026-05-30 | TASK-004 | Terminé — InvoiceController (10 routes), InvoiceVoter, 6 templates (index/show/new/edit/credit_note/_line_row) |
 | 2026-05-30 | TASK-003 | Terminé — PdpConfigEncryptorService, PdpDispatchService, SendInvoiceToPdpHandler, SendTechnicalAckHandler, ProcessPdpWebhookHandler |
 | 2026-05-30 | TASK-002 | Terminé — InvoiceXmlBuilderService (CII+UBL), PdfGeneratorService (dompdf+Factur-X embed), template PDF, GenerateInvoicePdfHandler |
 | 2026-05-30 | TASK-001 | Terminé — InvoiceNumberingService, InvoiceCalculatorService, InvoiceStatusService, InvoiceDuplicateService, PaymentService, NotificationService |

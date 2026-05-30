@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+{% block page_title %}Avoir sur {{ invoice.number }}{% endblock %}
+{% block main %}
+<div class="d-flex align-items-center gap-3 mb-4">
+    <a href="{{ path('app_invoices_show', {id: invoice.id}) }}" class="btn btn-sm btn-outline-secondary">← Retour</a>
+    <h1 class="h4 mb-0 fw-bold">Émettre un avoir</h1>
+</div>
+<div class="row justify-content-center">
+<div class="col-lg-6">
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+        <div class="alert alert-warning mb-4">
+            <strong>Avoir sur la facture {{ invoice.number }}</strong><br>
+            Un avoir sera créé en brouillon avec les mêmes lignes.
+            Vous pourrez le modifier avant de le valider.
+        </div>
+        <div class="mb-3">
+            <p class="text-muted small">Montant de la facture d'origine :</p>
+            <p class="fs-4 fw-bold">{{ invoice.totalTtc|number_format(2,',',' ') }} {{ invoice.currency }}</p>
+        </div>
+        <form method="POST" action="{{ path('app_invoices_credit_note', {id: invoice.id}) }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('credit_note_' ~ invoice.id) }}">
+            <div class="mb-4">
+                <label class="form-label fw-medium">Motif de l'avoir</label>
+                <textarea name="reason" class="form-control" rows="3"
+                    placeholder="Ex : Retour marchandise, erreur de facturation…"></textarea>
+            </div>
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-warning fw-medium">Créer l'avoir en brouillon</button>
+                <a href="{{ path('app_invoices_show', {id: invoice.id}) }}" class="btn btn-outline-secondary">Annuler</a>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+</div>
+{% endblock %}

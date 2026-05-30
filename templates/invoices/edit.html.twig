@@ -1,0 +1,208 @@
+{% extends 'base.html.twig' %}
+{% block page_title %}Modifier — {{ invoice.number ?? 'Brouillon' }}{% endblock %}
+
+{% block main %}
+<div class="d-flex align-items-center gap-3 mb-4">
+    <a href="{{ path('app_invoices_index') }}" class="btn btn-sm btn-outline-secondary">← Retour</a>
+    <h1 class="h4 mb-0 fw-bold">Modifier la facture</h1>
+</div>
+
+<form method="POST" action="{{ path('app_invoices_edit', {id: invoice.id}) }}" id="invoice-form">
+    <div class="row g-4">
+
+        {# En-tête facture #}
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header fw-semibold bg-transparent">Informations générales</div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-medium">Client <span class="text-danger">*</span></label>
+                            <select name="contact_id" class="form-select" required>
+                                <option value="">— Sélectionner un client —</option>
+                                {% for contact in contacts %}
+                                <option value="{{ contact.id }}">{{ contact.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-medium">Date d'émission</label>
+                            <input type="date" name="issue_date" class="form-control" value="{{ 'now'|date('Y-m-d') }}" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-medium">Échéance</label>
+                            <input type="date" name="due_date" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-medium">Objet</label>
+                            <input type="text" name="subject" class="form-control" placeholder="Objet de la facture">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-medium">Réf. client</label>
+                            <input type="text" name="client_reference" class="form-control">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-medium">Format</label>
+                            <select name="format" class="form-select">
+                                {% for fmt in formats %}
+                                <option value="{{ fmt.value }}" {{ fmt.value == 'FACTURX' ? 'selected' : '' }}>{{ fmt.value }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# Lignes #}
+            <div class="card border-0 shadow-sm mb-4" id="lines-container">
+                <div class="card-header d-flex align-items-center justify-content-between bg-transparent">
+                    <span class="fw-semibold">Lignes</span>
+                    <button type="button" class="btn btn-sm btn-outline-primary" id="add-line">+ Ajouter une ligne</button>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0" id="lines-table">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width:30%">Désignation</th>
+                                    <th style="width:10%">Qté</th>
+                                    <th style="width:8%">Unité</th>
+                                    <th style="width:14%">PU HT</th>
+                                    <th style="width:8%">Rem.%</th>
+                                    <th style="width:8%">TVA%</th>
+                                    <th style="width:14%">Montant HT</th>
+                                    <th style="width:8%"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="lines-body">
+                                {# Ligne initiale #}
+                                {% include 'invoices/_line_row.html.twig' with {index: 0, line: null} %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Colonne latérale #}
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header fw-semibold bg-transparent">Récapitulatif</div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Total HT</span>
+                        <span id="total-ht" class="fw-semibold">0,00 €</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Total TVA</span>
+                        <span id="total-tva" class="fw-semibold">0,00 €</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <span class="fw-bold">Total TTC</span>
+                        <span id="total-ttc" class="fw-bold fs-5">0,00 €</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header fw-semibold bg-transparent">Options</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-medium">Séquence</label>
+                        <select name="sequence_id" class="form-select form-select-sm">
+                            <option value="">Par défaut</option>
+                            {% for seq in sequences %}
+                            <option value="{{ seq.id }}">{{ seq.name }} (ex: {{ seq.prefix }}-{{ 'now'|date('Y') }}-{{ '0001' }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-medium">Modèle PDF</label>
+                        <select name="template_id" class="form-select form-select-sm">
+                            <option value="">Par défaut</option>
+                            {% for tpl in templates %}
+                            <option value="{{ tpl.id }}">{{ tpl.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-medium">Notes client</label>
+                        <textarea name="client_notes" class="form-control form-control-sm" rows="3" placeholder="Conditions de paiement, mentions…"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 btn-lg">Sauvegarder</button>
+        </div>
+
+    </div>
+</form>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+// Calcul temps réel des totaux
+document.addEventListener('input', function(e) {
+    if (!e.target.closest('#lines-table')) return;
+    updateTotals();
+});
+
+function calcLine(row) {
+    const qty   = parseFloat(row.querySelector('[name*="[quantity]"]')?.value) || 0;
+    const price = parseFloat(row.querySelector('[name*="[unit_price]"]')?.value) || 0;
+    const disc  = parseFloat(row.querySelector('[name*="[discount]"]')?.value) || 0;
+    const tva   = parseFloat(row.querySelector('[name*="[tva_rate]"]')?.value) || 0;
+    const ht    = Math.round(qty * price * (1 - disc / 100) * 100) / 100;
+    const tvamt = Math.round(ht * tva / 100 * 100) / 100;
+    const amtEl = row.querySelector('.line-amount');
+    if (amtEl) amtEl.textContent = ht.toFixed(2).replace('.', ',') + ' €';
+    return { ht, tva: tvamt };
+}
+
+function updateTotals() {
+    let totalHt = 0, totalTva = 0;
+    document.querySelectorAll('#lines-body tr').forEach(row => {
+        const r = calcLine(row);
+        totalHt  += r.ht;
+        totalTva += r.tva;
+    });
+    const fmt = v => v.toFixed(2).replace('.', ',') + ' €';
+    document.getElementById('total-ht').textContent  = fmt(totalHt);
+    document.getElementById('total-tva').textContent = fmt(totalTva);
+    document.getElementById('total-ttc').textContent = fmt(totalHt + totalTva);
+}
+
+// Ajouter une ligne
+let lineIndex = 1;
+document.getElementById('add-line')?.addEventListener('click', function() {
+    fetch('/invoices/_line_template?index=' + lineIndex)
+        .catch(() => {
+            // Fallback si l'endpoint n'existe pas encore : cloner la première ligne
+            const tbody = document.getElementById('lines-body');
+            const firstRow = tbody.querySelector('tr');
+            if (firstRow) {
+                const newRow = firstRow.cloneNode(true);
+                newRow.querySelectorAll('input,select').forEach(el => {
+                    el.name = el.name.replace(/\[\d+\]/, '[' + lineIndex + ']');
+                    el.value = el.defaultValue || '';
+                });
+                tbody.appendChild(newRow);
+                lineIndex++;
+            }
+        });
+});
+
+// Supprimer une ligne
+document.getElementById('lines-body')?.addEventListener('click', function(e) {
+    if (e.target.closest('.remove-line')) {
+        const row = e.target.closest('tr');
+        if (document.querySelectorAll('#lines-body tr').length > 1) {
+            row.remove();
+            updateTotals();
+        }
+    }
+});
+</script>
+{% endblock %}

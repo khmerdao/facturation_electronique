@@ -1,0 +1,13 @@
+<h2>Résumé {{ period }}</h2>
+<p>Bonjour {{ user.firstName ?? user.email }},</p>
+<p>Voici un résumé de votre activité FacturePro :</p>
+{% if notifications|length > 0 %}
+<ul>
+{% for notif in notifications %}
+<li><strong>{{ notif.title }}</strong>{% if notif.description %} — {{ notif.description }}{% endif %}</li>
+{% endfor %}
+</ul>
+{% else %}
+<p>Aucune nouvelle notification.</p>
+{% endif %}
+<p><a href="{{ app_url }}/notifications">Voir toutes les notifications</a></p>

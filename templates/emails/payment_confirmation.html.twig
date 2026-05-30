@@ -1,0 +1,10 @@
+<p>Bonjour {{ contact_name }},</p>
+<p>Nous vous confirmons la bonne réception de votre règlement de
+<strong>{{ amount }} {{ currency }}</strong> du {{ date }} pour la facture
+<strong>{{ invoice_number }}</strong>.</p>
+{% if remaining > '0.00' %}
+<p>Restant dû : <strong>{{ remaining }} {{ currency }}</strong></p>
+{% else %}
+<p>Cette facture est désormais soldée. Merci pour votre règlement.</p>
+{% endif %}
+<p>Cordialement,<br>{{ sender_name }}</p>

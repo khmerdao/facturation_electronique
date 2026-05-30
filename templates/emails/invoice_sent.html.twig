@@ -1,0 +1,6 @@
+<p>Bonjour {{ contact_name }},</p>
+<p>Veuillez trouver ci-joint la facture <strong>{{ invoice_number }}</strong>
+d'un montant de <strong>{{ total_ttc }} {{ currency }}</strong>.</p>
+{% if due_date %}<p>Date d'échéance : <strong>{{ due_date }}</strong></p>{% endif %}
+{% if message %}<p>{{ message }}</p>{% endif %}
+<p>Cordialement,<br>{{ sender_name }}</p>

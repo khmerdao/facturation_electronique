@@ -506,7 +506,7 @@ Routes à ajouter dans `src/Controller/Invoice/InvoiceController.php` :
 ---
 
 ## TASK-017 — Handlers Messenger (emails)
-**Statut :** `en cours`
+**Statut :** `terminé`
 **Priorité :** moyenne — améliore l'expérience mais non bloquant
 
 ### Ce qu'il faut faire
@@ -524,7 +524,7 @@ Créer les handlers et les templates email (`templates/emails/`) :
 ---
 
 ## TASK-018 — Handlers Messenger (tâches planifiées)
-**Statut :** `nouveau`
+**Statut :** `en cours`
 **Priorité :** moyenne
 
 ### Ce qu'il faut faire
@@ -640,6 +640,7 @@ Créer `src/DataFixtures/AppFixtures.php` avec `zenstruck/foundry` :
 | Date | Tâche | Action |
 |---|---|---|
 | 2026-05-29 | Toutes (TASK-001 à TASK-022) | Création initiale du fichier tasks.md |
+| 2026-05-30 | TASK-017 | Terminé — 6 handlers email + 8 templates email |
 | 2026-05-30 | TASK-016 | Terminé — 4 extensions Twig (InvoiceStatus/Money/DateFr/Siret), 6 contrôleurs Stimulus |
 | 2026-05-30 | TASK-015 | Terminé — ValidSiret (Luhn), ValidIban (ISO 13616), ValidBic, ValidTvaIntra (multi-pays), UniqueInvoiceNumber |
 | 2026-05-30 | TASK-014 | Terminé — AdminController (7 routes), 3 templates admin (tenants/tenant_show/logs) |

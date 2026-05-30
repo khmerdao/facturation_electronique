@@ -1,19 +1,97 @@
 {% extends 'base.html.twig' %}
-{% block page_title %}TVA & Exports{% endblock %}
+{% block page_title %}TVA & Comptabilité{% endblock %}
 {% block main %}
 <div class="d-flex align-items-center justify-content-between mb-4">
-    <div>
-        <h1 class="h4 mb-0 fw-bold">TVA & Exports</h1>
+    <h1 class="h4 mb-0 fw-bold">TVA & Comptabilité</h1>
+    <a href="{{ path('app_tax_exports') }}" class="btn btn-outline-secondary btn-sm">Exports</a>
+</div>
+
+{# Filtre période #}
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body py-3">
+        <form method="GET" class="row g-2 align-items-end">
+            <div class="col-auto">
+                <label class="form-label fw-medium mb-1">Année</label>
+                <select name="year" class="form-select form-select-sm">
+                    {% for y in years %}<option value="{{ y }}" {{ year == y ? 'selected' : '' }}>{{ y }}</option>{% endfor %}
+                </select>
+            </div>
+            <div class="col-auto">
+                <label class="form-label fw-medium mb-1">Mois</label>
+                <select name="month" class="form-select form-select-sm">
+                    <option value="0" {{ month == 0 ? 'selected' : '' }}>Toute l'année</option>
+                    {% for m in 1..12 %}
+                    <option value="{{ m }}" {{ month == m ? 'selected' : '' }}>
+                        {{ (from|date_modify((m - 1) ~ ' months'))|date('F') }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary btn-sm">Calculer</button>
+            </div>
+        </form>
     </div>
 </div>
 
+{# Tableau TVA #}
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header fw-semibold bg-transparent">
+        Décomposition TVA — {{ from|date('d/m/Y') }} au {{ to|date('d/m/Y') }}
+    </div>
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Taux TVA</th>
+                    <th class="text-end">Base HT</th>
+                    <th class="text-end">TVA collectée</th>
+                    <th class="text-end">Total TTC</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% set totalHt = 0 %}
+                {% set totalTva = 0 %}
+                {% for row in tvaStats %}
+                    {% set totalHt = totalHt + row.totalHt %}
+                    {% set totalTva = totalTva + row.totalTva %}
+                    <tr>
+                        <td><span class="badge bg-secondary">{{ row.tvaRate }}%</span></td>
+                        <td class="text-end">{{ row.totalHt|number_format(2, ',', ' ') }} €</td>
+                        <td class="text-end fw-semibold">{{ row.totalTva|number_format(2, ',', ' ') }} €</td>
+                        <td class="text-end">{{ (row.totalHt + row.totalTva)|number_format(2, ',', ' ') }} €</td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="4" class="text-center text-muted py-4">Aucune donnée pour cette période.</td></tr>
+                {% endfor %}
+            </tbody>
+            {% if tvaStats|length > 0 %}
+            <tfoot class="table-light fw-bold">
+                <tr>
+                    <td>Total</td>
+                    <td class="text-end">{{ totalHt|number_format(2, ',', ' ') }} €</td>
+                    <td class="text-end">{{ totalTva|number_format(2, ',', ' ') }} €</td>
+                    <td class="text-end">{{ (totalHt + totalTva)|number_format(2, ',', ' ') }} €</td>
+                </tr>
+            </tfoot>
+            {% endif %}
+        </table>
+    </div>
+</div>
+
+{# Export FEC rapide #}
 <div class="card border-0 shadow-sm">
-    <div class="card-body py-5 text-center text-muted">
-        <svg width="48" height="48" viewBox="0 0 20 20" fill="currentColor" class="mb-3 opacity-25">
-            <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm2 10a1 1 0 10-2 0v3a1 1 0 102 0v-3zm2-3a1 1 0 011 1v5a1 1 0 11-2 0v-5a1 1 0 011-1zm4-1a1 1 0 10-2 0v6a1 1 0 102 0V8z" clip-rule="evenodd"/>
-        </svg>
-        <p class="fw-medium mb-1">TVA & Exports</p>
-        <p class="small mb-0">Cette section est en cours de développement.</p>
+    <div class="card-header fw-semibold bg-transparent">Export FEC rapide</div>
+    <div class="card-body">
+        <p class="text-muted small">Génère le Fichier des Écritures Comptables (art. A47 A-1 CGI) pour la période affichée.</p>
+        <form method="POST" action="{{ path('app_tax_export_new') }}">
+            <input type="hidden" name="type" value="FEC">
+            <input type="hidden" name="from" value="{{ from|date('Y-m-d') }}">
+            <input type="hidden" name="to" value="{{ to|date('Y-m-d') }}">
+            <button type="submit" class="btn btn-outline-primary btn-sm">
+                Générer le FEC {{ from|date('Y') }}
+            </button>
+        </form>
     </div>
 </div>
 {% endblock %}

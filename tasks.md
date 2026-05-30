@@ -321,7 +321,7 @@ Routes à ajouter dans `src/Controller/Invoice/InvoiceController.php` :
 ---
 
 ## TASK-010 — Module TVA et Exports
-**Statut :** `en cours`
+**Statut :** `terminé`
 **Priorité :** haute — FEC obligatoire pour l'administration fiscale
 
 ### Ce qu'il faut faire
@@ -351,7 +351,7 @@ Routes à ajouter dans `src/Controller/Invoice/InvoiceController.php` :
 ---
 
 ## TASK-011 — E-reporting DGFiP
-**Statut :** `nouveau`
+**Statut :** `en cours`
 **Priorité :** haute — obligatoire pour les transactions B2C et internationales
 
 ### Ce qu'il faut faire
@@ -640,6 +640,7 @@ Créer `src/DataFixtures/AppFixtures.php` avec `zenstruck/foundry` :
 | Date | Tâche | Action |
 |---|---|---|
 | 2026-05-29 | Toutes (TASK-001 à TASK-022) | Création initiale du fichier tasks.md |
+| 2026-05-30 | TASK-010 | Terminé — ExportService (FEC+CSV), TaxController, GenerateExportFecHandler, GenerateExportCsvHandler, 2 templates |
 | 2026-05-30 | TASK-009 | Terminé — DashboardController avec KPIs/graphique/alertes, template Chart.js |
 | 2026-05-30 | TASK-008 | Terminé — PaymentController (3 routes), PaymentService déjà en TASK-001, 2 templates |
 | 2026-05-30 | TASK-007 | Terminé — ProductController (5 routes), ProductVoter, 4 templates |

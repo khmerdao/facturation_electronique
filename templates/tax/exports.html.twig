@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+{% block page_title %}Exports{% endblock %}
+{% block main %}
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <h1 class="h4 mb-0 fw-bold">Exports</h1>
+</div>
+
+{# Formulaire nouvel export #}
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header fw-semibold bg-transparent">Nouvel export</div>
+    <div class="card-body">
+        <form method="POST" action="{{ path('app_tax_export_new') }}" class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label fw-medium">Type</label>
+                <select name="type" class="form-select">
+                    <option value="CSV">CSV — Factures</option>
+                    <option value="FEC">FEC — Écritures comptables</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-medium">Du</label>
+                <input type="date" name="from" class="form-control" value="{{ 'now'|date('Y') ~ '-01-01' }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-medium">Au</label>
+                <input type="date" name="to" class="form-control" value="{{ 'now'|date('Y-m-d') }}">
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-100">Générer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{# Historique des exports #}
+<div class="card border-0 shadow-sm">
+    <div class="card-header fw-semibold bg-transparent">Historique des exports</div>
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead class="table-light">
+                <tr><th>Date</th><th>Type</th><th>Période</th><th>Taille</th><th>Statut</th><th></th></tr>
+            </thead>
+            <tbody>
+                {% for export in exports %}
+                <tr>
+                    <td>{{ export.createdAt|date('d/m/Y H:i') }}</td>
+                    <td><span class="badge bg-secondary">{{ export.type.value }}</span></td>
+                    <td class="text-muted small">
+                        {% if export.params.from is defined %}{{ export.params.from }} → {{ export.params.to }}{% endif %}
+                    </td>
+                    <td class="text-muted small">{{ export.fileSize ? (export.fileSize / 1024)|number_format(1) ~ ' Ko' : '—' }}</td>
+                    <td>
+                        {% if export.status.value == 'DONE' %}<span class="badge bg-success">Prêt</span>
+                        {% elseif export.status.value == 'PROCESSING' %}<span class="badge bg-warning text-dark">En cours…</span>
+                        {% elseif export.status.value == 'ERROR' %}<span class="badge bg-danger" title="{{ export.errorMessage }}">Erreur</span>
+                        {% else %}<span class="badge bg-secondary">En attente</span>{% endif %}
+                    </td>
+                    <td>
+                        {% if export.status.value == 'DONE' and export.s3Key %}
+                        <a href="{{ path('app_tax_export_download', {id: export.id}) }}" class="btn btn-sm btn-outline-primary">⬇ Télécharger</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="6" class="text-center text-muted py-4">Aucun export généré.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

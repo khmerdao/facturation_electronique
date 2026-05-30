@@ -544,7 +544,7 @@ Créer les handlers et les templates email (`templates/emails/`) :
 ---
 
 ## TASK-019 — API REST publique
-**Statut :** `nouveau`
+**Statut :** `terminé`
 **Priorité :** faible — pour les intégrations tierces
 
 ### Ce qu'il faut faire
@@ -640,6 +640,7 @@ Créer `src/DataFixtures/AppFixtures.php` avec `zenstruck/foundry` :
 | Date | Tâche | Action |
 |---|---|---|
 | 2026-05-29 | Toutes (TASK-001 à TASK-022) | Création initiale du fichier tasks.md |
+| 2026-05-30 | TASK-019 | Terminé — ApiTokenController, AbstractApiController, ApiInvoiceController, ApiContactController, ApiProductController, ApiMeController, TenantFromJwtSubscriber |
 | 2026-05-30 | TASK-021 | Terminé — AppFixtures : 1 tenant PRO, 2 users, 10 contacts, 15 produits, 14 factures, 3 factures reçues |
 | 2026-05-30 | TASK-018 | Terminé — 5 handlers tâches planifiées + 4 commandes Symfony (check-overdue, ereporting, purge-exports, sirene-refresh) |
 | 2026-05-30 | TASK-017 | Terminé — 6 handlers email + 8 templates email |

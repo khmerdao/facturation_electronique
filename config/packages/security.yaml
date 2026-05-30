@@ -101,6 +101,7 @@ security:
     access_control:
         # ── Routes publiques (Auth) ────────────────────────────────────
         - { path: ^/$, roles: PUBLIC_ACCESS }
+        - { path: ^/api/billing/webhook$, roles: PUBLIC_ACCESS }
         - { path: ^/login$, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
         - { path: ^/forgot-password, roles: PUBLIC_ACCESS }

@@ -598,9 +598,60 @@ class Tenant
         return $this->invitations;
     }
 
+
+    // ── Stripe / Billing ─────────────────────────────────────────────────────
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $stripeCustomerId = null;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $stripeSubscriptionId = null;
+
+    #[ORM\Column(type: 'string', length: 50, nullable: true)]
+    private ?string $stripeSubscriptionStatus = null;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $currentPeriodEnd = null;
+
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    private bool $cancelAtPeriodEnd = false;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $stripePriceId = null;
+
     /** @return Collection<int, InvoiceSequence> */
     public function getSequences(): Collection
     {
         return $this->sequences;
+    }
+
+    public function getStripeCustomerId(): ?string { return $this->stripeCustomerId; }
+    public function setStripeCustomerId(?string $v): self { $this->stripeCustomerId = $v; return $this; }
+
+    public function getStripeSubscriptionId(): ?string { return $this->stripeSubscriptionId; }
+    public function setStripeSubscriptionId(?string $v): self { $this->stripeSubscriptionId = $v; return $this; }
+
+    public function getStripeSubscriptionStatus(): ?string { return $this->stripeSubscriptionStatus; }
+    public function setStripeSubscriptionStatus(?string $v): self { $this->stripeSubscriptionStatus = $v; return $this; }
+
+    public function getCurrentPeriodEnd(): ?\DateTimeImmutable { return $this->currentPeriodEnd; }
+    public function setCurrentPeriodEnd(?\DateTimeImmutable $v): self { $this->currentPeriodEnd = $v; return $this; }
+
+    public function isCancelAtPeriodEnd(): bool { return $this->cancelAtPeriodEnd; }
+    public function setCancelAtPeriodEnd(bool $v): self { $this->cancelAtPeriodEnd = $v; return $this; }
+
+    public function getStripePriceId(): ?string { return $this->stripePriceId; }
+    public function setStripePriceId(?string $v): self { $this->stripePriceId = $v; return $this; }
+
+    /** Retourne true si l'abonnement est actif (status active ou trialing). */
+    public function hasActiveSubscription(): bool
+    {
+        return in_array($this->stripeSubscriptionStatus, ['active', 'trialing'], true);
+    }
+
+    /** Retourne true si l'abonnement est en période d'essai. */
+    public function isOnTrial(): bool
+    {
+        return $this->stripeSubscriptionStatus === 'trialing';
     }
 }

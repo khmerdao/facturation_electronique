@@ -613,7 +613,7 @@ Créer `src/DataFixtures/AppFixtures.php` avec `zenstruck/foundry` :
 ---
 
 ## TASK-022 — Système de paiement et abonnements
-**Statut :** `nouveau`
+**Statut :** `terminé`
 **Priorité :** haute pour le modèle SaaS
 
 ### Ce qu'il faut faire
@@ -640,6 +640,7 @@ Créer `src/DataFixtures/AppFixtures.php` avec `zenstruck/foundry` :
 | Date | Tâche | Action |
 |---|---|---|
 | 2026-05-29 | Toutes (TASK-001 à TASK-022) | Création initiale du fichier tasks.md |
+| 2026-05-30 | TASK-022 | Terminé — StripeService, PlanLimitChecker, BillingController, StripeWebhookController, 2 templates, migration, test |
 | 2026-05-30 | TASK-020 | Terminé — 11 fichiers de test, 168 assertions, PHPUnit 11 avec attributs |
 | 2026-05-30 | TASK-019 | Terminé — ApiTokenController, AbstractApiController, ApiInvoiceController, ApiContactController, ApiProductController, ApiMeController, TenantFromJwtSubscriber |
 | 2026-05-30 | TASK-021 | Terminé — AppFixtures : 1 tenant PRO, 2 users, 10 contacts, 15 produits, 14 factures, 3 factures reçues |

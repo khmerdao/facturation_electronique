@@ -1,0 +1,137 @@
+{% extends 'base.html.twig' %}
+{% block page_title %}Changer de plan{% endblock %}
+
+{% block main %}
+<div class="d-flex align-items-center gap-3 mb-4">
+    <a href="{{ path('app_billing_index') }}" class="btn btn-sm btn-outline-secondary">← Retour</a>
+    <h1 class="h4 mb-0 fw-bold">Choisir un plan</h1>
+</div>
+
+<div class="row g-4 justify-content-center">
+
+    {# FREE #}
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100 {{ current_plan.value == 'FREE' ? 'border border-secondary border-2' : '' }}">
+            <div class="card-body d-flex flex-column p-4">
+                {% if current_plan.value == 'FREE' %}
+                <span class="badge bg-secondary mb-3 align-self-start">Plan actuel</span>
+                {% endif %}
+                <div class="text-muted small fw-bold text-uppercase mb-2">Gratuit</div>
+                <div class="display-5 fw-bold mb-1">0 €</div>
+                <div class="text-muted small mb-4">pour toujours</div>
+                <hr>
+                <ul class="list-unstyled flex-grow-1 mb-4">
+                    <li class="mb-2">✓ 20 factures / mois</li>
+                    <li class="mb-2">✓ 2 utilisateurs</li>
+                    <li class="mb-2">✓ 1 Go de stockage</li>
+                    <li class="mb-2">✓ Formats Factur-X, UBL, CII</li>
+                    <li class="mb-2">✓ Connexion PPF direct</li>
+                    <li class="mb-2 text-muted">✗ PDP partenaire</li>
+                    <li class="mb-2 text-muted">✗ E-reporting auto</li>
+                </ul>
+                <button class="btn btn-outline-secondary w-100" disabled>
+                    {{ current_plan.value == 'FREE' ? 'Plan actuel' : 'Non disponible' }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {# PRO #}
+    <div class="col-md-4">
+        <div class="card border-primary border-2 shadow h-100 position-relative {{ current_plan.value == 'PRO' ? '' : '' }}" style="transform:scale(1.03)">
+            <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-warning text-dark px-3">
+                ⭐ Populaire
+            </span>
+            <div class="card-body d-flex flex-column p-4" style="background:linear-gradient(160deg,#0f2044,#1a3461);color:white;border-radius:inherit">
+                {% if current_plan.value == 'PRO' %}
+                <span class="badge bg-success mb-3 align-self-start">Plan actuel</span>
+                {% endif %}
+                <div class="small fw-bold text-uppercase mb-2" style="color:rgba(255,255,255,.6)">Pro</div>
+                <div class="display-5 fw-bold mb-1">49 €</div>
+                <div class="mb-4" style="color:rgba(255,255,255,.5);font-size:.875rem">/ mois HT · 30j d'essai gratuit</div>
+                <hr style="border-color:rgba(255,255,255,.2)">
+                <ul class="list-unstyled flex-grow-1 mb-4" style="color:rgba(255,255,255,.85)">
+                    <li class="mb-2">✓ 500 factures / mois</li>
+                    <li class="mb-2">✓ 10 utilisateurs</li>
+                    <li class="mb-2">✓ 10 Go de stockage</li>
+                    <li class="mb-2">✓ Connexion PDP partenaire</li>
+                    <li class="mb-2">✓ E-reporting DGFiP automatique</li>
+                    <li class="mb-2">✓ Relances automatiques</li>
+                    <li class="mb-2">✓ API & Webhooks</li>
+                    <li class="mb-2">✓ Export FEC complet</li>
+                    <li class="mb-2">✓ Support prioritaire</li>
+                </ul>
+                {% if current_plan.value == 'PRO' %}
+                    <button class="btn btn-light w-100" disabled>Plan actuel</button>
+                {% else %}
+                    <form method="POST" action="{{ path('app_billing_checkout') }}">
+                        <input type="hidden" name="plan" value="PRO">
+                        <button type="submit" class="btn btn-light w-100 fw-semibold">
+                            Commencer l'essai gratuit
+                        </button>
+                    </form>
+                {% endif %}
+                <p class="text-center mt-2 mb-0" style="color:rgba(255,255,255,.4);font-size:.75rem">
+                    Sans engagement · Annulable à tout moment
+                </p>
+            </div>
+        </div>
+    </div>
+
+    {# ENTERPRISE #}
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100 {{ current_plan.value == 'ENTERPRISE' ? 'border border-danger border-2' : '' }}">
+            <div class="card-body d-flex flex-column p-4">
+                {% if current_plan.value == 'ENTERPRISE' %}
+                <span class="badge bg-danger mb-3 align-self-start">Plan actuel</span>
+                {% endif %}
+                <div class="text-muted small fw-bold text-uppercase mb-2">Enterprise</div>
+                <div class="display-5 fw-bold mb-1">Sur devis</div>
+                <div class="text-muted small mb-4">volume illimité</div>
+                <hr>
+                <ul class="list-unstyled flex-grow-1 mb-4">
+                    <li class="mb-2">✓ Factures illimitées</li>
+                    <li class="mb-2">✓ Utilisateurs illimités</li>
+                    <li class="mb-2">✓ Stockage illimité</li>
+                    <li class="mb-2">✓ Multi-PDP configurable</li>
+                    <li class="mb-2">✓ SSO / SAML</li>
+                    <li class="mb-2">✓ SLA 99,9 %</li>
+                    <li class="mb-2">✓ Onboarding accompagné</li>
+                    <li class="mb-2">✓ Contrat DPA / DPO</li>
+                </ul>
+                {% if current_plan.value == 'ENTERPRISE' %}
+                    <button class="btn btn-outline-secondary w-100" disabled>Plan actuel</button>
+                {% else %}
+                    <a href="mailto:contact@facturation.app?subject=Demande Enterprise" class="btn btn-outline-dark w-100">
+                        Contacter l'équipe commerciale
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{# FAQ courte #}
+<div class="mt-5">
+    <h5 class="fw-bold mb-3">Questions fréquentes</h5>
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <strong>Comment fonctionne l'essai gratuit ?</strong>
+                    <p class="text-muted small mb-0 mt-1">Vous avez 30 jours pour tester le plan Pro sans aucun frais. Aucune carte bancaire n'est débitée pendant la période d'essai.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <strong>Puis-je annuler à tout moment ?</strong>
+                    <p class="text-muted small mb-0 mt-1">Oui. L'annulation prend effet à la fin de la période en cours. Vos données sont conservées pendant 90 jours.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

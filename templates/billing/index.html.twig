@@ -1,0 +1,146 @@
+{% extends 'base.html.twig' %}
+{% block page_title %}Mon abonnement{% endblock %}
+
+{% block main %}
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h1 class="h4 mb-0 fw-bold">Abonnement</h1>
+        <p class="text-muted small mb-0">Gérez votre plan et votre facturation</p>
+    </div>
+    {% if can_manage %}
+    <form method="POST" action="{{ path('app_billing_portal') }}">
+        <button type="submit" class="btn btn-outline-secondary btn-sm">
+            ⚙️ Gérer via Stripe
+        </button>
+    </form>
+    {% endif %}
+</div>
+
+{# Plan courant #}
+<div class="row g-4 mb-4">
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-muted small mb-1">Plan actuel</div>
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <span class="badge bg-{{ tenant.plan.value == 'ENTERPRISE' ? 'danger' : (tenant.plan.value == 'PRO' ? 'primary' : 'secondary') }} fs-6">
+                        {{ tenant.plan.label() }}
+                    </span>
+                    {% if tenant.isOnTrial() %}
+                        <span class="badge bg-warning text-dark">Période d'essai</span>
+                    {% endif %}
+                </div>
+                {% if tenant.currentPeriodEnd %}
+                <div class="text-muted small mb-2">
+                    {% if tenant.isCancelAtPeriodEnd() %}
+                        ⚠️ Annulation le {{ tenant.currentPeriodEnd|date('d/m/Y') }}
+                    {% else %}
+                        Renouvellement le {{ tenant.currentPeriodEnd|date('d/m/Y') }}
+                    {% endif %}
+                </div>
+                {% endif %}
+                {% if tenant.plan.value == 'FREE' %}
+                <a href="{{ path('app_billing_upgrade') }}" class="btn btn-primary btn-sm w-100 mt-2">
+                    Passer à Pro →
+                </a>
+                {% elseif not tenant.hasActiveSubscription() and tenant.plan.value != 'FREE' %}
+                <div class="alert alert-warning mt-2 mb-0 py-2 small">
+                    Abonnement inactif — réactivez pour continuer à utiliser les fonctionnalités Pro.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {# Usage factures #}
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-muted small mb-1">Factures ce mois</div>
+                <div class="fw-bold fs-4 mb-2">
+                    {{ usage.invoices.current }}
+                    {% if usage.invoices.limit %}
+                        <span class="fs-6 fw-normal text-muted">/ {{ usage.invoices.limit }}</span>
+                    {% else %}
+                        <span class="fs-6 fw-normal text-muted">/ illimité</span>
+                    {% endif %}
+                </div>
+                {% if usage.invoices.limit %}
+                <div class="progress" style="height:6px">
+                    <div class="progress-bar {{ usage.invoices.percent >= 90 ? 'bg-danger' : (usage.invoices.percent >= 70 ? 'bg-warning' : 'bg-primary') }}"
+                         style="width:{{ usage.invoices.percent }}%"></div>
+                </div>
+                <div class="text-muted small mt-1">{{ usage.invoices.percent }}% utilisé</div>
+                {% if usage.invoices.percent >= 80 %}
+                <div class="alert alert-warning mt-2 mb-0 py-2 small">
+                    ⚠️ Vous approchez de votre limite. <a href="{{ path('app_billing_upgrade') }}">Passer à Pro</a>
+                </div>
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {# Usage utilisateurs #}
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-muted small mb-1">Utilisateurs</div>
+                <div class="fw-bold fs-4 mb-2">
+                    {{ usage.users.current }}
+                    {% if usage.users.limit %}
+                        <span class="fs-6 fw-normal text-muted">/ {{ usage.users.limit }}</span>
+                    {% else %}
+                        <span class="fs-6 fw-normal text-muted">/ illimité</span>
+                    {% endif %}
+                </div>
+                {% if usage.users.limit %}
+                <div class="progress" style="height:6px">
+                    <div class="progress-bar {{ usage.users.percent >= 90 ? 'bg-danger' : 'bg-primary' }}"
+                         style="width:{{ usage.users.percent }}%"></div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Informations abonnement Stripe #}
+{% if tenant.stripeSubscriptionId %}
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header fw-semibold bg-transparent">Détails de l'abonnement</div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-sm-4">
+                <div class="text-muted small">ID abonnement</div>
+                <div class="font-monospace small">{{ tenant.stripeSubscriptionId }}</div>
+            </div>
+            <div class="col-sm-4">
+                <div class="text-muted small">Statut Stripe</div>
+                <div>
+                    <span class="badge bg-{{ tenant.stripeSubscriptionStatus in ['active','trialing'] ? 'success' : (tenant.stripeSubscriptionStatus == 'past_due' ? 'warning text-dark' : 'danger') }}">
+                        {{ tenant.stripeSubscriptionStatus ?? 'N/A' }}
+                    </span>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="text-muted small">Fin de période</div>
+                <div>{{ tenant.currentPeriodEnd ? tenant.currentPeriodEnd|date('d/m/Y') : '—' }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{# CTA upgrade si FREE #}
+{% if tenant.plan.value == 'FREE' %}
+<div class="card border-primary border-2 shadow-sm">
+    <div class="card-body text-center py-4">
+        <h5 class="fw-bold mb-2">🚀 Passez à Pro — 30 jours d'essai gratuit</h5>
+        <p class="text-muted mb-3">500 factures/mois, 10 utilisateurs, connexion PDP partenaire, e-reporting automatique.</p>
+        <a href="{{ path('app_billing_upgrade') }}" class="btn btn-primary px-5">Voir les plans</a>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

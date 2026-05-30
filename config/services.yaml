@@ -116,3 +116,16 @@ services:
         arguments:
             $buckets: '%app.s3.buckets%'
             $presignedTtl: '%app.s3.presigned_ttl%'
+
+    # ── Stripe / Billing ────────────────────────────────────────────────────
+    App\Service\Billing\StripeService:
+        arguments:
+            $stripeSecretKey:       '%env(STRIPE_SECRET_KEY)%'
+            $stripeWebhookSecret:   '%env(STRIPE_WEBHOOK_SECRET)%'
+            $stripePricePro:        '%env(STRIPE_PRICE_PRO)%'
+            $stripePriceEnterprise: '%env(STRIPE_PRICE_ENTERPRISE)%'
+            $appUrl:                '%env(APP_URL)%'
+
+    App\Service\Billing\PlanLimitChecker: ~
+    App\Service\Billing\LimitCheckResult: ~
+

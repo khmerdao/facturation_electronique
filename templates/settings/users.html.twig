@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+{% block page_title %}Utilisateurs{% endblock %}
+{% block main %}
+<h1 class="h4 fw-bold mb-4">Paramètres — Utilisateurs</h1>
+{% include 'settings/_nav.html.twig' %}
+<div class="card border-0 shadow-sm mt-4">
+    <div class="card-header fw-semibold bg-transparent">Membres ({{ members|length }})</div>
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead class="table-light"><tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Depuis</th></tr></thead>
+            <tbody>
+                {% for membership in members %}
+                <tr>
+                    <td>{{ membership.user.fullName ?? membership.user.email }}</td>
+                    <td>{{ membership.user.email }}</td>
+                    <td><span class="badge bg-secondary">{{ membership.role.value }}</span></td>
+                    <td>{{ membership.joinedAt ? membership.joinedAt|date('d/m/Y') : '—' }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="4" class="text-center text-muted py-4">Aucun membre.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

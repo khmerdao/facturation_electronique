@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+{% block page_title %}Modèles de factures{% endblock %}
+{% block main %}
+<h1 class="h4 fw-bold mb-4">Paramètres — Modèles PDF</h1>
+{% include 'settings/_nav.html.twig' %}
+<div class="mt-4">
+    {% if templates|length == 0 %}
+    <div class="text-center text-muted py-5">Aucun modèle configuré. Un modèle classique est utilisé par défaut.</div>
+    {% else %}
+    <div class="row g-3">
+        {% for tpl in templates %}
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm {{ tpl.isDefault ? 'border-primary border-2' : '' }}">
+                <div class="card-body text-center py-4">
+                    <div class="fw-semibold mb-2">{{ tpl.name }}</div>
+                    {% if tpl.isDefault %}<span class="badge bg-primary mb-2">Par défaut</span>{% endif %}
+                    <div class="text-muted small">{{ tpl.baseKey }}</div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

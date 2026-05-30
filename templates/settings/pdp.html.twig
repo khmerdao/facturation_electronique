@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+{% block page_title %}Configuration PDP{% endblock %}
+{% block main %}
+<h1 class="h4 fw-bold mb-4">Paramètres — PDP/PPF</h1>
+{% include 'settings/_nav.html.twig' %}
+
+{% if testResult is not null %}
+<div class="alert alert-{{ testResult.success ? 'success' : 'danger' }} mt-4">
+    {% if testResult.success %}
+    ✅ Connexion PDP réussie ({{ testResult.latency_ms }}ms)
+    {% else %}
+    ❌ Connexion PDP échouée : {{ testResult.error }}
+    {% endif %}
+</div>
+{% endif %}
+
+<div class="card border-0 shadow-sm mt-4">
+    <div class="card-body">
+        <form method="POST" action="{{ path('app_settings_pdp') }}">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label fw-medium">Mode</label>
+                    <select name="mode" class="form-select">
+                        {% for mode in modes %}
+                        <option value="{{ mode.value }}" {{ pdpConfig.mode and pdpConfig.mode.value == mode.value ? 'selected' : '' }}>
+                            {{ mode.value == 'PPF' ? 'PPF (Chorus Pro direct)' : 'PDP partenaire agréé' }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-medium">Nom du PDP</label>
+                    <input type="text" name="pdp_name" class="form-control" value="{{ pdpConfig.pdpName }}">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-medium">Identifiant émetteur</label>
+                    <input type="text" name="emitter_id" class="form-control" value="{{ pdpConfig.emitterId }}">
+                </div>
+                <div class="col-md-8">
+                    <label class="form-label fw-medium">URL de l'endpoint PDP</label>
+                    <input type="url" name="endpoint_url" class="form-control" value="{{ pdpConfig.endpointUrl }}">
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-medium">Clé API PDP</label>
+                    <input type="password" name="api_key" class="form-control" placeholder="{{ pdpConfig.apiKeyEncrypted ? '••••••••• (laisser vide pour conserver)' : 'Saisir la clé API' }}">
+                    <div class="form-text">La clé est chiffrée AES-256 avant stockage. Ne saisissez que si vous voulez la modifier.</div>
+                </div>
+                {% if pdpConfig.lastTestStatus %}
+                <div class="col-12">
+                    <div class="text-muted small">Dernier test : <span class="badge bg-{{ pdpConfig.lastTestStatus == 'OK' ? 'success' : 'danger' }}">{{ pdpConfig.lastTestStatus }}</span></div>
+                </div>
+                {% endif %}
+            </div>
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" name="action" value="save" class="btn btn-primary">Enregistrer</button>
+                {% if pdpConfig.endpointUrl %}
+                <button type="submit" name="action" value="test" class="btn btn-outline-secondary">Tester la connexion</button>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

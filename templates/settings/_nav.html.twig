@@ -1,0 +1,8 @@
+<nav class="nav nav-pills flex-row flex-wrap gap-1">
+    <a class="nav-link {{ app.request.attributes.get('_route') == 'app_settings_organisation' ? 'active' : '' }}" href="{{ path('app_settings_organisation') }}">Organisation</a>
+    <a class="nav-link {{ app.request.attributes.get('_route') == 'app_settings_users' ? 'active' : '' }}" href="{{ path('app_settings_users') }}">Utilisateurs</a>
+    <a class="nav-link {{ app.request.attributes.get('_route') == 'app_settings_templates' ? 'active' : '' }}" href="{{ path('app_settings_templates') }}">Modèles</a>
+    <a class="nav-link {{ app.request.attributes.get('_route') == 'app_settings_sequences' ? 'active' : '' }}" href="{{ path('app_settings_sequences') }}">Séquences</a>
+    <a class="nav-link {{ app.request.attributes.get('_route') == 'app_settings_pdp' ? 'active' : '' }}" href="{{ path('app_settings_pdp') }}">PDP/PPF</a>
+    <a class="nav-link {{ app.request.attributes.get('_route') == 'app_settings_integrations' ? 'active' : '' }}" href="{{ path('app_settings_integrations') }}">Intégrations</a>
+</nav>

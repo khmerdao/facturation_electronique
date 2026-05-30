@@ -1,19 +1,28 @@
 {% extends 'base.html.twig' %}
-{% block page_title %}Paramètres{% endblock %}
+{% block page_title %}Organisation{% endblock %}
 {% block main %}
-<div class="d-flex align-items-center justify-content-between mb-4">
-    <div>
-        <h1 class="h4 mb-0 fw-bold">Paramètres</h1>
-    </div>
-</div>
-
-<div class="card border-0 shadow-sm">
-    <div class="card-body py-5 text-center text-muted">
-        <svg width="48" height="48" viewBox="0 0 20 20" fill="currentColor" class="mb-3 opacity-25">
-            <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm2 10a1 1 0 10-2 0v3a1 1 0 102 0v-3zm2-3a1 1 0 011 1v5a1 1 0 11-2 0v-5a1 1 0 011-1zm4-1a1 1 0 10-2 0v6a1 1 0 102 0V8z" clip-rule="evenodd"/>
-        </svg>
-        <p class="fw-medium mb-1">Paramètres</p>
-        <p class="small mb-0">Cette section est en cours de développement.</p>
+<h1 class="h4 fw-bold mb-4">Paramètres — Organisation</h1>
+{% include 'settings/_nav.html.twig' %}
+<div class="card border-0 shadow-sm mt-4">
+    <div class="card-body">
+        <form method="POST" action="{{ path('app_settings_organisation') }}">
+            <div class="row g-3">
+                <div class="col-md-8"><label class="form-label fw-medium">Nom *</label><input type="text" name="name" class="form-control" value="{{ tenant.name }}" required></div>
+                <div class="col-md-4"><label class="form-label fw-medium">SIRET</label><input type="text" name="siret" class="form-control" value="{{ tenant.siret }}" maxlength="14"></div>
+                <div class="col-md-4"><label class="form-label fw-medium">N° TVA intracommunautaire</label><input type="text" name="tva_intra" class="form-control" value="{{ tenant.tvaIntra }}"></div>
+                <div class="col-md-4"><label class="form-label fw-medium">Email facturation</label><input type="email" name="billing_email" class="form-control" value="{{ tenant.billingEmail }}"></div>
+                <div class="col-md-4"><label class="form-label fw-medium">Téléphone</label><input type="text" name="phone" class="form-control" value="{{ tenant.phone }}"></div>
+                <div class="col-md-6"><label class="form-label fw-medium">IBAN</label><input type="text" name="iban" class="form-control" value="{{ tenant.iban }}"></div>
+                <div class="col-md-3"><label class="form-label fw-medium">BIC</label><input type="text" name="bic" class="form-control" value="{{ tenant.bic }}"></div>
+                <div class="col-12"><hr><h6 class="fw-semibold">Adresse</h6></div>
+                <div class="col-12"><input type="text" name="addr_line1" class="form-control" placeholder="Ligne 1" value="{{ tenant.address.line1 }}"></div>
+                <div class="col-12"><input type="text" name="addr_line2" class="form-control" placeholder="Ligne 2" value="{{ tenant.address.line2 }}"></div>
+                <div class="col-md-3"><input type="text" name="addr_postal_code" class="form-control" placeholder="Code postal" value="{{ tenant.address.postalCode }}"></div>
+                <div class="col-md-6"><input type="text" name="addr_city" class="form-control" placeholder="Ville" value="{{ tenant.address.city }}"></div>
+                <div class="col-md-3"><input type="text" name="addr_country" class="form-control" value="{{ tenant.address.country ?? 'FR' }}"></div>
+            </div>
+            <div class="mt-4"><button type="submit" class="btn btn-primary">Enregistrer</button></div>
+        </form>
     </div>
 </div>
 {% endblock %}

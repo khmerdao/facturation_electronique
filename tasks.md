@@ -26,7 +26,7 @@ Suivi de l'avancement du développement. Mis à jour à chaque tâche démarrée
 | Validators personnalisés | ❌ 0/5 |
 | Messenger Handlers | ❌ 0/23 |
 | Templates (pages applicatives) | ❌ 11 stubs vides + 20 manquants |
-| Tests PHPUnit | ❌ 0 |
+| Tests PHPUnit | ✅ 11 fichiers — 168 assertions, 7 unitaires, 2 fonctionnels, 2 intégration |
 | Fixtures de développement | ❌ 0 |
 | Commandes Symfony | ❌ 0/4 |
 | Système de paiement / abonnement | ❌ non démarré |
@@ -566,7 +566,7 @@ Middleware :
 ---
 
 ## TASK-020 — Tests PHPUnit
-**Statut :** `nouveau`
+**Statut :** `terminé`
 **Priorité :** haute avant mise en production
 
 ### Ce qu'il faut faire
@@ -640,6 +640,7 @@ Créer `src/DataFixtures/AppFixtures.php` avec `zenstruck/foundry` :
 | Date | Tâche | Action |
 |---|---|---|
 | 2026-05-29 | Toutes (TASK-001 à TASK-022) | Création initiale du fichier tasks.md |
+| 2026-05-30 | TASK-020 | Terminé — 11 fichiers de test, 168 assertions, PHPUnit 11 avec attributs |
 | 2026-05-30 | TASK-019 | Terminé — ApiTokenController, AbstractApiController, ApiInvoiceController, ApiContactController, ApiProductController, ApiMeController, TenantFromJwtSubscriber |
 | 2026-05-30 | TASK-021 | Terminé — AppFixtures : 1 tenant PRO, 2 users, 10 contacts, 15 produits, 14 factures, 3 factures reçues |
 | 2026-05-30 | TASK-018 | Terminé — 5 handlers tâches planifiées + 4 commandes Symfony (check-overdue, ereporting, purge-exports, sirene-refresh) |

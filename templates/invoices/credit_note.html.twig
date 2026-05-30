@@ -16,7 +16,7 @@
         </div>
         <div class="mb-3">
             <p class="text-muted small">Montant de la facture d'origine :</p>
-            <p class="fs-4 fw-bold">{{ invoice.totalTtc|number_format(2,',',' ') }} {{ invoice.currency }}</p>
+            <p class="fs-4 fw-bold">{{ invoice.totalTtc|money(invoice.currency) }} }}</p>
         </div>
         <form method="POST" action="{{ path('app_invoices_credit_note', {id: invoice.id}) }}">
             <input type="hidden" name="_token" value="{{ csrf_token('credit_note_' ~ invoice.id) }}">

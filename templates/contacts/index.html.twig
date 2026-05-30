@@ -12,7 +12,7 @@
                 <input type="text" name="q" class="form-control form-control-sm" placeholder="Rechercher…" value="{{ q ?? '' }}">
             </div>
             <div class="col-md-3">
-                <select name="type" class="form-select form-select-sm">
+                <select name="type" class="form-select form-select-sm" data-controller="select">
                     <option value="all" {{ type == 'all' ? 'selected' : '' }}>Tous</option>
                     <option value="client" {{ type == 'client' ? 'selected' : '' }}>Clients</option>
                     <option value="supplier" {{ type == 'supplier' ? 'selected' : '' }}>Fournisseurs</option>
@@ -33,7 +33,7 @@
                 <tr>
                     <td><a href="{{ path('app_contacts_show', {id: contact.id}) }}" class="fw-semibold text-decoration-none">{{ contact.name }}</a></td>
                     <td><span class="badge bg-secondary">{{ contact.type.value }}</span></td>
-                    <td class="font-monospace small">{{ contact.siret ?? '—' }}</td>
+                    <td class="font-monospace small">{{ contact.siret|siret_format ?? '—' }}</td>
                     <td>{{ contact.email ?? '—' }}</td>
                     <td>{{ contact.phone ?? '—' }}</td>
                     <td><a href="{{ path('app_contacts_show', {id: contact.id}) }}" class="btn btn-sm btn-outline-secondary">Voir</a></td>

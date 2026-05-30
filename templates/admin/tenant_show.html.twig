@@ -12,10 +12,10 @@
             <div class="card-body">
                 <div class="mb-2"><div class="text-muted small">Plan</div>
                     <span class="badge bg-primary fs-6">{{ tenant.plan.label() }}</span></div>
-                <div class="mb-2"><div class="text-muted small">SIRET</div><div>{{ tenant.siret ?? '—' }}</div></div>
+                <div class="mb-2"><div class="text-muted small">SIRET</div><div>{{ tenant.siret|siret_format ?? '—' }}</div></div>
                 <div class="mb-2"><div class="text-muted small">TVA</div><div>{{ tenant.tvaIntra ?? '—' }}</div></div>
                 <div class="mb-2"><div class="text-muted small">Email facturation</div><div>{{ tenant.billingEmail ?? '—' }}</div></div>
-                <div class="mb-2"><div class="text-muted small">Créé le</div><div>{{ tenant.createdAt|date('d/m/Y') }}</div></div>
+                <div class="mb-2"><div class="text-muted small">Créé le</div><div>{{ tenant.createdAt|date_fr }}</div></div>
             </div>
         </div>
         <div class="card border-0 shadow-sm mb-4">

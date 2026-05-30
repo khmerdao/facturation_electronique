@@ -34,9 +34,9 @@
                 {% if tenant.currentPeriodEnd %}
                 <div class="text-muted small mb-2">
                     {% if tenant.isCancelAtPeriodEnd() %}
-                        ⚠️ Annulation le {{ tenant.currentPeriodEnd|date('d/m/Y') }}
+                        ⚠️ Annulation le {{ tenant.currentPeriodEnd|date_fr }}
                     {% else %}
-                        Renouvellement le {{ tenant.currentPeriodEnd|date('d/m/Y') }}
+                        Renouvellement le {{ tenant.currentPeriodEnd|date_fr }}
                     {% endif %}
                 </div>
                 {% endif %}
@@ -126,7 +126,7 @@
             </div>
             <div class="col-sm-4">
                 <div class="text-muted small">Fin de période</div>
-                <div>{{ tenant.currentPeriodEnd ? tenant.currentPeriodEnd|date('d/m/Y') : '—' }}</div>
+                <div>{{ tenant.currentPeriodEnd ? tenant.currentPeriodEnd|date_fr : '—' }}</div>
             </div>
         </div>
     </div>

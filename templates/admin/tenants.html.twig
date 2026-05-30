@@ -31,7 +31,7 @@
                 <tr>
                     <td class="fw-semibold">{{ tenant.name }}</td>
                     <td class="font-monospace small text-muted">{{ tenant.slug }}</td>
-                    <td class="font-monospace small">{{ tenant.siret ?? '—' }}</td>
+                    <td class="font-monospace small">{{ tenant.siret|siret_format ?? '—' }}</td>
                     <td>
                         <span class="badge bg-{{ tenant.plan.value == 'ENTERPRISE' ? 'danger' : (tenant.plan.value == 'PRO' ? 'primary' : 'secondary') }}">
                             {{ tenant.plan.label() }}
@@ -42,7 +42,7 @@
                             {{ tenant.status.value }}
                         </span>
                     </td>
-                    <td>{{ tenant.createdAt|date('d/m/Y') }}</td>
+                    <td>{{ tenant.createdAt|date_fr }}</td>
                     <td>
                         <a href="{{ path('admin_tenant_show', {id: tenant.id}) }}" class="btn btn-sm btn-outline-secondary">Voir</a>
                     </td>

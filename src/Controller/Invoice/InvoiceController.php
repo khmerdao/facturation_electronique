@@ -25,6 +25,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\UX\Turbo\TurboBundle;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -152,6 +153,13 @@ final class InvoiceController extends AbstractController
         });
         $this->bus->dispatch(new GenerateInvoicePdfMessage((string) $invoice->getId()));
         $this->addFlash('success', sprintf('Facture %s validée.', $invoice->getNumber()));
+
+        if ($request->headers->get('Accept') === TurboBundle::STREAM_MEDIA_TYPE) {
+            return $this->render('invoices/_status_badge.stream.html.twig', ['invoice' => $invoice],
+                new Response(headers: ['Content-Type' => TurboBundle::STREAM_MEDIA_TYPE])
+            );
+        }
+
         return $this->redirectToRoute('app_invoices_show', ['id' => $invoice->getId()]);
     }
 
@@ -164,6 +172,13 @@ final class InvoiceController extends AbstractController
         }
         $this->bus->dispatch(new SendInvoiceToPdpMessage((string) $invoice->getId()));
         $this->addFlash('success', 'Transmission PDP/PPF démarrée.');
+
+        if ($request->headers->get('Accept') === TurboBundle::STREAM_MEDIA_TYPE) {
+            return $this->render('invoices/_status_badge.stream.html.twig', ['invoice' => $invoice],
+                new Response(headers: ['Content-Type' => TurboBundle::STREAM_MEDIA_TYPE])
+            );
+        }
+
         return $this->redirectToRoute('app_invoices_show', ['id' => $invoice->getId()]);
     }
 

@@ -1,0 +1,31 @@
+{#
+ # Turbo Stream — marquer toutes les notifications comme lues.
+ #
+ # Actions :
+ #   1. Remplacer la liste par une empty state
+ #   2. Supprimer le badge du header
+ #}
+
+{{# Remplacer la liste par un état vide #}}
+<turbo-stream action="replace" target="notifications-list">
+    <template>
+        <div id="notifications-list">
+            <div class="empty-state py-5">
+                <div class="empty-state__icon fs-1">✅</div>
+                <div class="empty-state__title">Tout est lu</div>
+                <div class="empty-state__description">Aucune notification non lue.</div>
+            </div>
+        </div>
+    </template>
+</turbo-stream>
+
+{{# Supprimer le badge du header #}}
+<turbo-stream action="replace" target="notifications-count">
+    <template>
+        <turbo-frame id="notifications-count"
+                     class="position-absolute top-0 start-100 translate-middle"
+                     src="{{ path('app_notifications_api_count') }}"
+                     refresh="morph">
+        </turbo-frame>
+    </template>
+</turbo-stream>

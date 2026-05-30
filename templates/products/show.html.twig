@@ -13,7 +13,7 @@
     <div class="card-body">
         <div class="row g-3">
             <div class="col-sm-3"><div class="text-muted small">Référence</div><div class="font-monospace">{{ product.reference }}</div></div>
-            <div class="col-sm-3"><div class="text-muted small">Prix HT</div><div class="fw-bold fs-5">{{ product.unitPrice|number_format(2,',',' ') }} €</div></div>
+            <div class="col-sm-3"><div class="text-muted small">Prix HT</div><div class="fw-bold fs-5">{{ product.unitPrice|money }}</div></div>
             <div class="col-sm-2"><div class="text-muted small">TVA</div><div>{{ product.tvaRate }}%</div></div>
             <div class="col-sm-2"><div class="text-muted small">Unité</div><div>{{ product.unit }}</div></div>
             {% if product.accountingCode %}<div class="col-sm-2"><div class="text-muted small">Code compta</div><div>{{ product.accountingCode }}</div></div>{% endif %}

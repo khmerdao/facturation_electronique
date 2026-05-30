@@ -14,7 +14,7 @@
                     <td>{{ membership.user.fullName ?? membership.user.email }}</td>
                     <td>{{ membership.user.email }}</td>
                     <td><span class="badge bg-secondary">{{ membership.role.value }}</span></td>
-                    <td>{{ membership.joinedAt ? membership.joinedAt|date('d/m/Y') : '—' }}</td>
+                    <td>{{ membership.joinedAt ? membership.joinedAt|date_fr : '—' }}</td>
                 </tr>
                 {% else %}
                 <tr><td colspan="4" class="text-center text-muted py-4">Aucun membre.</td></tr>

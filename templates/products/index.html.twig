@@ -23,7 +23,7 @@
                     <td class="font-monospace small">{{ product.reference }}</td>
                     <td><a href="{{ path('app_products_show', {id: product.id}) }}" class="fw-semibold text-decoration-none">{{ product.label }}</a></td>
                     <td><span class="badge bg-secondary">{{ product.type.value }}</span></td>
-                    <td class="text-end fw-semibold">{{ product.unitPrice|number_format(2,',',' ') }} €</td>
+                    <td class="text-end fw-semibold">{{ product.unitPrice|money }}</td>
                     <td class="text-end">{{ product.tvaRate }}%</td>
                     <td>
                         <a href="{{ path('app_products_edit', {id: product.id}) }}" class="btn btn-sm btn-outline-secondary">Modifier</a>

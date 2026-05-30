@@ -18,7 +18,7 @@
                 <input type="text" name="q" class="form-control form-control-sm" placeholder="Rechercher…" value="{{ filters.search ?? '' }}">
             </div>
             <div class="col-md-2">
-                <select name="status" class="form-select form-select-sm">
+                <select name="status" class="form-select form-select-sm" data-controller="select">
                     <option value="">Tous les statuts</option>
                     {% for status in statuses %}
                         <option value="{{ status.value }}" {{ filters.status == status.value ? 'selected' : '' }}>
@@ -28,7 +28,7 @@
                 </select>
             </div>
             <div class="col-md-2">
-                <select name="contact_id" class="form-select form-select-sm">
+                <select name="contact_id" class="form-select form-select-sm" data-controller="select">
                     <option value="">Tous les clients</option>
                     {% for contact in contacts %}
                         <option value="{{ contact.id }}" {{ filters.contact_id == contact.id|string ? 'selected' : '' }}>
@@ -77,17 +77,15 @@
                         {% endif %}
                     </td>
                     <td>{{ invoice.clientNameSnapshot ?? invoice.contact?.name ?? '—' }}</td>
-                    <td>{{ invoice.issueDate|date('d/m/Y') }}</td>
+                    <td>{{ invoice.issueDate|date_fr }}</td>
                     <td class="{{ invoice.dueDate and invoice.dueDate < date() and invoice.status.value not in ['PAID','CANCELLED'] ? 'text-danger fw-semibold' : '' }}">
-                        {{ invoice.dueDate ? invoice.dueDate|date('d/m/Y') : '—' }}
+                        {{ invoice.dueDate ? invoice.dueDate|date_fr : '—' }}
                     </td>
                     <td class="text-end fw-semibold">
-                        {{ invoice.totalTtc|number_format(2, ',', ' ') }} {{ invoice.currency }}
+                        {{ invoice.totalTtc|money(invoice.currency) }} }}
                     </td>
                     <td class="text-center">
-                        <span class="badge badge-{{ invoice.status.value }}">
-                            {{ invoice.status.label() }}
-                        </span>
+                        {{ invoice_status_badge(invoice.status) }}
                     </td>
                     <td class="text-center">
                         <div class="btn-group btn-group-sm">

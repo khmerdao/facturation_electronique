@@ -25,7 +25,7 @@
             <tbody>
                 {% for payment in payments %}
                 <tr>
-                    <td>{{ payment.date|date('d/m/Y') }}</td>
+                    <td>{{ payment.date|date_fr }}</td>
                     <td>
                         {% if payment.invoice %}
                             <a href="{{ path('app_invoices_show', {id: payment.invoice.id}) }}">{{ payment.invoice.number ?? 'Brouillon' }}</a>
@@ -34,7 +34,7 @@
                     <td>{{ payment.mode.label() }}</td>
                     <td class="text-muted small">{{ payment.reference ?? '—' }}</td>
                     <td class="text-end fw-semibold {{ payment.direction.value == 'INCOMING' ? 'text-success' : 'text-danger' }}">
-                        {{ payment.direction.value == 'INCOMING' ? '+' : '-' }}{{ payment.amount|number_format(2,',',' ') }} {{ payment.currency }}
+                        {{ payment.direction.value == 'INCOMING' ? '+' : '-' }}{{ payment.amount|money(invoice.currency) }} }}
                     </td>
                     <td><span class="badge {{ payment.direction.value == 'INCOMING' ? 'bg-success' : 'bg-danger' }}">{{ payment.direction.value }}</span></td>
                 </tr>

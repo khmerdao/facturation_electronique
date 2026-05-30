@@ -41,17 +41,17 @@
                     </div>
                     <div class="col-sm-4">
                         <div class="text-muted small">Date de facture</div>
-                        <div class="fw-semibold">{{ invoice.invoiceDate ? invoice.invoiceDate|date('d/m/Y') : '—' }}</div>
+                        <div class="fw-semibold">{{ invoice.invoiceDate ? invoice.invoiceDate|date_fr : '—' }}</div>
                         <div class="text-muted small mt-1">Échéance</div>
-                        <div class="fw-semibold">{{ invoice.dueDate ? invoice.dueDate|date('d/m/Y') : '—' }}</div>
+                        <div class="fw-semibold">{{ invoice.dueDate ? invoice.dueDate|date_fr : '—' }}</div>
                     </div>
                     <div class="col-sm-4">
                         <div class="text-muted small">Montant HT</div>
-                        <div class="fw-semibold">{{ invoice.amountHt ? invoice.amountHt|number_format(2,',',' ') ~ ' ' ~ invoice.currency : '—' }}</div>
+                        <div class="fw-semibold">{{ invoice.amountHt ? invoice.amountHt|money ~ ' ' ~ invoice.currency : '—' }}</div>
                         <div class="text-muted small mt-1">TVA</div>
-                        <div class="fw-semibold">{{ invoice.amountTva ? invoice.amountTva|number_format(2,',',' ') ~ ' ' ~ invoice.currency : '—' }}</div>
+                        <div class="fw-semibold">{{ invoice.amountTva ? invoice.amountTva|money ~ ' ' ~ invoice.currency : '—' }}</div>
                         <div class="text-muted small mt-1">TTC</div>
-                        <div class="fw-bold fs-5">{{ invoice.amountTtc ? invoice.amountTtc|number_format(2,',',' ') ~ ' ' ~ invoice.currency : '—' }}</div>
+                        <div class="fw-bold fs-5">{{ invoice.amountTtc ? invoice.amountTtc|money ~ ' ' ~ invoice.currency : '—' }}</div>
                     </div>
                 </div>
                 {% if invoice.supplierIban %}

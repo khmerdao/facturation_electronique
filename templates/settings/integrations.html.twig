@@ -16,7 +16,7 @@
                     <td class="font-monospace small">{{ key.keyPrefix }}...</td>
                     <td><span class="badge bg-{{ key.environment.value == 'PRODUCTION' ? 'danger' : 'warning text-dark' }}">{{ key.environment.value }}</span></td>
                     <td>{{ key.lastUsedAt ? key.lastUsedAt|date('d/m/Y H:i') : 'Jamais' }}</td>
-                    <td>{{ key.expiresAt ? key.expiresAt|date('d/m/Y') : 'Jamais' }}</td>
+                    <td>{{ key.expiresAt ? key.expiresAt|date_fr : 'Jamais' }}</td>
                 </tr>
                 {% else %}
                 <tr><td colspan="5" class="text-center text-muted py-3">Aucune clé API.</td></tr>

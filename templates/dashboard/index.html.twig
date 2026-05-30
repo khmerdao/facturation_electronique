@@ -31,7 +31,7 @@
         <div class="card border-0 shadow-sm kpi-card kpi-card--blue">
             <div class="card-body">
                 <div class="text-muted small mb-1">CA du mois (TTC)</div>
-                <div class="kpi-value text-primary">{{ kpis.totalSent is defined and kpis.totalSent ? kpis.totalSent|number_format(0, ',', ' ') : '0' }} €</div>
+                <div class="kpi-value text-primary">{{ kpis.totalSent is defined and kpis.totalSent ? kpis.totalSent|money : '0 €' }}</div>
                 <div class="text-muted small mt-1">Factures transmises</div>
             </div>
         </div>
@@ -40,7 +40,7 @@
         <div class="card border-0 shadow-sm kpi-card kpi-card--green">
             <div class="card-body">
                 <div class="text-muted small mb-1">Encaissé</div>
-                <div class="kpi-value text-success">{{ kpis.totalPaid is defined and kpis.totalPaid ? kpis.totalPaid|number_format(0, ',', ' ') : '0' }} €</div>
+                <div class="kpi-value text-success">{{ kpis.totalPaid is defined and kpis.totalPaid ? kpis.totalPaid|money : '0 €' }}</div>
                 <div class="text-muted small mt-1">Factures réglées ce mois</div>
             </div>
         </div>
@@ -49,7 +49,7 @@
         <div class="card border-0 shadow-sm kpi-card kpi-card--orange">
             <div class="card-body">
                 <div class="text-muted small mb-1">En attente</div>
-                <div class="kpi-value" style="color:#d97706">{{ kpis.totalAcknowledged is defined and kpis.totalAcknowledged ? kpis.totalAcknowledged|number_format(0, ',', ' ') : '0' }} €</div>
+                <div class="kpi-value" style="color:#d97706">{{ kpis.totalAcknowledged is defined and kpis.totalAcknowledged ? kpis.totalAcknowledged|money : '0 €' }}</div>
                 <div class="text-muted small mt-1">Acceptées non réglées</div>
             </div>
         </div>
@@ -108,7 +108,10 @@
             <div class="card-header fw-semibold bg-transparent">CA — 12 derniers mois</div>
             <div class="card-body">
                 {% if monthlyRevenue|length > 0 %}
-                    <canvas id="revenueChart" height="220"></canvas>
+                    <canvas id="revenueChart" height="220"
+                        data-controller="chart"
+                        data-chart-revenue="{{ monthlyRevenue|json_encode|e('html_attr') }}">
+                </canvas>
                 {% else %}
                     <div class="text-center text-muted py-5">Aucune donnée de chiffre d'affaires pour le moment.</div>
                 {% endif %}
@@ -130,8 +133,8 @@
                             <div class="text-muted small">{{ invoice.clientNameSnapshot ?? invoice.contact?.name ?? '—' }}</div>
                         </div>
                         <div class="text-end">
-                            <div class="fw-semibold">{{ invoice.totalTtc|number_format(2, ',', ' ') }} €</div>
-                            <span class="badge badge-{{ invoice.status.value }}">{{ invoice.status.label() }}</span>
+                            <div class="fw-semibold">{{ invoice.totalTtc|money }}</div>
+                            {{ invoice_status_badge(invoice.status) }}
                         </div>
                     </div>
                 </a>
@@ -163,6 +166,7 @@
 {{ parent() }}
 {% if monthlyRevenue|length > 0 %}
 <script>
+// Chart.js est chargé via admin.js (bundle webpack) — pas de CDN
 (function() {
     const rawData = {{ monthlyRevenue|json_encode|raw }};
     const months = [];
@@ -204,13 +208,14 @@
         });
     }
 
+    // Chart disponible via window.Chart (admin.js bundle)
     if (typeof Chart !== 'undefined') {
         initChart();
     } else {
-        const s = document.createElement('script');
-        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';
-        s.onload = initChart;
-        document.head.appendChild(s);
+        // Attendre que le bundle soit prêt (cas rare)
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof Chart !== 'undefined') initChart();
+        });
     }
 })();
 </script>

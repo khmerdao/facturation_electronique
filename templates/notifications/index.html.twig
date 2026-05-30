@@ -22,7 +22,7 @@
             </a>
         </div>
         {% if unreadCount > 0 %}
-            <form method="POST" action="{{ path('app_notifications_read_all') }}" class="d-inline">
+            <form method="POST" action="{{ path('app_notifications_read_all') }}" data-turbo-stream="true" class="d-inline">
                 <input type="hidden" name="_token" value="{{ csrf_token('notif_read_all') }}">
                 <button type="submit" class="btn btn-sm btn-outline-secondary">
                     ✓ Tout marquer comme lu
@@ -134,6 +134,7 @@ document.querySelectorAll('.mark-read-btn').forEach(btn => {
             await fetch('{{ path("app_notifications_read", {"id": "__ID__"}) }}'.replace('__ID__', notifId), {
                 method: 'POST',
                 headers: {
+                    'Accept': 'text/vnd.turbo-stream.html',
                     'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
                 },
             });

@@ -8,19 +8,19 @@
         <a href="{{ path('app_invoices_index') }}" class="btn btn-sm btn-outline-secondary">← Retour</a>
         <h1 class="h4 mb-0 fw-bold">
             {{ invoice.number ?? 'Brouillon' }}
-            <span class="badge badge-{{ invoice.status.value }} ms-2 fs-6">{{ invoice.status.label() }}</span>
+            {{ invoice_status_badge(invoice.status) }}
         </h1>
     </div>
-    {# Actions contextuelles selon le statut #}
-    <div class="d-flex gap-2 flex-wrap">
+    {# Actions contextuelles selon le statut — turbo-frame pour mise à jour sans rechargement #}
+    <turbo-frame id="invoice-actions-{{ invoice.id }}" class="d-flex gap-2 flex-wrap">
         {% if invoice.status.value == 'DRAFT' %}
             <a href="{{ path('app_invoices_edit', {id: invoice.id}) }}" class="btn btn-outline-secondary btn-sm">Modifier</a>
-            <form method="POST" action="{{ path('app_invoices_validate', {id: invoice.id}) }}" class="d-inline">
+            <form method="POST" action="{{ path('app_invoices_validate', {id: invoice.id}) }}" class="d-inline" data-turbo-stream="true">
                 <input type="hidden" name="_token" value="{{ csrf_token('invoice_' ~ invoice.id) }}">
                 <button type="submit" class="btn btn-primary btn-sm">Valider la facture</button>
             </form>
         {% elseif invoice.status.value == 'VALIDATED' %}
-            <form method="POST" action="{{ path('app_invoices_send', {id: invoice.id}) }}" class="d-inline">
+            <form method="POST" action="{{ path('app_invoices_send', {id: invoice.id}) }}" class="d-inline" data-turbo-stream="true">
                 <input type="hidden" name="_token" value="{{ csrf_token('invoice_' ~ invoice.id) }}">
                 <button type="submit" class="btn btn-primary btn-sm">Transmettre au PDP/PPF</button>
             </form>
@@ -34,7 +34,7 @@
             <input type="hidden" name="_token" value="{{ csrf_token('invoice_' ~ invoice.id) }}">
             <button type="submit" class="btn btn-outline-secondary btn-sm">Dupliquer</button>
         </form>
-    </div>
+    </turbo-frame>
 </div>
 
 <div class="row g-4">
@@ -52,12 +52,12 @@
                     </div>
                     <div class="col-sm-2">
                         <div class="text-muted small mb-1">Date d'émission</div>
-                        <div class="fw-semibold">{{ invoice.issueDate|date('d/m/Y') }}</div>
+                        <div class="fw-semibold">{{ invoice.issueDate|date_fr }}</div>
                     </div>
                     <div class="col-sm-2">
                         <div class="text-muted small mb-1">Échéance</div>
                         <div class="fw-semibold {{ invoice.dueDate and invoice.dueDate < date() and invoice.status.value not in ['PAID','CANCELLED'] ? 'text-danger' : '' }}">
-                            {{ invoice.dueDate ? invoice.dueDate|date('d/m/Y') : '—' }}
+                            {{ invoice.dueDate ? invoice.dueDate|date_fr : '—' }}
                         </div>
                     </div>
                     <div class="col-sm-2">
@@ -102,11 +102,11 @@
                             {% if line.isComment %}
                                 <td colspan="5"></td>
                             {% else %}
-                                <td class="text-end">{{ line.quantity|number_format(2,',',' ') }} {{ line.unit }}</td>
-                                <td class="text-end">{{ line.unitPrice|number_format(2,',',' ') }}</td>
+                                <td class="text-end">{{ line.quantity|money }}{{ line.unit }}</td>
+                                <td class="text-end">{{ line.unitPrice|money }}</td>
                                 <td class="text-end">{{ line.discount != '0.00' ? line.discount ~ '%' : '—' }}</td>
                                 <td class="text-end">{{ line.tvaRate }}%</td>
-                                <td class="text-end fw-semibold">{{ line.amountHt|number_format(2,',',' ') }} {{ invoice.currency }}</td>
+                                <td class="text-end fw-semibold">{{ line.amountHt|money(invoice.currency) }} }}</td>
                             {% endif %}
                         </tr>
                         {% endfor %}
@@ -125,27 +125,27 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between mb-2">
                     <span class="text-muted">Total HT</span>
-                    <span class="fw-semibold">{{ invoice.totalHt|number_format(2,',',' ') }} {{ invoice.currency }}</span>
+                    <span class="fw-semibold">{{ invoice.totalHt|money(invoice.currency) }} }}</span>
                 </div>
                 {% for rate, amounts in tvaBreakdown %}
                 <div class="d-flex justify-content-between mb-2 text-muted small">
                     <span>TVA {{ rate }}%</span>
-                    <span>{{ amounts.tva|number_format(2,',',' ') }} {{ invoice.currency }}</span>
+                    <span>{{ amounts.tva|money(invoice.currency) }} }}</span>
                 </div>
                 {% endfor %}
                 <hr>
                 <div class="d-flex justify-content-between mb-2">
                     <span class="fw-bold fs-6">Total TTC</span>
-                    <span class="fw-bold fs-6">{{ invoice.totalTtc|number_format(2,',',' ') }} {{ invoice.currency }}</span>
+                    <span class="fw-bold fs-6">{{ invoice.totalTtc|money(invoice.currency) }} }}</span>
                 </div>
                 {% if invoice.amountPaid != '0.00' %}
                 <div class="d-flex justify-content-between mb-2 text-success">
                     <span>Payé</span>
-                    <span>{{ invoice.amountPaid|number_format(2,',',' ') }} {{ invoice.currency }}</span>
+                    <span>{{ invoice.amountPaid|money(invoice.currency) }} }}</span>
                 </div>
                 <div class="d-flex justify-content-between fw-bold text-{{ remainingDue == '0.00' ? 'success' : 'danger' }}">
                     <span>Reste à payer</span>
-                    <span>{{ remainingDue|number_format(2,',',' ') }} {{ invoice.currency }}</span>
+                    <span>{{ remainingDue|money(invoice.currency) }} }}</span>
                 </div>
                 {% endif %}
             </div>
@@ -159,7 +159,7 @@
                 <div class="d-flex gap-2 py-2 border-bottom">
                     <div class="text-muted small" style="min-width:75px">{{ entry.createdAt|date('d/m H:i') }}</div>
                     <div>
-                        <span class="badge badge-{{ entry.toStatus.value }}">{{ entry.toStatus.label() }}</span>
+                        {{ invoice_status_badge(entry.toStatus) }}
                         {% if entry.comment %}<div class="text-muted small mt-1">{{ entry.comment }}</div>{% endif %}
                     </div>
                 </div>
@@ -176,9 +176,9 @@
                 <a href="{{ path('app_invoices_show', {id: cn.id}) }}" class="list-group-item list-group-item-action">
                     <div class="d-flex justify-content-between">
                         <span>{{ cn.number ?? 'Brouillon' }}</span>
-                        <span class="badge badge-{{ cn.status.value }}">{{ cn.status.label() }}</span>
+                        {{ invoice_status_badge(cn.status) }}
                     </div>
-                    <div class="text-muted small">{{ cn.totalTtc|number_format(2,',',' ') }} {{ cn.currency }}</div>
+                    <div class="text-muted small">{{ cn.totalTtc|money(invoice.currency) }} }}</div>
                 </a>
                 {% endfor %}
             </div>

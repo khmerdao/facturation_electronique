@@ -28,7 +28,7 @@
     <td><input type="number" name="lines[{{ i }}][unit_price]" class="form-control form-control-sm text-end" value="{{ l ? l.unitPrice : '0' }}" step="0.0001" min="0"></td>
     <td><input type="number" name="lines[{{ i }}][discount]" class="form-control form-control-sm text-end" value="{{ l ? l.discount : '0' }}" step="0.01" min="0" max="100"></td>
     <td><input type="number" name="lines[{{ i }}][tva_rate]" class="form-control form-control-sm text-end" value="{{ l ? l.tvaRate : '20.00' }}" step="0.01" min="0" max="100"></td>
-    <td><span class="line-amount fw-semibold small">{{ l ? l.amountHt|number_format(2,',',' ') ~ ' €' : '0,00 €' }}</span></td>
+    <td><span class="line-amount fw-semibold small">{{ l ? l.amountHt|money ~ ' €' : '0,00 €' }}</span></td>
     <td>
         <button type="button" class="btn btn-sm btn-outline-danger remove-line" title="Supprimer">×</button>
     </td>

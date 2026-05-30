@@ -33,4 +33,22 @@ window.flatpickr = flatpickr;
 import TomSelect from 'tom-select';
 window.TomSelect = TomSelect;
 
+// ── Chart.js — graphiques (dashboard, analytics) ────────────────────────────
+import {
+    Chart,
+    BarController, LineController, DoughnutController,
+    CategoryScale, LinearScale,
+    BarElement, LineElement, PointElement, ArcElement,
+    Tooltip, Legend,
+} from 'chart.js';
+
+Chart.register(
+    BarController, LineController, DoughnutController,
+    CategoryScale, LinearScale,
+    BarElement, LineElement, PointElement, ArcElement,
+    Tooltip, Legend,
+);
+
+window.Chart = Chart;
+
 export { app };

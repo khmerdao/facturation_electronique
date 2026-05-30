@@ -18,7 +18,7 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label fw-medium">Client <span class="text-danger">*</span></label>
-                            <select name="contact_id" class="form-select" required>
+                            <select name="contact_id" class="form-select" required data-controller="select">
                                 <option value="">— Sélectionner un client —</option>
                                 {% for contact in contacts %}
                                 <option value="{{ contact.id }}">{{ contact.name }}</option>
@@ -27,11 +27,13 @@
                         </div>
                         <div class="col-md-3">
                             <label class="form-label fw-medium">Date d'émission</label>
-                            <input type="date" name="issue_date" class="form-control" value="{{ 'now'|date('Y-m-d') }}" required>
+                            <input type="date" name="issue_date" class="form-control" value="{{ 'now'|date('Y-m-d') }}" required
+                   data-controller="datepicker">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label fw-medium">Échéance</label>
-                            <input type="date" name="due_date" class="form-control">
+                            <input type="date" name="due_date" class="form-control"
+                   data-controller="datepicker">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-medium">Objet</label>
@@ -102,7 +104,7 @@
                 <div class="card-body">
                     <div class="mb-3">
                         <label class="form-label fw-medium">Séquence</label>
-                        <select name="sequence_id" class="form-select form-select-sm">
+                        <select name="sequence_id" class="form-select form-select-sm" data-controller="select">
                             <option value="">Par défaut</option>
                             {% for seq in sequences %}
                             <option value="{{ seq.id }}">{{ seq.name }} (ex: {{ seq.prefix }}-{{ 'now'|date('Y') }}-{{ '0001' }})</option>
@@ -111,7 +113,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-medium">Modèle PDF</label>
-                        <select name="template_id" class="form-select form-select-sm">
+                        <select name="template_id" class="form-select form-select-sm" data-controller="select">
                             <option value="">Par défaut</option>
                             {% for tpl in templates %}
                             <option value="{{ tpl.id }}">{{ tpl.name }}</option>

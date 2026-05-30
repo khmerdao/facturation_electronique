@@ -37,7 +37,7 @@
 {# Tableau TVA #}
 <div class="card border-0 shadow-sm mb-4">
     <div class="card-header fw-semibold bg-transparent">
-        Décomposition TVA — {{ from|date('d/m/Y') }} au {{ to|date('d/m/Y') }}
+        Décomposition TVA — {{ from|date_fr }} au {{ to|date_fr }}
     </div>
     <div class="table-responsive">
         <table class="table align-middle mb-0">
@@ -57,9 +57,9 @@
                     {% set totalTva = totalTva + row.totalTva %}
                     <tr>
                         <td><span class="badge bg-secondary">{{ row.tvaRate }}%</span></td>
-                        <td class="text-end">{{ row.totalHt|number_format(2, ',', ' ') }} €</td>
-                        <td class="text-end fw-semibold">{{ row.totalTva|number_format(2, ',', ' ') }} €</td>
-                        <td class="text-end">{{ (row.totalHt + row.totalTva)|number_format(2, ',', ' ') }} €</td>
+                        <td class="text-end">{{ row.totalHt|money }}</td>
+                        <td class="text-end fw-semibold">{{ row.totalTva|money }}</td>
+                        <td class="text-end">{{ (row.totalHt + row.totalTva)|money }}</td>
                     </tr>
                 {% else %}
                     <tr><td colspan="4" class="text-center text-muted py-4">Aucune donnée pour cette période.</td></tr>
@@ -69,9 +69,9 @@
             <tfoot class="table-light fw-bold">
                 <tr>
                     <td>Total</td>
-                    <td class="text-end">{{ totalHt|number_format(2, ',', ' ') }} €</td>
-                    <td class="text-end">{{ totalTva|number_format(2, ',', ' ') }} €</td>
-                    <td class="text-end">{{ (totalHt + totalTva)|number_format(2, ',', ' ') }} €</td>
+                    <td class="text-end">{{ totalHt|money }}</td>
+                    <td class="text-end">{{ totalTva|money }}</td>
+                    <td class="text-end">{{ (totalHt + totalTva)|money }}</td>
                 </tr>
             </tfoot>
             {% endif %}

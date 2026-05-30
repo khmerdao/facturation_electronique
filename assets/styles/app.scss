@@ -175,3 +175,245 @@ $sidebar-active-color:   #FFFFFF;
 body.sidebar-open {
     overflow: hidden;
 }
+
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Avatar — initiales utilisateur dans le header
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: .75rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: darken($primary, 8%);
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: .02em;
+    user-select: none;
+    cursor: default;
+
+    &--sm { width: 24px; height: 24px; font-size: .65rem; }
+    &--lg { width: 44px; height: 44px; font-size: 1rem; }
+}
+
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Empty states — pages sans données
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+.empty-state {
+    padding: 4rem 2rem;
+    text-align: center;
+
+    &__icon {
+        opacity: .2;
+        margin-bottom: 1.25rem;
+        color: $secondary;
+    }
+
+    &__title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: $body-color;
+        margin-bottom: .5rem;
+    }
+
+    &__description {
+        font-size: .875rem;
+        color: $secondary;
+        max-width: 36ch;
+        margin: 0 auto .75rem;
+        line-height: 1.6;
+    }
+}
+
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Skeleton loaders — placeholders pendant les chargements async
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+@keyframes skeleton-shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position:  200% 0; }
+}
+
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        #f0f0f0 25%,
+        #e0e0e0 50%,
+        #f0f0f0 75%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s infinite;
+    border-radius: $border-radius;
+    display: block;
+
+    // Variantes de hauteur
+    &--text    { height: 1em; }
+    &--heading { height: 1.5em; width: 60%; }
+    &--btn     { height: 2.25rem; width: 120px; border-radius: $btn-border-radius; }
+    &--avatar  { width: 32px; height: 32px; border-radius: 50%; }
+    &--card    { height: 120px; }
+    &--row     { height: .875em; margin-bottom: .5rem; }
+}
+
+// Skeleton table row
+.skeleton-table-row td {
+    padding: .75rem 1rem;
+
+    &::after {
+        content: '';
+        @extend .skeleton;
+        @extend .skeleton--row;
+        display: block;
+    }
+}
+
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Responsive tables — scroll horizontal sur mobile
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+.table-responsive {
+    @include media-breakpoint-down(md) {
+        -webkit-overflow-scrolling: touch;
+        border-radius: $border-radius;
+
+        // Indicateur visuel de scroll
+        background:
+            linear-gradient(to right, white 30%, rgba(white, 0)),
+            linear-gradient(to right, rgba(white, 0), white 70%) 0 100%,
+            radial-gradient(farthest-side at 0% 50%, rgba(0,0,0,.1), transparent),
+            radial-gradient(farthest-side at 100% 50%, rgba(0,0,0,.1), transparent) 0 100%;
+        background-repeat: no-repeat;
+        background-size: 40px 100%, 40px 100%, 14px 100%, 14px 100%;
+        background-attachment: local, local, scroll, scroll;
+    }
+}
+
+// Colonnes qui restent fixes sur mobile
+.table .col-sticky {
+    @include media-breakpoint-down(md) {
+        position: sticky;
+        left: 0;
+        background: white;
+        z-index: 1;
+        box-shadow: 2px 0 4px rgba(0,0,0,.06);
+    }
+}
+
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Toast — notifications flash Bootstrap enrichies
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+#flash-container {
+    .alert {
+        box-shadow: $box-shadow-sm;
+        border: none;
+        border-left: 4px solid transparent;
+        animation: flash-slide-in .25s ease-out;
+
+        &.alert-success { border-left-color: $success; }
+        &.alert-danger  { border-left-color: $danger; }
+        &.alert-warning { border-left-color: $warning; }
+        &.alert-info    { border-left-color: $info; }
+    }
+}
+
+@keyframes flash-slide-in {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Print — masquer le chrome applicatif, afficher la facture
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+@media print {
+    .app-sidebar,
+    .app-header,
+    .no-print,
+    .btn,
+    .alert,
+    nav,
+    footer,
+    #flash-container { display: none !important; }
+
+    .app-content {
+        margin-left: 0 !important;
+        padding: 0 !important;
+    }
+
+    .card {
+        border: none !important;
+        box-shadow: none !important;
+        break-inside: avoid;
+    }
+
+    .table {
+        font-size: .8rem;
+
+        th, td { padding: .4rem .5rem !important; }
+    }
+
+    // Numéros de page
+    @page {
+        margin: 1.5cm;
+        size: A4;
+    }
+
+    body {
+        font-size: 11pt;
+        color: #000 !important;
+    }
+}
+
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Navigation settings — breadcrumb pills horizontaux
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+.settings-nav {
+    .nav-link {
+        border-radius: $border-radius-pill;
+        font-size: .875rem;
+        padding: .35rem .9rem;
+        color: $secondary;
+        transition: background .15s, color .15s;
+
+        &:hover { background: rgba($primary, .06); color: $primary; }
+        &.active { background: rgba($primary, .1); color: $primary; font-weight: 600; }
+    }
+}
+
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Formulaires — états focus et erreur enrichis
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+.form-control, .form-select {
+    &:focus {
+        border-color: rgba($primary, .6);
+        box-shadow: 0 0 0 .2rem rgba($primary, .15);
+    }
+
+    &.is-invalid:focus {
+        box-shadow: 0 0 0 .2rem rgba($danger, .15);
+    }
+}
+
+// Erreurs Symfony Form rendues via Bootstrap 5 form theme
+.invalid-feedback {
+    font-size: .8rem;
+    display: block; // Toujours visible quand présent
+}
+

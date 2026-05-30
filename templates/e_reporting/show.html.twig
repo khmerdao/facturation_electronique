@@ -28,7 +28,7 @@
             <div class="card-body">
                 <div class="mb-2"><div class="text-muted small">Période</div><div class="fw-semibold">{{ batch.period }}</div></div>
                 <div class="mb-2"><div class="text-muted small">Périodicité</div><div>{{ batch.periodicity.value }}</div></div>
-                <div class="mb-2"><div class="text-muted small">Échéance DGFiP</div><div class="{{ batch.late ? 'text-danger fw-bold' : '' }}">{{ batch.deadline|date('d/m/Y') }}</div></div>
+                <div class="mb-2"><div class="text-muted small">Échéance DGFiP</div><div class="{{ batch.late ? 'text-danger fw-bold' : '' }}">{{ batch.deadline|date_fr }}</div></div>
                 <div class="mb-2"><div class="text-muted small">Déclaration néant</div><div>{{ batch.nil ? 'Oui' : 'Non' }}</div></div>
                 {% if batch.submittedAt %}
                 <div class="mb-2"><div class="text-muted small">Soumis le</div><div>{{ batch.submittedAt|date('d/m/Y H:i') }}</div></div>
@@ -52,8 +52,8 @@
                         <tr>
                             <td><span class="badge bg-secondary">{{ tx.type.value }}</span></td>
                             <td>{{ tx.transactionCount }}</td>
-                            <td class="text-end">{{ tx.totalHt|number_format(2,',',' ') }} €</td>
-                            <td class="text-end">{{ tx.totalTva|number_format(2,',',' ') }} €</td>
+                            <td class="text-end">{{ tx.totalHt|money }}</td>
+                            <td class="text-end">{{ tx.totalTva|money }}</td>
                         </tr>
                         {% else %}
                         <tr><td colspan="4" class="text-center text-muted py-4">Aucune transaction. Lancez le recalcul.</td></tr>

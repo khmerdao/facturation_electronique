@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\UX\Turbo\TurboBundle;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/notifications', name: 'app_notifications_')]
@@ -44,16 +45,23 @@ final class NotificationController extends AbstractController
     public function markRead(string $id, Request $request): Response
     {
         $tenant = $this->tenantContext->requireTenant();
-        // CSRF via header pour les requêtes AJAX (pas de form body)
-        $token = $request->headers->get('X-CSRF-Token') ?? $request->request->get('_token', '');
+        $token  = $request->headers->get('X-CSRF-Token') ?? $request->request->get('_token', '');
         if (!$this->isCsrfTokenValid('notif_read_' . $id, $token)) {
             return new Response('', Response::HTTP_FORBIDDEN);
         }
-        $notif  = $this->notificationRepository->find($id);
+
+        $notif = $this->notificationRepository->find($id);
 
         if ($notif && (string) $notif->getTenant()->getId() === (string) $tenant->getId()) {
             $notif->setReadAt(new \DateTimeImmutable());
             $this->em->flush();
+        }
+
+        // Turbo Stream → mise à jour partielle sans rechargement
+        if ($request->headers->get('Accept') === TurboBundle::STREAM_MEDIA_TYPE) {
+            return $this->render('notifications/_mark_read.stream.html.twig', [
+                'notif' => $notif,
+            ], new Response(headers: ['Content-Type' => TurboBundle::STREAM_MEDIA_TYPE]));
         }
 
         return new Response('', Response::HTTP_NO_CONTENT);
@@ -67,6 +75,13 @@ final class NotificationController extends AbstractController
             throw $this->createAccessDeniedException('Token CSRF invalide.');
         }
         $this->notificationRepository->markAllAsRead($this->getUser(), $tenant);
+
+        // Turbo Stream → vider la liste instantanément
+        if ($request->headers->get('Accept') === TurboBundle::STREAM_MEDIA_TYPE) {
+            return $this->render('notifications/_mark_all_read.stream.html.twig', [],
+                new Response(headers: ['Content-Type' => TurboBundle::STREAM_MEDIA_TYPE])
+            );
+        }
         $this->addFlash('success', 'Toutes les notifications marquées comme lues.');
         return $this->redirectToRoute('app_notifications_index');
     }

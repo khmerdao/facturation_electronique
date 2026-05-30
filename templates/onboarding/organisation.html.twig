@@ -27,7 +27,7 @@
                 </div>
                 <div class="mb-4">
                     <label class="form-label fw-medium">SIRET</label>
-                    <input type="text" name="siret" class="form-control" value="{{ tenant.siret }}" maxlength="14" placeholder="12345678901234">
+                    <input type="text" name="siret" class="form-control" value="{{ tenant.siret|siret_format }}" maxlength="14" placeholder="12345678901234">
                     <div class="form-text">14 chiffres — optionnel pour l'instant.</div>
                 </div>
                 <div class="d-grid">

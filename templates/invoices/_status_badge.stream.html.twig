@@ -1,0 +1,40 @@
+{#
+ # Turbo Stream — mettre à jour le badge de statut et les boutons d'action
+ # après validate, send, acknowledge, cancel.
+ #
+ # Cible : turbo-frame id="invoice-actions-{{ invoice.id }}"
+ #         dans templates/invoices/show.html.twig
+ #}
+
+<turbo-stream action="replace" target="invoice-actions-{{ invoice.id }}">
+    <template>
+        <div id="invoice-actions-{{ invoice.id }}" class="d-flex align-items-center gap-2 flex-wrap">
+
+            {{# Badge statut mis à jour #}}
+            {{ invoice_status_badge(invoice.status) }}
+
+            {{# Boutons d'action selon le nouveau statut #}}
+            {% if invoice.status.value == 'DRAFT' %}
+                <form method="POST" action="{{ path('app_invoices_validate', {id: invoice.id}) }}" class="d-inline">
+                    <input type="hidden" name="_token" value="{{ csrf_token('invoice_' ~ invoice.id) }}">
+                    <button class="btn btn-sm btn-primary">✅ Valider</button>
+                </form>
+
+            {% elseif invoice.status.value == 'VALIDATED' %}
+                <form method="POST" action="{{ path('app_invoices_send', {id: invoice.id}) }}" class="d-inline">
+                    <input type="hidden" name="_token" value="{{ csrf_token('invoice_' ~ invoice.id) }}">
+                    <button class="btn btn-sm btn-success">📤 Envoyer via PDP</button>
+                </form>
+
+            {% elseif invoice.status.value == 'ACKNOWLEDGED' %}
+                <a href="{{ path('app_payments_record', {invoiceId: invoice.id}) }}" class="btn btn-sm btn-success">
+                    💳 Enregistrer un paiement
+                </a>
+
+            {% elseif invoice.status.value == 'PAID' %}
+                <span class="text-success small fw-semibold">✓ Payée le {{ invoice.paidAt|date_fr }}</span>
+            {% endif %}
+
+        </div>
+    </template>
+</turbo-stream>

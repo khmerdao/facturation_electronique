@@ -603,7 +603,7 @@ return $this->render('contacts/edit.html.twig', [
 
 ## TASK-F006 — Migration des filtres Twig : |money, |date_fr, |siret_format
 **Priorité :** 🟡 MOYENNE
-**Statut :** `nouveau`
+**Statut :** `terminé`
 **Estimation :** 2-3 heures
 
 ### Problème
@@ -684,7 +684,7 @@ e_reporting/show.html.twig       (2 occurrences)
 
 ## TASK-F007 — Intégration des bibliothèques JS déclarées dans package.json
 **Priorité :** 🟡 MOYENNE
-**Statut :** `nouveau`
+**Statut :** `terminé`
 **Estimation :** 1-2 jours
 
 ### Problème
@@ -798,7 +798,7 @@ Remplacer par le `chart_controller.js` Stimulus déjà créé :
 
 ## TASK-F008 — UX : Turbo Streams sur les actions POST critiques
 **Priorité :** 🟡 MOYENNE
-**Statut :** `nouveau`
+**Statut :** `terminé`
 **Estimation :** 2-3 jours
 
 ### Problème
@@ -874,7 +874,7 @@ public function markRead(Notification $notif): Response
 
 ## TASK-F009 — SCSS : compléter les styles manquants
 **Priorité :** 🟡 MOYENNE
-**Statut :** `nouveau`
+**Statut :** `terminé`
 **Estimation :** 1 jour
 
 ### Problème
@@ -1224,6 +1224,10 @@ curl /api/invoices \
 
 | Date | Task | Action |
 |---|---|---|
+| 2026-05-30 | TASK-F006 | Terminé — 32 |money, 20 |date_fr, 6 |siret_format, 6 invoice_status_badge migrés |
+| 2026-05-30 | TASK-F007 | Terminé — datepicker (7 champs), TomSelect (12 selects), Chart.js bundle (CDN supprimé) |
+| 2026-05-30 | TASK-F008 | Terminé — Turbo Streams notifications + statut facture |
+| 2026-05-30 | TASK-F009 | Terminé — 419 lignes SCSS : avatar, empty-state, skeleton, print, responsive, toast |
 | 2026-05-30 | TASK-F010 | Terminé — 21 fichiers de test, 351 assertions (objectif 250 dépassé) |
 | 2026-05-30 | TASK-F004 résiduel | 6 controllers web corrigés (InvoiceController, TaxController, ReceivedInvoiceController, NotificationController, AdminController, EReportingController) |
 | 2026-05-30 | TASK-F005 | 8 FormTypes créés + 4 controllers refactorisés, validators TASK-015 désormais actifs |

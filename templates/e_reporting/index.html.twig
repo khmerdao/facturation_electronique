@@ -44,7 +44,7 @@
                     <td class="fw-semibold">{{ batch.period }}</td>
                     <td><span class="badge bg-secondary">{{ batch.periodicity.value }}</span></td>
                     <td class="{{ batch.late ? 'text-danger fw-bold' : '' }}">
-                        {{ batch.deadline|date('d/m/Y') }}
+                        {{ batch.deadline|date_fr }}
                         {% if batch.late %}<span class="badge bg-danger ms-1">En retard</span>{% endif %}
                     </td>
                     <td>

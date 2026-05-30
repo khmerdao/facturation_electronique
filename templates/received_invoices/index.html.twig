@@ -93,15 +93,13 @@
                         </a>
                     </td>
                     <td>{{ invoice.supplierName ?? invoice.supplierContact?.name ?? '—' }}</td>
-                    <td>{{ invoice.invoiceDate ? invoice.invoiceDate|date('d/m/Y') : '—' }}</td>
+                    <td>{{ invoice.invoiceDate ? invoice.invoiceDate|date_fr : '—' }}</td>
                     <td>{{ invoice.receivedAt|date('d/m/Y H:i') }}</td>
                     <td class="text-end fw-semibold">
-                        {{ invoice.amountTtc ? invoice.amountTtc|number_format(2,',',' ') ~ ' ' ~ invoice.currency : '—' }}
+                        {{ invoice.amountTtc ? invoice.amountTtc|money ~ ' ' ~ invoice.currency : '—' }}
                     </td>
                     <td class="text-center">
-                        <span class="badge badge-{{ invoice.status.value }}">
-                            {{ invoice.status.label() }}
-                        </span>
+                        {{ invoice_status_badge(invoice.status) }}
                     </td>
                     <td class="text-center">
                         {% if invoice.technicalAckSentAt %}

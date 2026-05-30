@@ -16,7 +16,7 @@
     <div class="col-lg-4">
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-body">
-                {% if contact.siret %}<div class="mb-2"><div class="text-muted small">SIRET</div><div class="font-monospace">{{ contact.siret }}</div></div>{% endif %}
+                {% if contact.siret %}<div class="mb-2"><div class="text-muted small">SIRET</div><div class="font-monospace">{{ contact.siret|siret_format }}</div></div>{% endif %}
                 {% if contact.tvaIntra %}<div class="mb-2"><div class="text-muted small">N° TVA</div><div>{{ contact.tvaIntra }}</div></div>{% endif %}
                 {% if contact.email %}<div class="mb-2"><div class="text-muted small">Email</div><div><a href="mailto:{{ contact.email }}">{{ contact.email }}</a></div></div>{% endif %}
                 {% if contact.phone %}<div class="mb-2"><div class="text-muted small">Téléphone</div><div>{{ contact.phone }}</div></div>{% endif %}
@@ -45,9 +45,9 @@
                         {% for inv in invoices %}
                         <tr>
                             <td><a href="{{ path('app_invoices_show', {id: inv.id}) }}">{{ inv.number ?? 'Brouillon' }}</a></td>
-                            <td>{{ inv.issueDate|date('d/m/Y') }}</td>
-                            <td class="text-end">{{ inv.totalTtc|number_format(2,',',' ') }} {{ inv.currency }}</td>
-                            <td class="text-center"><span class="badge badge-{{ inv.status.value }}">{{ inv.status.label() }}</span></td>
+                            <td>{{ inv.issueDate|date_fr }}</td>
+                            <td class="text-end">{{ inv.totalTtc|money(invoice.currency) }} }}</td>
+                            <td class="text-center">{{ invoice_status_badge(inv.status) }}</td>
                         </tr>
                         {% else %}
                         <tr><td colspan="4" class="text-center text-muted py-4">Aucune facture pour ce contact.</td></tr>

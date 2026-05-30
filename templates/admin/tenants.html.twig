@@ -1,12 +1,57 @@
 {% extends 'base.html.twig' %}
-{% block title %}Admin — Organisations{% endblock %}
+{% block page_title %}Admin — Organisations{% endblock %}
 {% block main %}
 <div class="d-flex align-items-center justify-content-between mb-4">
-    <h1 class="h4 mb-0 fw-bold">Admin — Organisations</h1>
+    <h1 class="h4 mb-0 fw-bold">Organisations</h1>
+    <div class="d-flex gap-2">
+        {% for row in countByPlan %}
+        <span class="badge bg-secondary">{{ row.plan }} : {{ row.count }}</span>
+        {% endfor %}
+    </div>
 </div>
+
+<div class="card border-0 shadow-sm mb-3">
+    <div class="card-body py-3">
+        <form method="GET" class="row g-2">
+            <div class="col-md-5"><input type="text" name="q" class="form-control form-control-sm" placeholder="Rechercher…" value="{{ q ?? '' }}"></div>
+            <div class="col-auto"><button type="submit" class="btn btn-outline-secondary btn-sm">Filtrer</button></div>
+        </form>
+    </div>
+</div>
+
 <div class="card border-0 shadow-sm">
-    <div class="card-body py-5 text-center text-muted">
-        <p class="mb-0">⚙️ Admin — Organisations — en cours de développement.</p>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr><th>Nom</th><th>Slug</th><th>SIRET</th><th>Plan</th><th>Statut</th><th>Créé le</th><th></th></tr>
+            </thead>
+            <tbody>
+                {% for tenantRow in tenants %}
+                {% set tenant = tenantRow[0] is defined ? tenantRow[0] : tenantRow %}
+                <tr>
+                    <td class="fw-semibold">{{ tenant.name }}</td>
+                    <td class="font-monospace small text-muted">{{ tenant.slug }}</td>
+                    <td class="font-monospace small">{{ tenant.siret ?? '—' }}</td>
+                    <td>
+                        <span class="badge bg-{{ tenant.plan.value == 'ENTERPRISE' ? 'danger' : (tenant.plan.value == 'PRO' ? 'primary' : 'secondary') }}">
+                            {{ tenant.plan.label() }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge bg-{{ tenant.status.value == 'ACTIVE' ? 'success' : (tenant.status.value == 'SUSPENDED' ? 'danger' : 'warning text-dark') }}">
+                            {{ tenant.status.value }}
+                        </span>
+                    </td>
+                    <td>{{ tenant.createdAt|date('d/m/Y') }}</td>
+                    <td>
+                        <a href="{{ path('admin_tenant_show', {id: tenant.id}) }}" class="btn btn-sm btn-outline-secondary">Voir</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="7" class="text-center text-muted py-5">Aucune organisation.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 {% endblock %}

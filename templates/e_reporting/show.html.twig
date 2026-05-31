@@ -31,7 +31,7 @@
                 <div class="mb-2"><div class="text-muted small">Échéance DGFiP</div><div class="{{ batch.late ? 'text-danger fw-bold' : '' }}">{{ batch.deadline|date_fr }}</div></div>
                 <div class="mb-2"><div class="text-muted small">Déclaration néant</div><div>{{ batch.nil ? 'Oui' : 'Non' }}</div></div>
                 {% if batch.submittedAt %}
-                <div class="mb-2"><div class="text-muted small">Soumis le</div><div>{{ batch.submittedAt|date('d/m/Y H:i') }}</div></div>
+                <div class="mb-2"><div class="text-muted small">Soumis le</div><div>{{ batch.submittedAt|date_time_fr }}</div></div>
                 {% endif %}
                 {% if batch.dgfipReference %}
                 <div class="mb-2"><div class="text-muted small">Réf. DGFiP</div><div class="font-monospace small">{{ batch.dgfipReference }}</div></div>

@@ -15,7 +15,7 @@
                     <td>{{ key.name }}</td>
                     <td class="font-monospace small">{{ key.keyPrefix }}...</td>
                     <td><span class="badge bg-{{ key.environment.value == 'PRODUCTION' ? 'danger' : 'warning text-dark' }}">{{ key.environment.value }}</span></td>
-                    <td>{{ key.lastUsedAt ? key.lastUsedAt|date('d/m/Y H:i') : 'Jamais' }}</td>
+                    <td>{{ key.lastUsedAt ? key.lastUsedAt|date_time_fr : 'Jamais' }}</td>
                     <td>{{ key.expiresAt ? key.expiresAt|date_fr : 'Jamais' }}</td>
                 </tr>
                 {% else %}
@@ -37,7 +37,7 @@
                     <td class="font-monospace small">{{ wh.url|slice(0, 50) }}...</td>
                     <td class="small text-muted">{{ wh.events|join(', ') }}</td>
                     <td>{{ wh.active ? '<span class="badge bg-success">Actif</span>'|raw : '<span class="badge bg-secondary">Inactif</span>'|raw }}</td>
-                    <td>{{ wh.lastSuccessAt ? wh.lastSuccessAt|date('d/m/Y H:i') : '—' }}</td>
+                    <td>{{ wh.lastSuccessAt ? wh.lastSuccessAt|date_time_fr : '—' }}</td>
                 </tr>
                 {% else %}
                 <tr><td colspan="4" class="text-center text-muted py-3">Aucun webhook configuré.</td></tr>

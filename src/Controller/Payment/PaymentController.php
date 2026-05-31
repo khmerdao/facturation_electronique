@@ -9,11 +9,13 @@ use App\Entity\Enum\PaymentMode;
 use App\Repository\InvoiceRepository;
 use App\Repository\PaymentRepository;
 use App\Security\TenantContext;
+use App\Service\Invoice\InvoiceCalculatorService;
 use App\Service\Payment\PaymentService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\UX\Turbo\TurboBundle;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/payments', name: 'app_payments_')]
@@ -74,6 +76,13 @@ final class PaymentController extends AbstractController
                     'currency'  => $invoice->getCurrency(),
                 ], $this->getUser());
                 $this->addFlash('success', 'Paiement enregistré.');
+                if ($request->headers->get('Accept') === TurboBundle::STREAM_MEDIA_TYPE) {
+                    $calculator = \Symfony\Component\DependencyInjection\ContainerInterface::class;
+                    return $this->render('payments/_payment_recorded.stream.html.twig', [
+                        'invoice'      => $invoice,
+                        'remainingDue' => $this->paymentService->getCalculator()->getRemainingDue($invoice),
+                    ], new Response(headers: ['Content-Type' => TurboBundle::STREAM_MEDIA_TYPE]));
+                }
             } catch (\LogicException $e) {
                 $this->addFlash('error', $e->getMessage());
             }

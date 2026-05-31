@@ -1,0 +1,45 @@
+{#
+ # Turbo Stream — mise à jour inline après enregistrement d'un paiement.
+ #
+ # Actions :
+ #   1. Mettre à jour les montants (restant dû, payé) dans invoices/show.html.twig
+ #   2. Mettre à jour le badge de statut si la facture passe à PAID
+ #}
+
+{{# Mettre à jour le bloc "montants" de la facture #}}
+<turbo-stream action="replace" target="invoice-amounts-{{ invoice.id }}">
+    <template>
+        <div id="invoice-amounts-{{ invoice.id }}">
+            <div class="row g-3">
+                <div class="col-sm-4 text-center">
+                    <div class="text-muted small mb-1">Total HT</div>
+                    <div class="fw-bold fs-5">{{ invoice.totalHt|money(invoice.currency) }}</div>
+                </div>
+                <div class="col-sm-4 text-center">
+                    <div class="text-muted small mb-1">Total TVA</div>
+                    <div class="fw-semibold">{{ invoice.totalTva|money(invoice.currency) }}</div>
+                </div>
+                <div class="col-sm-4 text-center">
+                    <div class="text-muted small mb-1">Total TTC</div>
+                    <div class="fw-bold fs-5 text-primary">{{ invoice.totalTtc|money(invoice.currency) }}</div>
+                </div>
+            </div>
+            {% if invoice.amountPaid != '0.00' %}
+            <hr class="my-3">
+            <div class="d-flex justify-content-between">
+                <span class="text-muted">Payé</span>
+                <span class="text-success fw-semibold">{{ invoice.amountPaid|money(invoice.currency) }}</span>
+            </div>
+            <div class="d-flex justify-content-between fw-bold">
+                <span>Restant dû</span>
+                <span class="{{ remainingDue == '0.00' ? 'text-success' : 'text-danger' }}">
+                    {{ remainingDue|money(invoice.currency) }}
+                </span>
+            </div>
+            {% endif %}
+        </div>
+    </template>
+</turbo-stream>
+
+{{# Mettre à jour les actions selon le nouveau statut #}}
+{{ include('invoices/_status_badge.stream.html.twig') }}

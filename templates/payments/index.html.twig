@@ -12,8 +12,8 @@
                     <option value="OUTGOING" {{ filters.direction == 'OUTGOING' ? 'selected' : '' }}>Décaissements</option>
                 </select>
             </div>
-            <div class="col-md-2"><input type="date" name="from" class="form-control form-control-sm" value="{{ filters.from ?? '' }}"></div>
-            <div class="col-md-2"><input type="date" name="to" class="form-control form-control-sm" value="{{ filters.to ?? '' }}"></div>
+            <div class="col-md-2"><input type="date" name="from" class="form-control form-control-sm" data-controller="datepicker" value="{{ filters.from ?? '' }}"></div>
+            <div class="col-md-2"><input type="date" name="to" class="form-control form-control-sm" data-controller="datepicker" value="{{ filters.to ?? '' }}"></div>
             <div class="col-auto"><button type="submit" class="btn btn-outline-secondary btn-sm">Filtrer</button></div>
         </form>
     </div>

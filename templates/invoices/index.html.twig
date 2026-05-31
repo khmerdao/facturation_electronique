@@ -38,10 +38,10 @@
                 </select>
             </div>
             <div class="col-md-2">
-                <input type="date" name="from" class="form-control form-control-sm" value="{{ filters.from ?? '' }}" placeholder="Du">
+                <input type="date" name="from" class="form-control form-control-sm" data-controller="datepicker" value="{{ filters.from ?? '' }}" placeholder="Du">
             </div>
             <div class="col-md-2">
-                <input type="date" name="to" class="form-control form-control-sm" value="{{ filters.to ?? '' }}" placeholder="Au">
+                <input type="date" name="to" class="form-control form-control-sm" data-controller="datepicker" value="{{ filters.to ?? '' }}" placeholder="Au">
             </div>
             <div class="col-md-1">
                 <button type="submit" class="btn btn-outline-secondary btn-sm w-100">Filtrer</button>

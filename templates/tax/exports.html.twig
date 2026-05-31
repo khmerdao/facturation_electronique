@@ -46,12 +46,12 @@
             <tbody>
                 {% for export in exports %}
                 <tr>
-                    <td>{{ export.createdAt|date('d/m/Y H:i') }}</td>
+                    <td>{{ export.createdAt|date_time_fr }}</td>
                     <td><span class="badge bg-secondary">{{ export.type.value }}</span></td>
                     <td class="text-muted small">
                         {% if export.params.from is defined %}{{ export.params.from }} → {{ export.params.to }}{% endif %}
                     </td>
-                    <td class="text-muted small">{{ export.fileSize ? (export.fileSize / 1024)|number_format(1) ~ ' Ko' : '—' }}</td>
+                    <td class="text-muted small">{{ export.fileSize ? (export.fileSize / 1024)|number_format(1) ~ ' Ko'{# taille fichier : format légitime #} : '—' }}</td>
                     <td>
                         {% if export.status.value == 'DONE' %}<span class="badge bg-success">Prêt</span>
                         {% elseif export.status.value == 'PROCESSING' %}<span class="badge bg-warning text-dark">En cours…</span>

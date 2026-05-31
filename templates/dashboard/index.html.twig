@@ -20,7 +20,7 @@
 <div class="d-flex align-items-center justify-content-between mb-4">
     <div>
         <h1 class="h4 mb-0 fw-bold">Tableau de bord</h1>
-        <p class="text-muted small mb-0">{{ 'now'|date('F Y')|capitalize }} — {{ tenant.name }}</p>
+        <p class="text-muted small mb-0">{{ 'now'|date_month_year_fr|capitalize }} — {{ tenant.name }}</p>
     </div>
     <a href="{{ path('app_invoices_new') }}" class="btn btn-primary">+ Nouvelle facture</a>
 </div>
@@ -108,10 +108,35 @@
             <div class="card-header fw-semibold bg-transparent">CA — 12 derniers mois</div>
             <div class="card-body">
                 {% if monthlyRevenue|length > 0 %}
-                    <canvas id="revenueChart" height="220"
+                    <canvas height="220"
                         data-controller="chart"
-                        data-chart-revenue="{{ monthlyRevenue|json_encode|e('html_attr') }}">
-                </canvas>
+                        data-chart-config-value="{{ {
+                            type: 'bar',
+                            data: {
+                                labels: monthlyRevenue|map(r => r.label ?? r.month),
+                                datasets: [{
+                                    label: 'CA TTC',
+                                    data: monthlyRevenue|map(r => r.total|default(0)),
+                                    backgroundColor: 'rgba(37,99,235,.15)',
+                                    borderColor: '#2563eb',
+                                    borderWidth: 2,
+                                    borderRadius: 4,
+                                    borderSkipped: false
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    legend: { display: false },
+                                    tooltip: { callbacks: {} }
+                                },
+                                scales: {
+                                    y: { beginAtZero: true },
+                                    x: { grid: { display: false } }
+                                }
+                            }
+                        }|json_encode|e('html_attr') }}">
+                    </canvas>
                 {% else %}
                     <div class="text-center text-muted py-5">Aucune donnée de chiffre d'affaires pour le moment.</div>
                 {% endif %}
@@ -164,60 +189,4 @@
 
 {% block javascripts %}
 {{ parent() }}
-{% if monthlyRevenue|length > 0 %}
-<script>
-// Chart.js est chargé via admin.js (bundle webpack) — pas de CDN
-(function() {
-    const rawData = {{ monthlyRevenue|json_encode|raw }};
-    const months = [];
-    const today  = new Date();
-    for (let i = 11; i >= 0; i--) {
-        const d   = new Date(today.getFullYear(), today.getMonth() - i, 1);
-        const key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
-        months.push({ key, label: d.toLocaleDateString('fr-FR', { month: 'short', year: '2-digit' }) });
-    }
-    const dataMap = {};
-    rawData.forEach(r => dataMap[r.month] = parseFloat(r.total) || 0);
-
-    function initChart() {
-        new Chart(document.getElementById('revenueChart'), {
-            type: 'bar',
-            data: {
-                labels: months.map(m => m.label),
-                datasets: [{
-                    label: 'CA TTC',
-                    data: months.map(m => dataMap[m.key] || 0),
-                    backgroundColor: 'rgba(37,99,235,.15)',
-                    borderColor: '#2563eb',
-                    borderWidth: 2,
-                    borderRadius: 4,
-                    borderSkipped: false,
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: { callbacks: { label: c => c.parsed.y.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' }) } }
-                },
-                scales: {
-                    y: { beginAtZero: true, ticks: { callback: v => v >= 1000 ? (v/1000).toFixed(0)+'k €' : v+' €' } },
-                    x: { grid: { display: false } }
-                }
-            }
-        });
-    }
-
-    // Chart disponible via window.Chart (admin.js bundle)
-    if (typeof Chart !== 'undefined') {
-        initChart();
-    } else {
-        // Attendre que le bundle soit prêt (cas rare)
-        document.addEventListener('DOMContentLoaded', () => {
-            if (typeof Chart !== 'undefined') initChart();
-        });
-    }
-})();
-</script>
-{% endif %}
 {% endblock %}

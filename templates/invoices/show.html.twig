@@ -120,9 +120,10 @@
     {# Colonne latérale #}
     <div class="col-lg-4">
 
-        {# Totaux #}
+        {# Totaux — turbo-frame pour mise à jour inline après paiement #}
+        <turbo-frame id="invoice-amounts-{{ invoice.id }}">
         <div class="card border-0 shadow-sm mb-4">
-            <div class="card-body">
+            <div id="invoice-amounts-{{ invoice.id }}-inner" class="card-body">
                 <div class="d-flex justify-content-between mb-2">
                     <span class="text-muted">Total HT</span>
                     <span class="fw-semibold">{{ invoice.totalHt|money(invoice.currency) }} }}</span>
@@ -150,6 +151,7 @@
                 {% endif %}
             </div>
         </div>
+        </turbo-frame>
 
         {# Timeline statuts #}
         <div class="card border-0 shadow-sm mb-4">

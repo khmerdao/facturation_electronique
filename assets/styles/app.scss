@@ -417,3 +417,230 @@ body.sidebar-open {
     display: block; // Toujours visible quand présent
 }
 
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Toasts / Flash messages — animation slide-in + border colorée
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(100%); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+.alert {
+    border-left: 4px solid transparent;
+    animation: slideIn .25s ease-out;
+
+    &.alert-success { border-left-color: $success; }
+    &.alert-danger   { border-left-color: $danger;  }
+    &.alert-warning  { border-left-color: $warning; }
+    &.alert-info     { border-left-color: $info;    }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Badges statuts DGFiP — palette cohérente
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+.badge {
+    font-size: .73rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+
+    &.badge-DRAFT        { background: #e2e8f0; color: #475569; }
+    &.badge-VALIDATED    { background: #dbeafe; color: #1d4ed8; }
+    &.badge-SENT         { background: #e0f2fe; color: #0369a1; }
+    &.badge-ACKNOWLEDGED { background: #dcfce7; color: #166534; }
+    &.badge-PAID         { background: #f0fdf4; color: #15803d; border: 1px solid #86efac; }
+    &.badge-REJECTED     { background: #fee2e2; color: #b91c1c; }
+    &.badge-CANCELLED    { background: #f1f5f9; color: #94a3b8; text-decoration: line-through; }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Tables — scroll shadow mobile + lignes cliquables
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+.table-responsive {
+    @include media-breakpoint-down(md) {
+        // Ombre indiquant qu'il y a du contenu à faire défiler
+        background:
+            linear-gradient(to right, white 30%, rgba(255,255,255,0)),
+            linear-gradient(to left, white 30%, rgba(255,255,255,0)) 100% 0,
+            radial-gradient(farthest-side at 0 50%, rgba(0,0,0,.1), rgba(0,0,0,0)),
+            radial-gradient(farthest-side at 100% 50%, rgba(0,0,0,.1), rgba(0,0,0,0)) 100% 0;
+        background-repeat: no-repeat;
+        background-attachment: local, local, scroll, scroll;
+        background-size: 40px 100%, 40px 100%, 14px 100%, 14px 100%;
+    }
+}
+
+// Lignes de tableau cliquables
+.table-hover > tbody > tr {
+    cursor: default;
+    &[data-href], &.clickable { cursor: pointer; }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Éditeur de factures (Vue 3 — invoice_editor.js)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+.invoice-editor {
+    // Forcer le scroll horizontal sur mobile pour le tableau de lignes
+    .table-responsive { margin: 0 -1rem; }
+
+    // Ligne commentaire — fond légèrement teinté
+    tr.is-comment td { background: rgba($info, .04); font-style: italic; }
+
+    // Totaux — carte arrondie
+    .invoice-totals {
+        background: $light;
+        border-radius: $border-radius;
+        padding: 1.25rem 1.5rem;
+    }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Timeline de statuts (invoices/show.html.twig)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+.status-timeline {
+    position: relative;
+    padding-left: 1.5rem;
+
+    &::before {
+        content: '';
+        position: absolute;
+        left: .45rem;
+        top: .5rem;
+        bottom: .5rem;
+        width: 2px;
+        background: $border-color;
+    }
+
+    .timeline-item {
+        position: relative;
+        padding-bottom: 1.25rem;
+
+        &::before {
+            content: '';
+            position: absolute;
+            left: -1.1rem;
+            top: .35rem;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: $border-color;
+            border: 2px solid white;
+        }
+
+        &.done::before  { background: $success; }
+        &.current::before { background: $primary; box-shadow: 0 0 0 3px rgba($primary, .2); }
+        &.error::before  { background: $danger; }
+    }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Responsive — améliorations générales mobile
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+@include media-breakpoint-down(sm) {
+    // Masquer les colonnes secondaires sur très petits écrans
+    .d-none-xs { display: none !important; }
+
+    // Cards sans padding latéral sur mobile
+    .card-body { padding: 1rem .75rem; }
+
+    // Boutons pleine largeur sur mobile dans les formulaires
+    .form-actions .btn { width: 100%; margin-bottom: .5rem; }
+}
+
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Toasts / Flash messages — animation slide-in + border colorée
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(100%); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+.alert {
+    border-left: 4px solid transparent;
+    animation: slideIn .25s ease-out;
+
+    &.alert-success { border-left-color: $success; }
+    &.alert-danger   { border-left-color: $danger;  }
+    &.alert-warning  { border-left-color: $warning; }
+    &.alert-info     { border-left-color: $info;    }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Éditeur de factures (Vue 3)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+.invoice-editor {
+    tr.is-comment td { background: rgba($info, .04); font-style: italic; }
+
+    .invoice-totals {
+        background: $light;
+        border-radius: $border-radius;
+        padding: 1.25rem 1.5rem;
+    }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Timeline de statuts DGFiP
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+.status-timeline {
+    position: relative;
+    padding-left: 1.5rem;
+
+    &::before {
+        content: '';
+        position: absolute;
+        left: .45rem;
+        top: .5rem;
+        bottom: .5rem;
+        width: 2px;
+        background: $border-color;
+    }
+
+    .timeline-item {
+        position: relative;
+        padding-bottom: 1.25rem;
+
+        &::before {
+            content: '';
+            position: absolute;
+            left: -1.1rem;
+            top: .35rem;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: $border-color;
+            border: 2px solid white;
+        }
+
+        &.done::before    { background: $success; }
+        &.current::before { background: $primary; box-shadow: 0 0 0 3px rgba($primary, .2); }
+        &.error::before   { background: $danger; }
+    }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Lignes de tableau cliquables
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+.table-hover > tbody > tr {
+    cursor: default;
+    &[data-href], &.clickable { cursor: pointer; }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Responsive — mobile
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+@include media-breakpoint-down(sm) {
+    .card-body { padding: 1rem .75rem; }
+    .form-actions .btn { width: 100%; margin-bottom: .5rem; }
+}

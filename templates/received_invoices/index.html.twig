@@ -56,10 +56,10 @@
                 </select>
             </div>
             <div class="col-md-3">
-                <input type="date" name="from" class="form-control form-control-sm" value="{{ filters.from ?? '' }}">
+                <input type="date" name="from" class="form-control form-control-sm" data-controller="datepicker" value="{{ filters.from ?? '' }}">
             </div>
             <div class="col-md-3">
-                <input type="date" name="to" class="form-control form-control-sm" value="{{ filters.to ?? '' }}">
+                <input type="date" name="to" class="form-control form-control-sm" data-controller="datepicker" value="{{ filters.to ?? '' }}">
             </div>
             <div class="col-md-3">
                 <button type="submit" class="btn btn-outline-secondary btn-sm">Filtrer</button>
@@ -94,7 +94,7 @@
                     </td>
                     <td>{{ invoice.supplierName ?? invoice.supplierContact?.name ?? '—' }}</td>
                     <td>{{ invoice.invoiceDate ? invoice.invoiceDate|date_fr : '—' }}</td>
-                    <td>{{ invoice.receivedAt|date('d/m/Y H:i') }}</td>
+                    <td>{{ invoice.receivedAt|date_time_fr }}</td>
                     <td class="text-end fw-semibold">
                         {{ invoice.amountTtc ? invoice.amountTtc|money ~ ' ' ~ invoice.currency : '—' }}
                     </td>
@@ -103,7 +103,7 @@
                     </td>
                     <td class="text-center">
                         {% if invoice.technicalAckSentAt %}
-                            <span class="text-success" title="{{ invoice.technicalAckSentAt|date('d/m/Y H:i') }}">✓</span>
+                            <span class="text-success" title="{{ invoice.technicalAckSentAt|date_time_fr }}">✓</span>
                         {% else %}
                             <span class="text-warning">En attente</span>
                         {% endif %}

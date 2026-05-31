@@ -1228,6 +1228,7 @@ curl /api/invoices \
 | 2026-05-30 | TASK-F007 | Terminé — datepicker (7 champs), TomSelect (12 selects), Chart.js bundle (CDN supprimé) |
 | 2026-05-30 | TASK-F008 | Terminé — Turbo Streams notifications + statut facture |
 | 2026-05-30 | TASK-F009 | Terminé — 419 lignes SCSS : avatar, empty-state, skeleton, print, responsive, toast |
+| 2026-05-30 | TASK-F006/F007/F008/F009 | Terminées — filtres Twig, datepicker+select+chart câblés, Turbo Streams, SCSS 646L |
 | 2026-05-30 | TASK-F010 | Terminé — 21 fichiers de test, 351 assertions (objectif 250 dépassé) |
 | 2026-05-30 | TASK-F004 résiduel | 6 controllers web corrigés (InvoiceController, TaxController, ReceivedInvoiceController, NotificationController, AdminController, EReportingController) |
 | 2026-05-30 | TASK-F005 | 8 FormTypes créés + 4 controllers refactorisés, validators TASK-015 désormais actifs |

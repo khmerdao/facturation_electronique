@@ -60,7 +60,7 @@
                     <tbody>
                         {% for log in logs %}
                         <tr>
-                            <td>{{ log.createdAt|date('d/m/Y H:i') }}</td>
+                            <td>{{ log.createdAt|date_time_fr }}</td>
                             <td><span class="badge bg-dark">{{ log.action }}</span></td>
                             <td>{{ log.superAdmin.email }}</td>
                             <td class="text-muted small">{{ log.ipAddress ?? '—' }}</td>

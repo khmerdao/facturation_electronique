@@ -18,6 +18,8 @@ final class DateFrExtension extends AbstractExtension
         return [
             new TwigFilter('date_fr', $this->dateFr(...)),
             new TwigFilter('date_short_fr', $this->dateShortFr(...)),
+            new TwigFilter('date_time_fr', $this->dateTimeFr(...)),
+            new TwigFilter('date_month_year_fr', $this->dateMonthYearFr(...)),
             new TwigFilter('date_relative', $this->dateRelative(...)),
         ];
     }
@@ -36,6 +38,23 @@ final class DateFrExtension extends AbstractExtension
         if (null === $date) return '—';
         $dt = is_string($date) ? new \DateTimeImmutable($date) : $date;
         return $dt->format('d/m/Y');
+    }
+
+
+    /** "15/01/2026 14:30" */
+    public function dateTimeFr(\DateTimeInterface|string|null $date): string
+    {
+        if (null === $date) return '—';
+        $dt = is_string($date) ? new \DateTimeImmutable($date) : $date;
+        return $dt->format('d/m/Y H:i');
+    }
+
+    /** "janvier 2026" */
+    public function dateMonthYearFr(\DateTimeInterface|string|null $date): string
+    {
+        if (null === $date) return '—';
+        $dt = is_string($date) ? new \DateTimeImmutable($date) : $date;
+        return self::$months[(int)$dt->format('n')] . ' ' . $dt->format('Y');
     }
 
     /** "il y a 3 jours" / "dans 5 jours" / "aujourd'hui" */

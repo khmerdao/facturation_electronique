@@ -116,13 +116,13 @@
                 </div>
                 <div class="mb-2">
                     <div class="text-muted small">Reçue le</div>
-                    <div>{{ invoice.receivedAt|date('d/m/Y H:i') }}</div>
+                    <div>{{ invoice.receivedAt|date_time_fr }}</div>
                 </div>
                 <div class="mb-2">
                     <div class="text-muted small">Acquittement technique</div>
                     <div>
                         {% if invoice.technicalAckSentAt %}
-                            <span class="text-success">Envoyé le {{ invoice.technicalAckSentAt|date('d/m/Y H:i') }}</span>
+                            <span class="text-success">Envoyé le {{ invoice.technicalAckSentAt|date_time_fr }}</span>
                         {% else %}
                             <span class="text-warning">Non encore envoyé</span>
                         {% endif %}

@@ -14,7 +14,7 @@
             <tbody>
                 {% for log in logs %}
                 <tr>
-                    <td>{{ log.createdAt|date('d/m/Y H:i') }}</td>
+                    <td>{{ log.createdAt|date_time_fr }}</td>
                     <td class="small">{{ log.superAdmin.email }}</td>
                     <td>
                         {% if log.targetTenant %}

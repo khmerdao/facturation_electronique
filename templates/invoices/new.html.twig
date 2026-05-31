@@ -10,8 +10,10 @@
 <form method="POST" action="{{ path('app_invoices_new') }}" id="invoice-form">
     <div class="row g-4">
 
-        {# En-tête facture #}
+        {# Colonne principale #}
         <div class="col-lg-8">
+
+            {# Informations générales #}
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header fw-semibold bg-transparent">Informations générales</div>
                 <div class="card-body">
@@ -27,13 +29,14 @@
                         </div>
                         <div class="col-md-3">
                             <label class="form-label fw-medium">Date d'émission</label>
-                            <input type="date" name="issue_date" class="form-control" value="{{ 'now'|date('Y-m-d') }}" required
-                   data-controller="datepicker">
+                            <input type="date" name="issue_date" class="form-control"
+                                   value="{{ 'now'|date('Y-m-d') }}" required
+                                   data-controller="datepicker">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label fw-medium">Échéance</label>
                             <input type="date" name="due_date" class="form-control"
-                   data-controller="datepicker">
+                                   data-controller="datepicker">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-medium">Objet</label>
@@ -54,20 +57,133 @@
                     </div>
                 </div>
             </div>
-            {# ── Éditeur de lignes Vue 3 (invoice_editor.js) ────────────── #}
+
+            {# ── Éditeur de lignes — Stimulus invoice-lines ──────────────── #}
             <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header fw-semibold bg-transparent">Lignes</div>
-                <div class="card-body p-0 p-md-3">
-                    <div id="invoice-editor-app"
-                         data-lines="[]"
-                         data-products="{{ products|map(p => {
-                             'id':         p.id,
-                             'label':      p.label,
-                             'reference':  p.reference,
-                             'unit_price': p.unitPrice,
-                             'unit':       p.unit,
-                             'tva_rate':   p.tvaRate
-                         })|json_encode|e('html_attr') }}">
+                <div class="card-header fw-semibold bg-transparent d-flex align-items-center justify-content-between">
+                    <span>Lignes</span>
+                    <div class="d-flex gap-2">
+                        <button type="button"
+                                class="btn btn-sm btn-outline-primary"
+                                data-action="click->invoice-lines#addLine">
+                            + Ligne
+                        </button>
+                        <button type="button"
+                                class="btn btn-sm btn-outline-secondary"
+                                data-action="click->invoice-lines#addComment">
+                            + Commentaire
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0"
+                     data-controller="invoice-lines"
+                     data-invoice-lines-products-value="{{ products|map(p => {
+                         'id':        p.id,
+                         'label':     p.label,
+                         'reference': p.reference,
+                         'unit_price':p.unitPrice,
+                         'unit':      p.unit,
+                         'tva_rate':  p.tvaRate
+                     })|json_encode|e('html_attr') }}">
+
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width:28px"></th>
+                                    <th>Désignation</th>
+                                    <th class="text-end" style="width:80px">Qté</th>
+                                    <th class="text-center" style="width:60px">Unité</th>
+                                    <th class="text-end" style="width:105px">PU HT</th>
+                                    <th class="text-end" style="width:70px">Rem. %</th>
+                                    <th style="width:80px">TVA</th>
+                                    <th class="text-end" style="width:95px">HT</th>
+                                    <th style="width:36px"></th>
+                                </tr>
+                            </thead>
+                            <tbody data-invoice-lines-target="tbody">
+                                {# Ligne vide initiale — le controller Stimulus la gère #}
+                                <tr data-line data-comment="0" data-line-index="0">
+                                    <td class="drag-handle text-muted ps-2 align-middle" style="cursor:grab">
+                                        <svg width="12" height="16" viewBox="0 0 12 16" fill="currentColor" opacity=".4">
+                                            <circle cx="3" cy="3" r="1.5"/><circle cx="9" cy="3" r="1.5"/>
+                                            <circle cx="3" cy="8" r="1.5"/><circle cx="9" cy="8" r="1.5"/>
+                                            <circle cx="3" cy="13" r="1.5"/><circle cx="9" cy="13" r="1.5"/>
+                                        </svg>
+                                    </td>
+                                    <td class="py-2 px-2" style="min-width:200px">
+                                        {% if products|length > 0 %}
+                                        <select class="form-select form-select-sm mb-1"
+                                                name="lines[0][product_id]"
+                                                data-action="change->invoice-lines#fillFromCatalog">
+                                            <option value="">— Catalogue —</option>
+                                            {% for p in products %}
+                                            <option value="{{ p.id }}">{{ p.label }} ({{ p.reference }})</option>
+                                            {% endfor %}
+                                        </select>
+                                        {% else %}
+                                        <input type="hidden" name="lines[0][product_id]" value="">
+                                        {% endif %}
+                                        <input type="text"
+                                               name="lines[0][description]"
+                                               class="form-control form-control-sm"
+                                               placeholder="Description *"
+                                               data-action="input->invoice-lines#recalculate">
+                                        <input type="text"
+                                               name="lines[0][reference]"
+                                               class="form-control form-control-sm mt-1"
+                                               placeholder="Référence (optionnel)">
+                                        <input type="hidden" name="lines[0][is_comment]" value="0">
+                                        <input type="hidden" name="lines[0][position]"   value="0">
+                                    </td>
+                                    <td class="py-2 px-1">
+                                        <input type="number" name="lines[0][quantity]"
+                                               class="form-control form-control-sm text-end"
+                                               value="1" min="0.01" step="0.01"
+                                               data-action="input->invoice-lines#recalculate">
+                                    </td>
+                                    <td class="py-2 px-1">
+                                        <input type="text" name="lines[0][unit]"
+                                               class="form-control form-control-sm text-center"
+                                               value="U" maxlength="10">
+                                    </td>
+                                    <td class="py-2 px-1">
+                                        <input type="number" name="lines[0][unit_price]"
+                                               class="form-control form-control-sm text-end"
+                                               value="0" min="0" step="0.0001"
+                                               data-action="input->invoice-lines#recalculate">
+                                    </td>
+                                    <td class="py-2 px-1">
+                                        <input type="number" name="lines[0][discount]"
+                                               class="form-control form-control-sm text-end"
+                                               value="0" min="0" max="100" step="0.01"
+                                               data-action="input->invoice-lines#recalculate">
+                                    </td>
+                                    <td class="py-2 px-1">
+                                        <select name="lines[0][tva_rate]"
+                                                class="form-select form-select-sm"
+                                                data-action="change->invoice-lines#recalculate">
+                                            <option value="20.00" selected>20 %</option>
+                                            <option value="10.00">10 %</option>
+                                            <option value="5.50">5,5 %</option>
+                                            <option value="2.10">2,1 %</option>
+                                            <option value="0.00">0 %</option>
+                                        </select>
+                                    </td>
+                                    <td class="py-2 px-2 text-end fw-semibold small align-middle line-amount">0,00 €</td>
+                                    <td class="py-2 px-1 text-center align-middle">
+                                        <button type="button"
+                                                class="btn btn-link btn-sm text-danger p-0"
+                                                data-action="click->invoice-lines#removeLine"
+                                                title="Supprimer">
+                                            <svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                            </svg>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -76,25 +192,29 @@
 
         {# Colonne latérale #}
         <div class="col-lg-4">
+
+            {# Récapitulatif des totaux #}
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header fw-semibold bg-transparent">Récapitulatif</div>
                 <div class="card-body">
                     <div class="d-flex justify-content-between mb-2">
                         <span class="text-muted">Total HT</span>
-                        <span id="total-ht" class="fw-semibold">0,00 €</span>
+                        <span data-invoice-lines-target="totalHt" class="fw-semibold">0,00 €</span>
                     </div>
+                    <div data-invoice-lines-target="tvaDetails"></div>
                     <div class="d-flex justify-content-between mb-2">
                         <span class="text-muted">Total TVA</span>
-                        <span id="total-tva" class="fw-semibold">0,00 €</span>
+                        <span data-invoice-lines-target="totalTva" class="fw-semibold">0,00 €</span>
                     </div>
                     <hr>
                     <div class="d-flex justify-content-between">
                         <span class="fw-bold">Total TTC</span>
-                        <span id="total-ttc" class="fw-bold fs-5">0,00 €</span>
+                        <span data-invoice-lines-target="totalTtc" class="fw-bold fs-5 text-primary">0,00 €</span>
                     </div>
                 </div>
             </div>
 
+            {# Options #}
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header fw-semibold bg-transparent">Options</div>
                 <div class="card-body">
@@ -103,7 +223,7 @@
                         <select name="sequence_id" class="form-select form-select-sm" data-controller="select">
                             <option value="">Par défaut</option>
                             {% for seq in sequences %}
-                            <option value="{{ seq.id }}">{{ seq.name }} (ex: {{ seq.prefix }}-{{ 'now'|date('Y') }}-{{ '0001' }})</option>
+                            <option value="{{ seq.id }}">{{ seq.name }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -118,12 +238,15 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-medium">Notes client</label>
-                        <textarea name="client_notes" class="form-control form-control-sm" rows="3" placeholder="Conditions de paiement, mentions…"></textarea>
+                        <textarea name="client_notes" class="form-control form-control-sm" rows="3"
+                                  placeholder="Conditions de paiement, mentions légales…"></textarea>
                     </div>
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100 btn-lg">Enregistrer le brouillon</button>
+            <button type="submit" class="btn btn-primary w-100 btn-lg">
+                Enregistrer le brouillon
+            </button>
         </div>
 
     </div>
@@ -133,5 +256,4 @@
 
 {% block javascripts %}
 {{ parent() }}
-{{ encore_entry_script_tags('invoice_editor') }}
 {% endblock %}

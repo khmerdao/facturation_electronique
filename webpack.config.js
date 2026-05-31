@@ -2,7 +2,7 @@ const Encore = require('@symfony/webpack-encore');
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Webpack Encore — Build frontend (Symfony 7)
-// Stack : Bootstrap 5 + Hotwire Turbo + Stimulus + Vue 3
+// Stack : Bootstrap 5 + Hotwire Turbo + Stimulus
 // ─────────────────────────────────────────────────────────────────────────────
 
 if (!Encore.isRuntimeEnvironmentConfigured()) {
@@ -19,8 +19,6 @@ Encore
     .addEntry('app', './assets/app.js')
     // Point d'entrée admin (super-admin uniquement)
     .addEntry('admin', './assets/admin.js')
-    // Page d'édition de facture (composants Vue 3 lourds)
-    .addEntry('invoice_editor', './assets/invoice_editor.js')
 
     // ─── CSS ─────────────────────────────────────────────────────────────────
     .addStyleEntry('styles', './assets/styles/app.scss')
@@ -40,11 +38,6 @@ Encore
     // SCSS / Bootstrap 5
     .enableSassLoader()
     .enablePostCssLoader()
-
-    // Vue 3 (Composition API)
-    .enableVueLoader(() => {}, {
-        runtimeCompilerBuild: false,  // Utilise la version runtime uniquement
-    })
 
     // TypeScript (optionnel — peut être activé si besoin)
     // .enableTypeScriptLoader()

@@ -1,0 +1,63 @@
+{#
+ # Partial — Ligne commentaire du tableau de lignes de facture.
+ #
+ # Paramètres :
+ #   idx         (int)    Index de la ligne (0, 1, 2…)
+ #   description (string) Texte du commentaire (vide en mode création)
+ #}
+
+{% set drag_icon %}
+<svg width="12" height="16" viewBox="0 0 12 16" fill="currentColor" opacity=".4">
+    <circle cx="3" cy="3" r="1.5"/><circle cx="9" cy="3" r="1.5"/>
+    <circle cx="3" cy="8" r="1.5"/><circle cx="9" cy="8" r="1.5"/>
+    <circle cx="3" cy="13" r="1.5"/><circle cx="9" cy="13" r="1.5"/>
+</svg>
+{% endset %}
+
+{% set trash_icon %}
+<svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20">
+    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+</svg>
+{% endset %}
+
+<tr data-line data-comment="1" data-line-index="{{ idx }}" class="is-comment">
+
+    {# Poignée drag & drop #}
+    <td class="drag-handle text-muted ps-2 align-middle" style="cursor:grab">
+        {{ drag_icon }}
+    </td>
+
+    {# Texte du commentaire — pleine largeur #}
+    <td colspan="6" class="py-2 px-2">
+        <input type="text"
+               name="lines[{{ idx }}][description]"
+               class="form-control form-control-sm fst-italic"
+               value="{{ description ?? '' }}"
+               placeholder="Commentaire, sous-titre de section…"
+               data-action="input->invoice-lines#recalculate">
+
+        {# Champs cachés — valeurs nulles pour les commentaires #}
+        <input type="hidden" name="lines[{{ idx }}][is_comment]"  value="1">
+        <input type="hidden" name="lines[{{ idx }}][quantity]"    value="0">
+        <input type="hidden" name="lines[{{ idx }}][unit]"        value="U">
+        <input type="hidden" name="lines[{{ idx }}][unit_price]"  value="0">
+        <input type="hidden" name="lines[{{ idx }}][discount]"    value="0">
+        <input type="hidden" name="lines[{{ idx }}][tva_rate]"    value="0">
+        <input type="hidden" name="lines[{{ idx }}][product_id]"  value="">
+        <input type="hidden" name="lines[{{ idx }}][position]"    value="{{ idx }}">
+    </td>
+
+    {# Montant vide #}
+    <td class="text-end text-muted small px-2 align-middle">—</td>
+
+    {# Bouton supprimer #}
+    <td class="text-center align-middle px-1">
+        <button type="button"
+                class="btn btn-link btn-sm text-danger p-0"
+                data-action="click->invoice-lines#removeLine"
+                title="Supprimer">
+            {{ trash_icon }}
+        </button>
+    </td>
+
+</tr>

@@ -1,0 +1,149 @@
+{#
+ # Partial — Ligne normale du tableau de lignes de facture.
+ #
+ # Paramètres :
+ #   idx      (int)          Index de la ligne (0, 1, 2…)
+ #   line     (InvoiceLine|null)  null = ligne vide (mode création)
+ #   products (Product[])    Catalogue produits du tenant
+ #   is_new   (bool)         true = valeurs vides par défaut
+ #}
+
+{% set q    = is_new ? '1'    : line.quantity %}
+{% set unit = is_new ? 'U'    : line.unit %}
+{% set prix = is_new ? '0'    : line.unitPrice %}
+{% set disc = is_new ? '0'    : line.discount %}
+{% set tva  = is_new ? '20.00' : line.tvaRate %}
+{% set ht   = is_new ? '0,00 €' : line.amountHt|money %}
+{% set prod_id = (not is_new and line.product) ? line.product.id : '' %}
+
+{# ── Icône drag & drop (réutilisée dans _line_comment.html.twig) ── #}
+{% set drag_icon %}
+<svg width="12" height="16" viewBox="0 0 12 16" fill="currentColor" opacity=".4">
+    <circle cx="3" cy="3" r="1.5"/><circle cx="9" cy="3" r="1.5"/>
+    <circle cx="3" cy="8" r="1.5"/><circle cx="9" cy="8" r="1.5"/>
+    <circle cx="3" cy="13" r="1.5"/><circle cx="9" cy="13" r="1.5"/>
+</svg>
+{% endset %}
+
+{% set trash_icon %}
+<svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20">
+    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+</svg>
+{% endset %}
+
+<tr data-line data-comment="0" data-line-index="{{ idx }}">
+
+    {# Poignée drag & drop #}
+    <td class="drag-handle text-muted ps-2 align-middle" style="cursor:grab">
+        {{ drag_icon }}
+    </td>
+
+    {# Désignation : catalogue + description + référence #}
+    <td class="py-2 px-2" style="min-width:200px">
+
+        {# Sélecteur catalogue #}
+        {% if products|length > 0 %}
+        <select class="form-select form-select-sm mb-1"
+                name="lines[{{ idx }}][product_id]"
+                data-action="change->invoice-lines#fillFromCatalog">
+            <option value="">— Catalogue —</option>
+            {% for p in products %}
+            <option value="{{ p.id }}"
+                {{ prod_id == p.id ? 'selected' : '' }}>
+                {{ p.label }} ({{ p.reference }})
+            </option>
+            {% endfor %}
+        </select>
+        {% else %}
+        <input type="hidden" name="lines[{{ idx }}][product_id]" value="{{ prod_id }}">
+        {% endif %}
+
+        {# Description #}
+        <input type="text"
+               name="lines[{{ idx }}][description]"
+               class="form-control form-control-sm"
+               value="{{ is_new ? '' : line.description }}"
+               placeholder="Description *"
+               data-action="input->invoice-lines#recalculate">
+
+        {# Référence (optionnelle) #}
+        <input type="text"
+               name="lines[{{ idx }}][reference]"
+               class="form-control form-control-sm mt-1"
+               value="{{ is_new ? '' : line.reference }}"
+               placeholder="Référence (optionnel)">
+
+        {# Champs cachés #}
+        <input type="hidden" name="lines[{{ idx }}][is_comment]" value="0">
+        <input type="hidden" name="lines[{{ idx }}][position]"   value="{{ idx }}">
+
+    </td>
+
+    {# Quantité #}
+    <td class="py-2 px-1">
+        <input type="number"
+               name="lines[{{ idx }}][quantity]"
+               class="form-control form-control-sm text-end"
+               value="{{ q }}"
+               min="0.01" step="0.01"
+               data-action="input->invoice-lines#recalculate">
+    </td>
+
+    {# Unité #}
+    <td class="py-2 px-1">
+        <input type="text"
+               name="lines[{{ idx }}][unit]"
+               class="form-control form-control-sm text-center"
+               value="{{ unit }}"
+               maxlength="10">
+    </td>
+
+    {# Prix unitaire HT #}
+    <td class="py-2 px-1">
+        <input type="number"
+               name="lines[{{ idx }}][unit_price]"
+               class="form-control form-control-sm text-end"
+               value="{{ prix }}"
+               min="0" step="0.0001"
+               data-action="input->invoice-lines#recalculate">
+    </td>
+
+    {# Remise % #}
+    <td class="py-2 px-1">
+        <input type="number"
+               name="lines[{{ idx }}][discount]"
+               class="form-control form-control-sm text-end"
+               value="{{ disc }}"
+               min="0" max="100" step="0.01"
+               data-action="input->invoice-lines#recalculate">
+    </td>
+
+    {# TVA #}
+    <td class="py-2 px-1">
+        <select name="lines[{{ idx }}][tva_rate]"
+                class="form-select form-select-sm"
+                data-action="change->invoice-lines#recalculate">
+            <option value="20.00" {{ tva == '20.00' ? 'selected' : '' }}>20 %</option>
+            <option value="10.00" {{ tva == '10.00' ? 'selected' : '' }}>10 %</option>
+            <option value="5.50"  {{ tva == '5.50'  ? 'selected' : '' }}>5,5 %</option>
+            <option value="2.10"  {{ tva == '2.10'  ? 'selected' : '' }}>2,1 %</option>
+            <option value="0.00"  {{ tva == '0.00'  ? 'selected' : '' }}>0 %</option>
+        </select>
+    </td>
+
+    {# Montant HT (lecture seule — recalculé par Stimulus) #}
+    <td class="py-2 px-2 text-end fw-semibold small align-middle line-amount">
+        {{ ht }}
+    </td>
+
+    {# Bouton supprimer #}
+    <td class="py-2 px-1 text-center align-middle">
+        <button type="button"
+                class="btn btn-link btn-sm text-danger p-0"
+                data-action="click->invoice-lines#removeLine"
+                title="Supprimer">
+            {{ trash_icon }}
+        </button>
+    </td>
+
+</tr>

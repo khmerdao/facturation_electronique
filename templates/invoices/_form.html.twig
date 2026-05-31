@@ -1,0 +1,303 @@
+{#
+ # Partial — Formulaire de facture (création et édition)
+ #
+ # Paramètres attendus via {% include ... with { ... } %} :
+ #
+ #   form_action   (string)  URL action du <form>
+ #   csrf_token_id (string)  Identifiant du token CSRF
+ #   submit_label  (string)  Texte du bouton de soumission
+ #   is_edit       (bool)    true = mode édition, false = création
+ #   back_url      (string)  URL du bouton ← Retour
+ #   cancel_url    (string|null) URL du bouton Annuler (mode édition uniquement)
+ #
+ #   invoice       (Invoice|null) Entité à modifier — null en mode création
+ #   contacts      (Contact[])   Liste des contacts du tenant
+ #   formats       (InvoiceFormat[]) Formats électroniques disponibles
+ #   products      (Product[])   Catalogue produits du tenant
+ #   sequences     (InvoiceSequence[]) Séquences de numérotation
+ #   templates     (InvoiceTemplate[]) Modèles PDF
+ #
+ # Utilitaire — valeur courante ou défaut si null
+ #}
+
+{# Macro locale : retourne la valeur de l'entité ou le défaut en mode création #}
+{% macro val(entity_value, default_value) %}{{ entity_value ?? default_value }}{% endmacro %}
+
+<form method="POST" action="{{ form_action }}" id="invoice-form">
+    <div class="row g-4">
+
+        {# ── Colonne principale ──────────────────────────────────────────── #}
+        <div class="col-lg-8">
+
+            {# Informations générales #}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header fw-semibold bg-transparent">
+                    Informations générales
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+
+                        {# Client #}
+                        <div class="col-md-6">
+                            <label class="form-label fw-medium">
+                                Client <span class="text-danger">*</span>
+                            </label>
+                            <select name="contact_id" class="form-select"
+                                    required data-controller="select">
+                                <option value="">— Sélectionner un client —</option>
+                                {% for contact in contacts %}
+                                <option value="{{ contact.id }}"
+                                    {{ is_edit and invoice.contact and contact.id == invoice.contact.id
+                                        ? 'selected' : '' }}>
+                                    {{ contact.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        {# Date d'émission #}
+                        <div class="col-md-3">
+                            <label class="form-label fw-medium">Date d'émission</label>
+                            <input type="date" name="issue_date"
+                                   class="form-control"
+                                   value="{{ is_edit and invoice.issueDate
+                                       ? invoice.issueDate|date('Y-m-d')
+                                       : 'now'|date('Y-m-d') }}"
+                                   required
+                                   data-controller="datepicker">
+                        </div>
+
+                        {# Échéance #}
+                        <div class="col-md-3">
+                            <label class="form-label fw-medium">Échéance</label>
+                            <input type="date" name="due_date"
+                                   class="form-control"
+                                   value="{{ is_edit and invoice.dueDate
+                                       ? invoice.dueDate|date('Y-m-d')
+                                       : '' }}"
+                                   data-controller="datepicker">
+                        </div>
+
+                        {# Objet #}
+                        <div class="col-md-6">
+                            <label class="form-label fw-medium">Objet</label>
+                            <input type="text" name="subject"
+                                   class="form-control"
+                                   value="{{ is_edit ? invoice.subject : '' }}"
+                                   placeholder="Objet de la facture">
+                        </div>
+
+                        {# Référence client #}
+                        <div class="col-md-3">
+                            <label class="form-label fw-medium">Réf. client</label>
+                            <input type="text" name="client_reference"
+                                   class="form-control"
+                                   value="{{ is_edit ? invoice.clientReference : '' }}">
+                        </div>
+
+                        {# Format électronique #}
+                        <div class="col-md-3">
+                            <label class="form-label fw-medium">Format</label>
+                            <select name="format" class="form-select">
+                                {% for fmt in formats %}
+                                <option value="{{ fmt.value }}"
+                                    {{ (is_edit ? invoice.format.value : 'FACTURX') == fmt.value
+                                        ? 'selected' : '' }}>
+                                    {{ fmt.value }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            {# ── Éditeur de lignes — Stimulus invoice-lines ──────────────── #}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header fw-semibold bg-transparent
+                            d-flex align-items-center justify-content-between">
+                    <span>Lignes</span>
+                    <div class="d-flex gap-2">
+                        <button type="button"
+                                class="btn btn-sm btn-outline-primary"
+                                data-action="click->invoice-lines#addLine">
+                            + Ligne
+                        </button>
+                        <button type="button"
+                                class="btn btn-sm btn-outline-secondary"
+                                data-action="click->invoice-lines#addComment">
+                            + Commentaire
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-body p-0"
+                     data-controller="invoice-lines"
+                     data-invoice-lines-products-value="{{ products|map(p => {
+                         'id':         p.id,
+                         'label':      p.label,
+                         'reference':  p.reference,
+                         'unit_price': p.unitPrice,
+                         'unit':       p.unit,
+                         'tva_rate':   p.tvaRate
+                     })|json_encode|e('html_attr') }}">
+
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width:28px"></th>
+                                    <th>Désignation</th>
+                                    <th class="text-end" style="width:80px">Qté</th>
+                                    <th class="text-center" style="width:60px">Unité</th>
+                                    <th class="text-end" style="width:105px">PU HT</th>
+                                    <th class="text-end" style="width:70px">Rem. %</th>
+                                    <th style="width:80px">TVA</th>
+                                    <th class="text-end" style="width:95px">HT</th>
+                                    <th style="width:36px"></th>
+                                </tr>
+                            </thead>
+                            <tbody data-invoice-lines-target="tbody">
+
+                                {# ── Mode édition : lignes existantes ── #}
+                                {% if is_edit and invoice.lines|length > 0 %}
+
+                                    {% for line in invoice.lines %}
+                                    {% set idx = loop.index0 %}
+
+                                    {% if line.isComment %}
+                                    {# Ligne commentaire #}
+                                    {{ include('invoices/_line_comment.html.twig', {
+                                        idx: idx,
+                                        description: line.description
+                                    }) }}
+
+                                    {% else %}
+                                    {# Ligne normale #}
+                                    {{ include('invoices/_line_normal.html.twig', {
+                                        idx:        idx,
+                                        line:       line,
+                                        products:   products,
+                                        is_new:     false
+                                    }) }}
+                                    {% endif %}
+
+                                    {% endfor %}
+
+                                {# ── Mode création : une ligne vide ── #}
+                                {% else %}
+
+                                    {{ include('invoices/_line_normal.html.twig', {
+                                        idx:      0,
+                                        line:     null,
+                                        products: products,
+                                        is_new:   true
+                                    }) }}
+
+                                {% endif %}
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        {# ── Colonne latérale ────────────────────────────────────────────── #}
+        <div class="col-lg-4">
+
+            {# Récapitulatif #}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header fw-semibold bg-transparent">Récapitulatif</div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Total HT</span>
+                        <span data-invoice-lines-target="totalHt" class="fw-semibold">
+                            {{ is_edit ? invoice.totalHt|money(invoice.currency) : '0,00 €' }}
+                        </span>
+                    </div>
+                    <div data-invoice-lines-target="tvaDetails"></div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Total TVA</span>
+                        <span data-invoice-lines-target="totalTva" class="fw-semibold">
+                            {{ is_edit ? invoice.totalTva|money(invoice.currency) : '0,00 €' }}
+                        </span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <span class="fw-bold">Total TTC</span>
+                        <span data-invoice-lines-target="totalTtc"
+                              class="fw-bold fs-5 text-primary">
+                            {{ is_edit ? invoice.totalTtc|money(invoice.currency) : '0,00 €' }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            {# Options #}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header fw-semibold bg-transparent">Options</div>
+                <div class="card-body">
+
+                    <div class="mb-3">
+                        <label class="form-label fw-medium">Séquence</label>
+                        <select name="sequence_id" class="form-select form-select-sm"
+                                data-controller="select">
+                            <option value="">Par défaut</option>
+                            {% for seq in sequences %}
+                            <option value="{{ seq.id }}"
+                                {{ is_edit and invoice.sequence and seq.id == invoice.sequence.id
+                                    ? 'selected' : '' }}>
+                                {{ seq.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-medium">Modèle PDF</label>
+                        <select name="template_id" class="form-select form-select-sm"
+                                data-controller="select">
+                            <option value="">Par défaut</option>
+                            {% for tpl in templates %}
+                            <option value="{{ tpl.id }}"
+                                {{ is_edit and invoice.template and tpl.id == invoice.template.id
+                                    ? 'selected' : '' }}>
+                                {{ tpl.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-medium">Notes client</label>
+                        <textarea name="client_notes"
+                                  class="form-control form-control-sm"
+                                  rows="3"
+                                  placeholder="Conditions de paiement, mentions légales…">{{ is_edit ? invoice.clientNotes : '' }}</textarea>
+                    </div>
+
+                </div>
+            </div>
+
+            {# Boutons d'action #}
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    {{ submit_label }}
+                </button>
+                {% if cancel_url is defined and cancel_url %}
+                <a href="{{ cancel_url }}" class="btn btn-outline-secondary">
+                    Annuler
+                </a>
+                {% endif %}
+            </div>
+
+        </div>
+
+    </div>
+
+    <input type="hidden" name="_token" value="{{ csrf_token(csrf_token_id) }}">
+</form>

@@ -268,11 +268,13 @@ final class InvoiceController extends AbstractController
     {
         $lines = $request->request->all('lines') ?? [];
         foreach ($lines as $i => $ld) {
-            if (empty($ld['description'])) continue;
+            // Ignorer les lignes vraiment vides (ni description ni commentaire)
+            $isComment = !empty($ld['is_comment']) && $ld['is_comment'] !== '0';
+            if (empty($ld['description']) && !$isComment) continue;
             $line = new InvoiceLine();
             $line->setInvoice($invoice);
             $line->setPosition((int)($ld['position'] ?? $i));
-            $line->setIsComment(!empty($ld['is_comment']));
+            $line->setIsComment($isComment);
             $line->setDescription($ld['description']);
             $line->setReference($ld['reference'] ?? null);
             $line->setQuantity($ld['quantity'] ?? '1');

@@ -59,7 +59,15 @@
                 <div class="card-header fw-semibold bg-transparent">Lignes</div>
                 <div class="card-body p-0 p-md-3">
                     <div id="invoice-editor-app"
-                         data-lines="[]">
+                         data-lines="[]"
+                         data-products="{{ products|map(p => {
+                             'id':         p.id,
+                             'label':      p.label,
+                             'reference':  p.reference,
+                             'unit_price': p.unitPrice,
+                             'unit':       p.unit,
+                             'tva_rate':   p.tvaRate
+                         })|json_encode|e('html_attr') }}">
                     </div>
                 </div>
             </div>

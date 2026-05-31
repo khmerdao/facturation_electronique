@@ -212,7 +212,7 @@ stimulus:
 
 ## TASK-F003 — Vue 3 : éditeur de lignes de factures
 **Priorité :** 🟠 HAUTE
-**Statut :** `nouveau`
+**Statut :** `terminé`
 **Estimation :** 2-3 jours
 
 ### Problème
@@ -1224,10 +1224,12 @@ curl /api/invoices \
 
 | Date | Task | Action |
 |---|---|---|
+| 2026-05-30 | TASK-F003 | Terminé — InvoiceEditor.vue + InvoiceLine.vue + SortableJS drag&drop + catalog lookup |
 | 2026-05-30 | TASK-F006 | Terminé — 32 |money, 20 |date_fr, 6 |siret_format, 6 invoice_status_badge migrés |
 | 2026-05-30 | TASK-F007 | Terminé — datepicker (7 champs), TomSelect (12 selects), Chart.js bundle (CDN supprimé) |
 | 2026-05-30 | TASK-F008 | Terminé — Turbo Streams notifications + statut facture |
 | 2026-05-30 | TASK-F009 | Terminé — 419 lignes SCSS : avatar, empty-state, skeleton, print, responsive, toast |
+| 2026-05-30 | TASK-F003 | Terminé — InvoiceEditor.vue + InvoiceLine.vue + SortableJS drag&drop + catalog lookup |
 | 2026-05-30 | TASK-F006/F007/F008/F009 | Terminées — filtres Twig, datepicker+select+chart câblés, Turbo Streams, SCSS 646L |
 | 2026-05-30 | TASK-F010 | Terminé — 21 fichiers de test, 351 assertions (objectif 250 dépassé) |
 | 2026-05-30 | TASK-F004 résiduel | 6 controllers web corrigés (InvoiceController, TaxController, ReceivedInvoiceController, NotificationController, AdminController, EReportingController) |

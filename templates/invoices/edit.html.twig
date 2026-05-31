@@ -71,7 +71,15 @@
                                  'is_comment':  l.isComment ? true : false,
                                  'product_id':  l.product ? l.product.id : null
                              })|json_encode
-                             : '[]' }}>
+                             : '[]' }}
+                         data-products="{{ products|map(p => {
+                             'id':         p.id,
+                             'label':      p.label,
+                             'reference':  p.reference,
+                             'unit_price': p.unitPrice,
+                             'unit':       p.unit,
+                             'tva_rate':   p.tvaRate
+                         })|json_encode|e('html_attr') }}">
                     </div>
                 </div>
             </div>
